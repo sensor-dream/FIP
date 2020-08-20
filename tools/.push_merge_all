@@ -1,0 +1,28 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: Pavel M. Teslenko
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © Pavel M. Teslenko. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: push_merge_all
+## @Creation date file: 14.11.2019, 03:08:34
+#
+#   Декларируем имя файла
+#
+
+declare -rx merge_all_and_push_script_source="$BASH_SOURCE";
+
+[[ -f main.cfg ]] || cd ../;
+
+git add --all
+git commit -m 'mailto: sensor-dream@sensor-dream.ru commiter: auto-merge-commit'
+
+git reset $(git commit-tree HEAD^{tree} -m "mailto: sensor-dream@sensor-dream.ru commiter: auto-merge-commit")
+
+git push origin --force
+git push gitlab --force
+git push bitbucket --force

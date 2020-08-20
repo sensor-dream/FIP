@@ -1,0 +1,26 @@
+#!/bin/env bash
+
+root_path="$( dirname $( pwd ) )";
+find_path="${root_path}";
+out_file="${root_path}/temp/project_directory_structure.md";
+
+[[ ! -d "${root_path}/temp/" ]] && mkdir -p "${root_path}/temp";
+
+f='-d';
+
+while getopts "d:o:f" OPT
+do
+  case $OPT in
+    d   ) find_path="${root_path}/$OPTARG"; ;;
+    o   ) out_file="${root_path}/$OPTARG"; ;;
+    f   ) f=''; ;;
+    *   ) ;;
+  esac
+done
+shift $(($OPTIND - 1));
+# shift `expr $OPTIND - 1`
+[ "${1:-}" = "--" ] && shift;
+
+printf "### Текущая структура каталога\n---\n\`\`\`\n" > "${out_file}";
+tree $f "${find_path}" | sed 's%'${find_path}'%'$(basename ${find_path} )'%m' - >> "${out_file}";
+echo -e "\`\`\`" >> "${out_file}";

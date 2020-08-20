@@ -1,0 +1,36 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: Pavel M. Teslenko
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © Pavel M. Teslenko. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: push
+## @Creation date file: 14.11.2019, 03:08:34
+
+#
+#   Декларируем имя файла
+#
+
+declare -rx push_script_source="$BASH_SOURCE";
+
+[[ -f main.cfg ]] || cd ../;
+
+git add --all
+
+if [[ -z "$@" ]]; then
+
+    git commit -m 'mailto: sensor-dream@sensor-dream.ru commiter: auto-commit'
+
+else
+
+    git commit -m "message: $@ mailto: sensor-dream@sensor-dream.ru"
+
+fi
+
+git push origin
+git push gitlab
+git push bitbucket

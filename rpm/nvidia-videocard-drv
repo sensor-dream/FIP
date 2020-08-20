@@ -1,0 +1,135 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: nvidia-videocard-drv-340xx
+## @Creation date file: 21.08.2020, 03:11:14
+
+#
+#   Декларируем имя файла
+#
+
+declare -rx nvidia_videocard_drv_340xx_script_source="$BASH_SOURCE"
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path:\n\t%s\n" "${main_run_script_path}"
+fi
+
+#
+#   Подключаем общую библиотеку и общую конфигурацию
+#
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading:\n\t%s\n" "$(readlink -m ${nvidia_videocard_drv_340xx_script_source})"
+
+function install_nvidia_videocard_drv_340xx() {
+
+  local install_pkg=(
+    'kernel-devel'
+    'kernel-headers'
+    'gcc'
+    'make'
+    'dkms'
+    'acpid'
+    'libglvnd-glx'
+    'libglvnd-opengl'
+    'libglvnd-devel'
+    'pkgconf-pkg-config'
+    'libdrm'
+    'libdrm-devel'
+    'drm-utils'
+    'glibc'
+    'libX11'
+    'libXau'
+    'libXext'
+    'libgcc'
+    'libxcb'
+  )
+  sudo dnf install "${install_pkg[@]}"
+
+  install_pkg=(
+    'libvdpau'
+    # Tool to query the capabilities of a VDPAU implementation.
+    'vdpauinfo'
+    # VDPAU Backend for Video Acceleration (VA) API.
+    'libva-vdpau-driver'
+    # Tools for VAAPI (including vainfo)
+    'libva-utils'
+  )
+  sudo dnf install "${install_pkg[@]}"
+
+  install_pkg=(
+    #
+    # FOR NVIDIA CARD
+    # Querying OpenGL resource usage of applications using the NVIDIA OpenGL driver
+    'nvidia-query-resource-opengl-lib'
+    'nvidia-query-resource-opengl'
+    # Libraries for xorg-x11-drv-nvidia-340xx
+    'xorg-x11-drv-nvidia-340xx-libs'
+    # Akmod package for nvidia-340xx kernel module(s)
+    'akmod-nvidia-340xx'
+    # Metapackage which tracks in nvidia-340xx kernel module for newest kernel
+    'kmod-nvidia-340xx'
+    # NVIDIA's 340xx series proprietary display driver for NVIDIA graphic cards
+    'xorg-x11-drv-nvidia-340xx'
+    # CUDA libraries for xorg-x11-drv-nvidia-340xx
+    # optional for cuda up to 6.5 support
+    'xorg-x11-drv-nvidia-340xx-cuda'
+    # Development files for xorg-x11-drv-nvidia-340xx
+    'xorg-x11-drv-nvidia-340xx-devel'
+    # xorg-x11-drv-nvidia-340xx kernel module source code
+    'xorg-x11-drv-nvidia-340xx-kmodsrc'
+    # This package provides the shared libraries i686 for xorg-x11-drv-nvidia xorg-x11-drv-nvidia-libs
+    'xorg-x11-drv-nvidia-340xx-libs.i686'
+  )
+  sudo dnf install "${install_pkg[@]}"
+
+}
+
+function uninstall_nvidia_videocard_drv_340xx() {
+
+  sudo dnf remove xorg-x11-drv-nvidia\* nvidia\*
+  sudo rm -f /usr/lib{,64}/libGL.so.* /usr/lib{,64}/libEGL.so.*
+  sudo rm -f /usr/lib{,64}/xorg/modules/extensions/libglx.so
+  sudo dnf reinstall xorg-x11-server-Xorg mesa-libGL mesa-libEGL libglvnd\*
+  sudo mv /etc/X11/xorg.conf /etc/X11/xorg.conf.saved
+
+}
+
+function main_nvidia_videocard_drv_340xx_script_source() {
+
+  # printf "Initialise main function of nvidia-videocard-drv-340xx script source";
+
+  install_nvidia_videocard_drv_340xx "$@"
+
+}
+
+main_nvidia_videocard_drv_340xx_script_source "$@"

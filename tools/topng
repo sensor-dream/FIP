@@ -1,0 +1,30 @@
+#!/bin/env bash
+
+## Version: ImageMagick 6.9.9-27 Q16 x86_64 2017-12-23 http://www.imagemagick.org
+## topng 101291 101292 101293 102293
+convert_to_png() {
+    local name;
+    local images=($@)
+ 
+    for index in "${!images[@]}"; do
+        images[$index]+="*";
+    done
+
+    local listimages=($(ls ${images[@]} 2> /dev/null))
+
+    for index in ${!listimages[@]}; do
+        ## name="${listimages[$index]/%jpg/png}"; 
+        ## name=$(echo ${listimages[$index]} | sed '$x;$G;/\(.*\)\..*$/!H;//!{$!d }; $!x;$s//\1/')
+        name="$(echo ${listimages[$index]} | sed 's/\(.*\)\..*$/\1/').png"
+        if [[ "${listimages[$index]}" != "$name"  ]]; then
+            if [[ -f "$name" ]]; then
+                echo "Уже сконвертирован ${listimages[$index]} -> $name";
+            else
+                convert -monitor "${listimages[$index]}" "$name";
+            fi
+        fi
+    done
+}
+if [ -z "$UUID" ]; then
+    convert_to_png $@;
+fi
