@@ -1,0 +1,6 @@
+gd
+graphviz
+libyaml
+libyaml-devel
+memcached
+yamllint

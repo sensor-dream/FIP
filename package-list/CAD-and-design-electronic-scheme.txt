@@ -1,0 +1,12 @@
+clang
+desktop-file-utils
+gcc-c++
+git
+openssl
+pkgconf-pkg-config
+polyclipping
+polyclipping-devel
+quazip
+quazip-devel
+shared-mime-info
+zlib

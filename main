@@ -1,0 +1,140 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: main
+## @Creation date file: 12.09.2020, 09:32:01
+
+if [ "$#" -lq "1" ]; then
+  echo "Error: Illegal argument $1"
+  exit 1
+fi
+
+declare -rx main_script_source="$BASH_SOURCE"
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function main_main_script_source() {
+
+  echo "Get args"
+
+  local flags='-a'
+  local main_txt_file="${main_project_path}/main.txt"
+  local main_analysis_txt_file="${main_project_path}/main.analysis.txt"
+
+  OPTIND=1
+
+  while getopts "n" OPT; do
+    case $OPT in
+    n) flags= ;;
+    *) ;;
+    esac
+  done
+  shift $(($OPTIND - 1))
+  # shift `expr $OPTIND - 1`
+  [ "${1:-}" = "--" ] && shift
+
+  # flags+="$(xargs)"
+
+  printf "Initialise main function of main script source\n"
+
+  echo 'FIP (Fedora Instalation and Preparation)'
+
+  echo -e "\nManually installed packages are also added when the system is cleanly installed.\nIt also specifies which scripts were run and in what order.\nThis file will be used for accelerated installation and configuration of the system from scratch, to get started.\n"
+
+  printf '%s\n\t%s\n\t%s\n%s\n\t%s\n%s\n\t%s\n\n' 'Find one packages list:' \
+    "cat ${main_txt_file} | sort -udi | tee ${main_txt_file}" \
+    "cat ${main_txt_file} | awk -F': ' '/Имя(\s+)?:(\s+)?/ { print \$2 }' | sort -udi" \
+    'Install one packages list:' \
+    "sudo dnf install \$(cat ${main_txt_file} | awk -F': ' '/Имя(\s+)?:(\s+)?/ { print \$2 }' | sort -udi)" \
+    'Adding a package description to a file:' \
+    "sudo dnf info \$1 | grep 'Имя Репозиторий Из репо Краткое URL Лицензия Описание'"
+
+  . "${main_project_path}/FULL-installed-packs-in-system" -g
+
+  echo -n 'Install and activate additional repository ? (N/y)'
+  read temp_one
+  if [[ "${temp_one}" == 'y' ]]; then
+    . "${main_project_path}/repository/adobe" ${flags}
+    # . "${main_project_path}/repository/arangodb" ${flags}
+    . "${main_project_path}/repository/rpmfusion" ${flags}
+    # . "${main_project_path}/repository/rpmsphere" ${flags}
+    # . "${main_project_path}/repository/unitedrpms" ${flags}
+    . "${main_project_path}/repository/vscode" ${flags}
+  fi
+
+  echo -n "Sort ${main_txt_file} ? (N/y)"
+  read temp_one
+  if [[ "${temp_one}" == 'y' ]]; then
+    # cat ${main_txt_file} | xargs | sort -uid -o "${main_txt_file}"
+    cat ${main_txt_file} | sed '/^$/d' | sort -uid -o "${main_txt_file}"
+  fi
+
+  echo -n "Create info package list into ${main_txt_file} ? (N/y)"
+  read temp_one
+  if [[ "${temp_one}" == 'y' ]]; then
+    dnf info --installed $(cat ${main_txt_file} | sed '/^$/d' | sort -uid) | tee "${main_txt_file}.info" >/dev/null
+  fi
+
+  echo -n "Runs install from ${main_txt_file} file ? (N/y)"
+  read temp_one
+  if [[ "${temp_one}" == 'y' ]]; then
+    pm ${flags} -- "$(cat ${main_txt_file} | sed '/^$/d' | sort -uid)"
+  fi
+
+  echo -n "Start remove packages from ${main_txt_file} file ? (N/y)"
+  read temp_one
+  if [[ "${temp_one}" == 'y' ]]; then
+    main_txt_file="${main_project_path}/remove-packages-from-workgroup-packages.txt"
+    pm -r -n ${flags} -- "$(cat ${main_txt_file})"
+  fi
+
+  echo -n "Sort ${main_analysis_txt_file} ? (N/y)"
+  read temp_one
+  if [[ "${temp_one}" == 'y' ]]; then
+    # cat ${main_analysis_txt_file} | xargs | sort -uid -o "${main_analysis_txt_file}"
+    cat ${main_analysis_txt_file} | sed '/^$/d' | sort -uid -o "${main_analysis_txt_file}"
+  fi
+
+  echo -n "Create info package list into ${main_analysis_txt_file} ? (N/y)"
+  read temp_one
+  if [[ "${temp_one}" == 'y' ]]; then
+    dnf info --installed $(cat ${main_analysis_txt_file} | sed '/^$/d' | sort -uid) | tee "${main_analysis_txt_file}.info" >/dev/null
+  fi
+
+}
+
+main_main_script_source "$@"

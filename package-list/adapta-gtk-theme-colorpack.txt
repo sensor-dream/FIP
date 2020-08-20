@@ -1,0 +1,17 @@
+autoconf
+automake
+gdk-pixbuf2-devel
+glib2-devel
+google-roboto-condensed-fonts
+google-roboto-fonts
+google-roboto-mono-fonts
+gtk2-engines
+inkscape
+libxml2
+parallel
+pkgconf
+pkgconf-pkg-config
+qt5-qtstyleplugins
+roboto-fontface-common
+roboto-fontface-fonts
+sassc

@@ -1,0 +1,1448 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: system-and-programming-tools
+## @Creation date file: 11.11.2020, 03:31:17
+
+[[ -z "${system_and_programming_tools_script_source}" ]] && declare -rx system_and_programming_tools_script_source="$BASH_SOURCE"
+
+if [[ -z "${system_and_programming_tools_script_source_path}" ]]; then
+  temp_one="$(dirname ${system_and_programming_tools_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx system_and_programming_tools_script_source_path="$(pwd)"
+  else
+    declare -rx system_and_programming_tools_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_system_and_programming_tools() {
+
+  local install_pkg=(
+    'system-tools'
+  )
+
+  pm -g "$@" -- "${install_pkg[@]}"
+
+  echo -e "\e[1;31m Run command: dnf groupinfo system-tools --hidden and used Optional packages list \e[0m"
+
+  # Optional packages list
+  install_pkg=(
+    #
+    # AIDE (Advanced Intrusion Detection Environment) is a file integrity
+    # : checker and intrusion detection program.
+    # -> 'aide'
+    #
+    # : aircrack-ng is a set of tools for auditing wireless networks. It's an
+    # : enhanced/reborn version of aircrack. It consists of airodump-ng (an 802.11
+    # : packet capture program), aireplay-ng (an 802.11 packet injection program),
+    # : aircrack (static WEP and WPA-PSK cracking), airdecap-ng (decrypts WEP/WPA
+    # : capture files), and some tools to handle capture files (merge, convert, etc.).
+    # -> 'aircrack-ng'
+    #
+    # : The Amanda-client package should be installed on any machine that will
+    # : be backed up by AMANDA (including the server if it also needs to be
+    # : backed up).  You will also need to install the amanda package on each
+    # : AMANDA client machine.
+    # -> 'amanda-client'
+    #
+    # : Apcupsd can be used for controlling most APC UPSes. During a
+    # : power failure, apcupsd will inform the users about the power
+    # : failure and that a shutdown may occur.  If power is not restored,
+    # : a system shutdown will follow when the battery is exausted, a
+    # : timeout (seconds) expires, or the battery runtime expires based
+    # : on internal APC calculations determined by power consumption
+    # : rates.  If the power is restored before one of the above shutdown
+    # : conditions is met, apcupsd will inform users about this fact.
+    # : Some features depend on what UPS model you have (simple or smart).
+    # -> 'apcupsd'
+    # A GUI interface to the APC UPS monitoring daemon.
+    # -> 'apcupsd-gui'
+    #
+    # Am-utils includes an updated version of Amd, the popular BSD
+    # : automounter. An automounter is a program which maintains a cache
+    # : of mounted filesystems. Filesystems are mounted when they are
+    # : first referenced by the user and unmounted after a certain period of
+    # : inactivity. Amd supports a variety of filesystems, including NFS, UFS,
+    # : CD-ROMS and local drives.
+    # :
+    # : You should install am-utils if you need a program for automatically
+    # : mounting and unmounting filesystems.
+    # -> 'am-utils'
+    #
+    # : APG (Automated Password Generator) is the tool set for random password
+    # : generation. This standalone version generates some random words of
+    # : required type and prints them to standard output.
+    'apg'
+    #
+    # : This package provides commandline tools for searching and
+    # : managing as well as querying information about packages
+    # : as a low-level access to all features of the libapt-pkg library.
+    # :
+    # : These include:
+    # : * apt-get for retrieval of packages and information about them
+    # : from authenticated sources and for installation, upgrade and
+    # : removal of packages together with their dependencies
+    # : * apt-cache for querying available information about installed
+    # : as well as installable packages
+    # : * apt-cdrom to use removable media as a source for packages
+    # : * apt-config as an interface to the configuration settings
+    # : * apt-key as an interface to manage authentication keys
+    # -> 'apt'
+    #
+    # : The arpwatch package contains arpwatch and arpsnmp.  Arpwatch and
+    # : arpsnmp are both network monitoring tools. Both utilities monitor
+    # : Ethernet or FDDI network traffic and build databases of Ethernet/IP
+    # : address pairs, and can report certain changes via email.
+    # :
+    # : Install the arpwatch package if you need networking monitoring devices
+    # : which will automatically keep track of the IP addresses on your
+    # : network.
+    'arpwatch'
+    #
+    # : autofs is a daemon which automatically mounts filesystems when you use
+    # : them, and unmounts them later when you are not using them. This can
+    # : include network filesystems, CD-ROMs, floppies, and so forth.
+    # -> 'autofs'
+    #
+    # : Command line tools that use avahi to browse and publish mDNS services.
+    # -> 'avahi-tools'
+    #
+    # : Bochs is a portable x86 PC emulation software package that emulates
+    # : enough of the x86 CPU, related AT hardware, and BIOS to run DOS,
+    # : Windows '95, Minix 2.0, and other OS's, all on your workstation.
+    # -> 'bochs'
+    #
+    # Catfish is a handy file searching tool. The interface is
+    # : intentionally lightweight and simple, using only GTK+3.
+    # : You can configure it to your needs by using several command line
+    # : options.
+    'catfish'
+    #
+    # : chrpath allows you to modify the dynamic library load path (rpath) of
+    # : compiled programs. Currently, only removing and modifying the rpath
+    # : is supported.
+    'chrpath'
+    #
+    # : ConMan is a serial console management program designed to support a large
+    # : number of console devices and simultaneous users.  It currently supports
+    # : local serial devices and remote terminal servers (via the telnet protocol).
+    # : Its features include:
+    # :
+    # :   - mapping symbolic names to console devices
+    # :   - logging all output from a console device to file
+    # :   - supporting monitor (R/O), interactive (R/W), and
+    # :     broadcast (W/O) modes of console access
+    # :   - allowing clients to join or steal console "write" privileges
+    # :   - executing Expect scripts across multiple consoles in parallel
+    # -> 'conman'
+    #
+    # : connect-proxy is the simple relaying command to make network connection via
+    # : SOCKS and https proxy. It is mainly intended to be used as proxy command
+    # : of OpenSSH. You can make SSH session beyond the firewall with this command.
+    # :
+    # : Features of connect-proxy are:
+    # :
+    # :     * Supports SOCKS (version 4/4a/5) and https CONNECT method.
+    # :     * Supports NO-AUTH and USERPASS authentication of SOCKS
+    # :     * Partially supports telnet proxy (experimental).
+    # :     * You can input password from tty, ssh-askpass or environment variable.
+    # :     * Simple and general program independent from OpenSSH.
+    # :     * You can also relay local socket stream instead of standard I/O.
+    # -> 'connect-proxy'
+    #
+    # : This package contains the tool convmv with which you can convert the encodings
+    # : of filenames, e.g. from Latin1 to UTF-8.
+    'convmv'
+    #
+    # : Crack is a password guessing program that is designed to quickly locate
+    # : insecurities in Unix (or other) password files by scanning the contents of a
+    # : password file, looking for users who have misguidedly chosen a weak login
+    # : password.
+    # :
+    # : This package creates a group named "crack" and the Crack program puts all
+    # : its results in the /var/lib/crack/run directory, which belongs to that group.
+    # : Only users in the crack group can use this package.
+    'crack'
+    #
+    # : The core analysis suite is a self-contained tool that can be used to
+    # : investigate either live systems, kernel core dumps created from the
+    # : netdump, diskdump and kdump packages from Red Hat Linux, the mcore kernel patch
+    # : offered by Mission Critical Linux, or the LKCD kernel patch.
+    'crash'
+    #
+    # : C implementation of Createrepo.
+    # : A set of utilities (createrepo_c, mergerepo_c, modifyrepo_c)
+    # : for generating a common metadata repository from a directory of
+    # : rpm packages and maintaining it.
+    # -> 'createrepo_c'
+    #
+    # : DAR is a command line tool to backup a directory tree and files. DAR is
+    # : able to make differential backups, split them over a set of disks or files
+    # : of a given size, use compression, filter files or subtrees to be saved or
+    # : not saved, directly access and restore given files. DAR is also able
+    # : to handle extented attributes, and can make remote backups through an
+    # : ssh session for example. Finally, DAR handles save and restore of hard
+    # : and symbolic links.
+    #
+    'dar'
+    #
+    # Краткое опис : Package maintenance system for Debian Linux
+    # URL          : https://tracker.debian.org/pkg/dpkg
+    # Лицензия     : GPLv2 and GPLv2+ and LGPLv2+ and Public Domain and BSD
+    # Описание     : This package provides the low-level infrastructure for handling the
+    # : installation and removal of Debian software packages.
+    # :
+    # : This package contains the tools (including dpkg-source) required
+    # : to unpack, build and upload Debian source packages.
+    # :
+    # : This package also contains the programs dpkg which used to handle the
+    # : installation and removal of packages on a Debian system.
+    # :
+    # : This package also contains dselect, an interface for managing the
+    # : installation and removal of packages on the system.
+    # :
+    # : dpkg and dselect will certainly be non-functional on a rpm-based system
+    # : because packages dependencies will likely be unmet.
+    # -> 'dpkg'
+    #
+    # : ddclient is a Perl client used to update dynamic DNS entries for accounts
+    # : on many different dynamic DNS services. Features include: Operating as a
+    # : daemon, manual and automatic updates, static and dynamic updates, optimized
+    # : updates for multiple addresses, MX, wildcards, abuse avoidance, retrying
+    # : the failed updates and sending update status to syslog and through e-mail.
+    # -> 'ddclient'
+    #
+    # : This package contains the framework for the Dynamic Kernel Module Support (DKMS)
+    # : method for installing module RPMS as originally developed by Dell.
+    'dkms'
+    #
+    # : dtach is a program that emulates the detach feature of screen, with
+    # : less overhead.  It is designed to be transparent and un-intrusive; it
+    # : avoids interpreting the input and output between attached terminals
+    # : and the program under its control. Consequently, it works best with
+    # : full-screen applications such as emacs.
+    'dtach'
+    #
+    # : Edonkey 2000 file hash calculator
+    # : A tool that outputs ed2k-links for given files.
+    'ed2k_hash'
+    #
+    # : Graphical editor for access control lists (ACLs) and extended attributes
+    # : (xattr), either as an extension within Nautilus, or as a standalone
+    # : utility.
+    'eiciel'
+    #
+    # : emelFM2 is the GTK+2 port of emelFM. emelFM2 is a file manager that implements
+    # : the popular two-pane design. It features a simple GTK+2 interface, a flexible
+    # : file typing scheme, and a built-in command line for executing commands without
+    # : opening an xterm.
+    # -> 'emelfm2'
+    #
+    # : Enca is an Extremely Naive Charset Analyser. It detects character set and
+    # : encoding of text files and can also convert them to other encodings using
+    # : either a built-in converter or external libraries and tools like libiconv,
+    # : librecode, or cstocs.
+    # :
+    # : Currently, it has support for Belarussian, Bulgarian, Croatian, Czech,
+    # : Estonian, Latvian, Lithuanian, Polish, Russian, Slovak, Slovene, Ukrainian,
+    # : Chinese and some multibyte encodings (mostly variants of Unicode)
+    # : independent on the language.
+    # :
+    # : This package also contains shared Enca library other programs can make use of.
+    # :
+    # : Install enca if you need to cope with text files of dubious origin
+    # : and unknown encoding and convert them to some reasonable encoding.
+    'enca'
+    #
+    # : The Environment Modules package provides for the dynamic modification of
+    # : a user's environment via modulefiles.
+    # :
+    # : Each modulefile contains the information needed to configure the shell
+    # : for an application. Once the Modules package is initialized, the
+    # : environment can be modified on a per-module basis using the module
+    # : command which interprets modulefiles. Typically modulefiles instruct
+    # : the module command to alter or set shell environment variables such as
+    # : PATH, MANPATH, etc. modulefiles may be shared by many users on a system
+    # : and users may have their own collection to supplement or replace the
+    # : shared modulefiles.
+    # :
+    # : Modules can be loaded and unloaded dynamically and atomically, in an
+    # : clean fashion. All popular shells are supported, including bash, ksh,
+    # : zsh, sh, csh, tcsh, as well as some scripting languages such as perl.
+    # :
+    # : Modules are useful in managing different versions of applications.
+    # : Modules can also be bundled into metamodules that will load an entire
+    # : suite of different applications.
+    # :
+    # : NOTE: You will need to get a new shell after installing this package to
+    # : have access to the module alias.
+    'environment-modules'
+    #
+    # : Ettercap is a suite for man in the middle attacks on LAN. It features
+    # : sniffing of live connections, content filtering on the fly and many other
+    # : interesting tricks. It supports active and passive dissection of many
+    # : protocols (even ciphered ones) and includes many feature for network and host
+    # : analysis.
+    # -> 'ettercap'
+    #
+    # : Fail2Ban scans log files and bans IP addresses that makes too many password
+    # : failures. It updates firewall rules to reject the IP address. These rules can
+    # : be defined by the user. Fail2Ban can read multiple log files such as sshd or
+    # : Apache web server ones.
+    # :
+    # : Fail2Ban is able to reduce the rate of incorrect authentications attempts
+    # : however it cannot eliminate the risk that weak authentication presents.
+    # : Configure services to use only two factor or public/private authentication
+    # : mechanisms if you really want to protect services.
+    # :
+    # : This is a meta-package that will install the default configuration.  Other
+    # : sub-packages are available to install support for other actions and
+    # : configurations.
+    # -> 'fail2ban'
+    #
+    # : Fatsort is a utility written in C to sort FAT16 and FAT32 filesystems. It is
+    # : needed to sort files on cheap mp3 players that display files not sorted by
+    # : their name but by the order they appear in the file allocation table (FAT).
+    # -> 'fatsort'
+    #
+    # : FDUPES is a program for identifying duplicate files residing within specified
+    # : directories.
+    'fdupes'
+    #
+    # : Festival is a general multi-lingual speech synthesis system developed
+    # : at CSTR. It offers a full text to speech system with various APIs, as
+    # : well as an environment for development and research of speech synthesis
+    # : techniques. It is written in C++ with a Scheme-based command interpreter
+    # : for general control.
+    # -> 'festival'
+    #
+    # : Foremost recovers files files based on their headers, footers, and internal
+    # : data structures. This process is commonly referred to as data carving.
+    # : Foremost can work on a raw disk drive or image file generated by dd.  The
+    # : headers and footers can be specified by a configuration file or you can use
+    # : command line switches to specify built-in file types. These built-in types
+    # : look at the data structures of a given file format allowing for a more
+    # : reliable and faster recovery.
+    # -> 'foremost'
+    #
+    # : The xfreerdp & wlfreerdp Remote Desktop Protocol (RDP) clients from the FreeRDP
+    # : project.
+    # :
+    # : xfreerdp & wlfreerdp can connect to RDP servers such as Microsoft Windows
+    # : machines, xrdp and VirtualBox.
+    # -> 'freerdp'
+    #
+    # : fwknop implements an authorization scheme known as Single Packet
+    # : Authorization (SPA) that requires only a single encrypted packet to
+    # : communicate various pieces of information including desired access through an
+    # : iptables policy and/or specific commands to execute on the target system.
+    # : The main application of this program is to protect services such as SSH with
+    # : an additional layer of security in order to make the exploitation of
+    # : vulnerabilities (both 0-day and unpatched code) much more difficult.  The
+    # : authorization server passively monitors authorization packets via libpcap and
+    # : hence there is no "server" to which to connect in the traditional sense.  Any
+    # : service protected by fwknop is inaccessible (by using iptables to
+    # : intercept packets within the kernel) before authenticating; anyone scanning for
+    # : the service will not be able to detect that it is even listening.  This
+    # : authorization scheme offers many advantages over port knocking, include being
+    # : non-replayable, much more data can be communicated, and the scheme cannot be
+    # : broken by simply connecting to extraneous ports on the server in an effort to
+    # : break knock sequences.  The authorization packets can easily be spoofed as
+    # : well, and this makes it possible to make it appear as though, say,
+    # : www.yahoo.com is trying to authenticate to a target system but in reality the
+    # : actual connection will come from a seemingly unrelated IP. Although the
+    # : default data collection method is to use libpcap to sniff packets off the
+    # : wire, fwknop can also read packets out of a file that is written by the
+    # : iptables ulogd pcap writer or by a separate sniffer process.
+    # -> 'fwknop'
+    #
+    # Distributed Monitoring System
+    #     # :          : http://ganglia.sourceforge.net/
+    # : Ganglia is a scalable, real-time monitoring and execution environment
+    # : with all execution requests and statistics expressed in an open
+    # : well-defined XML format.
+    # -> 'ganglia'
+    #
+    # : Geoclue is a D-Bus service that provides location information. The primary goal
+    # : of the Geoclue project is to make creating location-aware applications as
+    # : simple as possible, while the secondary goal is to ensure that no application
+    # : can access location information without explicit permission from user.
+    'geoclue2'
+    #
+    # : GHex can load raw data from binary files and display them for editing in the
+    # : traditional hex editor view. The display is split in two columns, with
+    # : hexadecimal values in one column and the ASCII representation in the other.
+    # : A useful tool for working with raw data.
+    'ghex'
+    #
+    #  : A frontend to easily manage connections to remote filesystems using GIO/GVFS.
+    # : It allows you to quickly connect/mount a remote filesystem and manage
+    # : bookmarks of such.
+    # -> 'gigolo'
+    #
+    # : Multiple stacked system monitors in one process
+    # :     # :          : http://www.gkrellm.net/
+    # : GKrellM charts CPU, load, Disk, and all active net interfaces
+    # : automatically.  An on/off button and online timer for the PPP
+    # : interface is provided, as well as monitors for memory and swap usage,
+    # : file system, internet connections, APM laptop battery, mbox style
+    # : mailboxes, and temperature sensors on supported systems.  Also
+    # : included is an uptime monitor, a hostname label, and a clock/calendar.
+    # : Additional features are:
+    # :
+    # :   * Autoscaling grid lines with configurable grid line resolution.
+    # :   * LED indicators for the net interfaces.
+    # :   * A gui popup for configuration of chart sizes and resolutions.
+    # -> 'gkrellm'
+    #
+    # Краткое опис : Linux/Unix tool suite for various mobile phones
+    #     # :          : http://www.gnokii.org/
+    # Описание     : Gnokii provides tools and a user space driver for use with mobile
+    # : phones under Linux, various unices and Win32. With gnokii you can do
+    # : such things as make data calls, update your address book, change
+    # : calendar entries, send and receive SMS messages and load ring tones
+    # : depending on the phone you have.
+    # -> 'gnokii'
+    #
+    # Краткое опис : Command line tools for TLS protocol
+    #     # :          : http://www.gnutls.org/
+    # Описание     : GnuTLS is a secure communications library implementing the SSL, TLS and DTLS
+    # : protocols and technologies around them. It provides a simple C language
+    # : application programming interface (API) to access the secure communications
+    # : protocols as well as APIs to parse and write X.509, PKCS #12, OpenPGP and
+    # : other required structures.
+    # : This package contains command line TLS client and server and certificate
+    # : manipulation tools.
+    'gnutls-utils'
+    #
+    # Краткое опис : Search mailboxes for a particular email
+    #     # :          : https://metacpan.org/release/grepmail
+    # Описание     : Grepmail searches a normal or compressed mailbox for a given regular
+    # : expression, and returns those emails that match it. Piped input is allowed,
+    # : and date and size restrictions are supported, as are searches using logical
+    # : operators.
+    # -> 'grepmail'
+    #
+    # Имя          : rsync
+    # Краткое опис : A program for synchronizing files over a network
+    # URL          : http://rsync.samba.org/
+    # Лицензия     : GPLv3+
+    # Описание     : Rsync uses a reliable algorithm to bring remote and host files into
+    #              : sync very quickly. Rsync is fast because it just sends the differences
+    #              : in the files over the network instead of sending the complete
+    #              : files. Rsync is often used as a very powerful mirroring process or
+    #              : just as a more capable replacement for the rcp command. A technical
+    #              : report which describes the rsync algorithm is included in this
+    #              : package.
+    'rsync'
+    # Краткое опис : A Gtk+ GUI for rsync
+    #     # :          : http://www.opbyte.it/grsync/
+    # Описание     : Grsync is a GUI (Graphical User Interface) for rsync, the commandline
+    # : directory synchronization tool. It makes use of the GTK libraries and
+    # : is released under the GPL license, so it is opensource. It is in beta
+    # : stage and doesn't support all of rsync features, but can be effectively
+    # : used to synchronize local directories. For example some people use
+    # : grsync to synchronize their music collection with removable devices or
+    # : to backup personal files to a networked drive.
+    'grsync'
+    #
+    # Краткое опис : Resource discovery and announcement over SSDP
+    #     # :          : http://www.gupnp.org/
+    # Описание     : GSSDP implements resource discovery and announcement over SSDP and is part
+    # : of gUPnP.  GUPnP is an object-oriented open source framework for creating
+    # : UPnP devices and control points, written in C using GObject and libsoup. The
+    # : GUPnP API is intended to be easy to use, efficient and flexible.
+    # -> 'gssdp'
+    #
+    # Краткое опис : Serial port terminal
+    #     # :          : https://github.com/Jeija/gtkterm
+    # Описание     : Simple GUI terminal used to communicate with the serial port.
+    # : Similar to minicom or hyperterminal.
+    # -> 'gtkterm'
+    #
+    # Краткое опис : A framework for creating UPnP devices & control points
+    #     # :          : http://www.gupnp.org/
+    # Описание     : GUPnP is an object-oriented open source framework for creating UPnP
+    # : devices and control points, written in C using GObject and libsoup.
+    # : The GUPnP API is intended to be easy to use, efficient and flexible.
+    # -> 'gupnp'
+    #
+    # Краткое опис : Instruction-level machine emulator
+    #     # :          : http://gavare.se/gxemul/
+    # Описание     : GXemul is an experimental instruction-level machine emulator. It can be
+    # : used to run binary code for (among others) MIPS-based machines, regardless
+    # : of host platform. Several emulation modes are available. For some modes,
+    # : processors and surrounding hardware components are emulated well enough to
+    # : let unmodified operating systems (e.g. NetBSD) run as if they were running
+    # : on a real machine.
+    # -> 'gxemul'
+    #
+    # Краткое опис : Hercules S/370, ESA/390, and z/Architecture emulator
+    #     # :          : http://www.hercules-390.eu/
+    # Описание     : Hercules is an emulator for the IBM System/370, ESA/390, and z/Architecture
+    # : series of mainframe computers. It is capable of running any IBM operating
+    # : system and applications that a real system will run, as long as the hardware
+    # : needed is emulated. Hercules can emulate FBA and CKD DASD, tape, printer,
+    # : card reader, card punch, channel-to-channel adapter, LCS Ethernet, and
+    # : printer-keyboard, 3270 terminal, and 3287 printer devices.
+    # -> 'hercules'
+    #
+    # Краткое опис : Tools to create/check Apple HFS+ filesystems
+    #     # :          : http://gentoo-wiki.com/HOWTO_hfsplus
+    # Описание     : HFS+, HFS Plus, or Mac OS Extended are names for a file system developed by
+    # : Apple Computer to replace their Hierarchical File System (HFS). In addition to
+    # : being the default file system on modern Apple computers, HFS+ is one of two
+    # : formats, FAT being the other, that are supported by the iPod hard-disk based
+    # : music player. Unlike FAT, HFS+ supports UNIX style file permissions, which
+    # : makes it useful, for serving and sharing files in a secured manner. As Apple
+    # : Computer's devices and systems become increasingly ubiquitous, it becomes
+    # : important that Linux fully support this format.  This package provides tools
+    # : to create and check HFS+ filesystems under Linux.
+    # :
+    # : The Linux kernel does not support writing to HFS+ journals, writing to a
+    # : hfsplus partition is recommended only after disabling journaling; however, the
+    # : kernel, as of version 2.6.16, supports case-sensitivity (also known as HFSX)
+    # -> 'hfsplus-tools'
+    #
+    # Краткое опис : Interactive process viewer
+    #     # :          : http://hisham.hm/htop/
+    # Описание     : htop is an interactive text-mode process viewer for Linux, similar to
+    # : top(1).
+    'htop'
+    #
+    # Краткое опис : A full-text search system
+    #     # :          : http://hyperestraier.sourceforge.net/
+    # Описание     : Hyper Estraier is a full-text search system. You can search
+    # : lots of documents for some documents including specified words.
+    # : If you run a web site, it is useful as your own search engine
+    # : for pages in your site. Also, it is useful as search utilities
+    # : of mail boxes and file servers.
+    # -> 'hyperestraier'
+    #
+    # Краткое опис : Interactive bandwidth monitor
+    #     # :          : http://ibmonitor.sourceforge.net/
+    # Описание     : The program ibmonitor is an interactive linux console application which shows
+    # : bandwidth consumed and total data transferred on all interfaces.
+    'ibmonitor'
+    #
+    # Краткое опис : Command line tool that displays bandwidth usage on an interface
+    #     # :          : http://www.ex-parrot.com/~pdw/iftop/
+    # Описание     : iftop does for network usage what top(1) does for CPU usage. It listens to
+    # : network traffic on a named interface and displays a table of current bandwidth
+    # : usage by pairs of hosts. Handy for answering the question "why is our ADSL link
+    # : so slow?".
+    'iftop'
+    #
+    # Краткое опис : Dynamic DNS Client
+    #     # :          : http://inadyn-mt.sourceforge.net
+    # Описание     : INADYN-MT is a dynamic DNS client. It maintains the IP address of
+    # : a host name. It periodically checks whether the IP address stored
+    # : by the DSN server is the real current address of the machine that
+    # : is running INADYN-MT.
+    # :
+    # : Before using inadyn-mt for the first time you must use the DynDNS
+    # : provider's web interface to create the entry for the hostname. You
+    # : should then fill in /etc/inadyn.conf with the appropriate detail
+    # -> 'inadyn-mt'
+    #
+    # Краткое опис : Inotify cron system
+    #     # :          : https://github.com/ar-/incron
+    # Описание     : This program is an "inotify cron" system.
+    # : It consists of a daemon and a table manipulator.
+    # : You can use it a similar way as the regular cron.
+    # : The difference is that the inotify cron handles
+    # : filesystem events rather than time periods.
+    'incron'
+    #
+    # Краткое опис : Top like utility for I/O
+    #     # :          : http://guichaz.free.fr/iotop/
+    # Описание     : Linux has always been able to show how much I/O was going on
+    # : (the bi and bo columns of the vmstat 1 command).
+    # : iotop is a Python program with a top like UI used to
+    # : show of behalf of which process is the I/O going on.
+    'iotop'
+    #
+    # -> 'ipsec-tools'
+    #
+    # -> 'jad'
+    #
+    # Краткое опис : Japanese Console for Linux Frame Buffer Device
+    #     # :          : http://jfbterm.sourceforge.jp/
+    # Описание     : JFBTERM/ME takes advantages of framebuffer device that is
+    # : supported since linux kernel 2.2.x (at least on ix86 architecture)
+    # : and make it enable to display multilingual text on console.
+    # : It is developed on ix86 architecture, and it will works on
+    # : other architectures such as linux/ppc.
+    # :
+    # : Features:
+    # :    * It works with framebuffer device instead of VGA.
+    # :    * It supports pcf format font
+    # :    * It is not so fast because it doesn't take any advantages
+    # :      of accelaration.
+    # :    * It also support coding systems other than ISO-2022,
+    # :      such as SHIFT-JIS by using iconv(3).
+    # :    * It is userland program.
+    # -> 'jfbterm'
+    #
+    # Краткое опис : John the Ripper password cracker
+    #     # :          : http://www.openwall.com/john
+    # Описание     : John the Ripper is a fast password cracker. Its primary purpose is to
+    # : detect weak Unix passwords, but a number of other hash types are
+    # : supported as well.
+    'john'
+    #
+    # Краткое опис : Graphical Directory Statistics for Used Disk Space
+    #     # :          : https://bitbucket.org/jeromerobert/k4dirstat/wiki/Home
+    # Описание     : KDirStat (KDE Directory Statistics) is a utility program that sums up
+    # : disk usage for directory trees - very much like the Unix 'du' command.
+    # : It can also help you clean up used space.
+    # -> 'k4dirstat'
+    #
+    # Краткое опис : Agent manager for OpenSSH, ssh.com, Sun SSH, and GnuPG
+    #     # :          : https://www.funtoo.org/Keychain
+    # Описание     : Keychain is a manager for OpenSSH, ssh.com, Sun SSH and GnuPG agents.
+    # : It acts as a front-end to the agents, allowing you to easily have one
+    # : long-running agent process per system, rather than per login session.
+    # : This dramatically reduces the number of times you need to enter your
+    # : passphrase from once per new login session to once every time your
+    # : local machine is rebooted.
+    'keychain'
+    #
+    # Краткое опис : Compatibility package installing all lirc packages
+    #     # :          : http://www.lirc.org/
+    # Описание     : Part of the LIRC package suite which handles IR remotes. See
+    # : the package lirc for more.
+    # :
+    # : Installing this package will install most lirc sub-packages, roughly
+    # : the same as installing previous versions of the lirc package.
+    # -> 'lirc-compat'
+    #
+    # Краткое опис : An utility for viewing/manipulating the MAC address of network interfaces
+    #     # :          : https://github.com/alobbs/macchanger
+    # Описание     : Features:
+    # :   * set specific MAC address of a network interface
+    # :   * set the MAC randomly
+    # :   * set a MAC of another vendor
+    # :   * set another MAC of the same vendor
+    # :   * reset MAC address to its original permanent hardware value
+    # :   * display a vendor MAC list (more than 18000 items)
+    'macchanger'
+    #
+    # Краткое опис : User-friendly text console file manager and visual shell
+    #     # :          : http://www.midnight-commander.org/
+    # Описание     : Midnight Commander is a visual shell much like a file manager, only with
+    # : many more features. It is a text mode application, but it also includes
+    # : mouse support. Midnight Commander's best features are its ability to FTP,
+    # : view tar and zip files, and to poke into RPMs for specific files.
+    'mc'
+    #
+    # Краткое опис : Fedora Media Writer
+    #     # :          : https://github.com/FedoraQt/MediaWriter
+    # Описание     : A tool to write images of Fedora media to portable drives
+    # : like flash drives or memory card
+    'mediawriter'
+    #
+    # Краткое опис : Move/copy/append/link multiple files
+    #     # :          : http://packages.qa.debian.org/m/mmv.html
+    # Описание     : This is mmv, a program to move/copy/append/link multiple files
+    # : according to a set of wildcard patterns. This multiple action is
+    # : performed safely, i.e. without any unexpected deletion of files due to
+    # : collisions of target names with existing filenames or with other
+    # : target names. Furthermore, before doing anything, mmv attempts to
+    # : detect any errors that would result from the entire set of actions
+    # : specified and gives the user the choice of either aborting before
+    # : beginning, or proceeding by avoiding the offending parts.
+    'mmv'
+    #
+    # Краткое опис : Multi Router Traffic Grapher
+    #     # :          : http://oss.oetiker.ch/mrtg/
+    # Описание     : The Multi Router Traffic Grapher (MRTG) is a tool to monitor the traffic
+    # : load on network-links. MRTG generates HTML pages containing PNG
+    # : images which provide a LIVE visual representation of this traffic.
+    'mrtg'
+    #
+    # Краткое опис : SCSI media changer control program
+    #     # :          : http://mtx.sourceforge.net/
+    # Описание     : The MTX program controls the robotic mechanism in autoloaders and tape
+    # : libraries such as the HP SureStore DAT 40x6, Exabyte EZ-17, and
+    # : Exabyte 220. This program is also reported to work with a variety of
+    # : other tape libraries and autochangers from ADIC, Tandberg/Overland,
+    # : Breece Hill, HP, and Seagate.
+    # :
+    # : If you have a backup tape device capable of handling more than one
+    # : tape at a time, you should install MTX.
+    'mtx'
+    #
+    # Краткое опис : Network-wide resource monitoring tool
+    #     # :          : http://munin-monitoring.org/
+    # Описание     : Munin is a highly flexible and powerful solution used to create graphs of
+    # : virtually everything imaginable throughout your network, while still
+    # : maintaining a rattling ease of installation and configuration.
+    # :
+    # : This package contains the grapher/gatherer. You will only need one instance of
+    # : it in your network. It will periodically poll all the nodes in your network
+    # : it's aware of for data, which it in turn will use to create graphs and HTML
+    # : pages, suitable for viewing with your graphical web browser of choice.
+    # :
+    # : You must also install munin-nginx or munin-apache sub-package to generate
+    # : web graphs. See /usr/share/doc/munin-*/*.conf for example nginx/apache config
+    # : files and installation instructions.
+    # -> 'munin'
+    # -> 'munin-nginx'
+    # -> 'munin-apache'
+    #
+    # Краткое опис : Host/service/network monitoring program
+    #     # :          : https://www.nagios.org/projects/nagios-core/
+    # Описание     : Nagios is a program that will monitor hosts and services on your
+    # : network.  It has the ability to send email or page alerts when a
+    # : problem arises and when a problem is resolved.  Nagios is written
+    # : in C and is designed to run under Linux (and some other *NIX
+    # : variants) as a background process, intermittently running checks
+    # : on various services that you specify.
+    # :
+    # : The actual service checks are performed by separate "plugin" programs
+    # : which return the status of the checks to Nagios. The plugins are
+    # : available at https://github.com/nagios-plugins/nagios-plugins
+    # :
+    # : This package provides the core program, web interface, and documentation
+    # : files for Nagios. Development files are built as a separate package.
+    # -> 'nagios'
+    #
+    # Краткое опис : Network management utilities using SNMP, from the NET-SNMP project
+    #     # :          : http://net-snmp.sourceforge.net/
+    # Описание     : The net-snmp-utils package contains various utilities for use with the
+    # : NET-SNMP network management project.
+    # :
+    # : Install this package if you need utilities for managing your network
+    # : using the SNMP protocol. You will also need to install the net-snmp
+    # : package.
+    # -> 'net-snmp-utils'
+    # -> 'net-snmp'
+    #
+    # Краткое опис : A tool resembling top for network traffic
+    #     # :          : https://github.com/raboof/nethogs/
+    # Описание     : NetHogs is a small "net top" tool.
+    # :
+    # : Instead of breaking the traffic down per protocol or per subnet, like
+    # : most such tools do, it groups bandwidth by process and does not rely
+    # : on a special kernel module to be loaded.
+    # :
+    # : So if there's suddenly a lot of network traffic, you can fire up
+    # : NetHogs and immediately see which PID is causing this, and if it's
+    # : some kind of spinning process, kill it.
+    'nethogs'
+    #
+    # Краткое опис : A tool that displays NAT connections
+    #     # :          : http://www.tweegy.nl/projects/netstat-nat/
+    # Описание     : Netstat-nat is a small program written in C. It displays NAT connections,
+    # : managed by netfilter/iptables which comes with the > 2.4.x linux kernels.
+    # : The program reads its information from '/proc/net/nf_conntrack', which is
+    # : the temporary conntrack-storage of netfilter.
+    'netstat-nat'
+    #
+    # Краткое опис : An NFS traffic monitoring tool
+    #     # :          : http://nfswatch.sourceforge.net
+    # Описание     : Nfswatch is a command-line tool for monitoring NFS traffic.
+    # : Nfswatch can capture and analyze the NFS packets on a particular
+    # : network interface or on all interfaces.
+    # :
+    # : Install nfswatch if you need a program to monitor NFS traffic.
+    # -> 'nfswatch'
+    #
+    # Краткое опис : A dynamic DNS update client
+    #     # :          : http://www.no-ip.com
+    # Описание     : Keep your current IP address in sync with your No-IP host or domain with
+    # : this Dynamic Update Client (DUC). The client continually checks for IP
+    # : address changes in the background and automatically updates the DNS at
+    # : No-IP whenever it changes.
+    # :
+    # : N.B. You need to run
+    # :         %# noip2 -C
+    # : before starting the service.
+    # -> 'noip'
+    #
+    # Краткое опис : Convert Nero Burning Rom image files into ISO
+    #     # :          : http://gregory.kokanosky.free.fr/v4/linux/nrg2iso.en.html
+    # Описание     : Nrg2Iso is a linux utility for converting CD (or DVD) image generated by
+    # : Nero Burning Rom to ISO format.
+    # -> 'nrg2iso'
+    #
+    # Краткое опис : The NTP daemon and utilities
+    #     # :          : http://www.ntp.org
+    # Описание     : The Network Time Protocol (NTP) is used to synchronize a computer's
+    # : time with another reference time source. This package includes ntpd
+    # : (a daemon which continuously adjusts system time) and utilities used
+    # : to query and configure the ntpd daemon.
+    # :
+    # : Perl scripts are in the ntp-perl package, ntpdate is in the ntpdate
+    # : package and sntp is in the sntp package. The documentation in HTML
+    # : format is in the ntp-doc package.
+    # -> 'ntp'
+    #
+    # Краткое опис : NTP utilities written in Perl
+    #     # :          : http://www.ntp.org
+    # Описание     : This package contains Perl scripts calc_tickadj, ntp-wait and ntptrace.
+    # -> 'ntp-perl'
+    #
+    # Краткое опис : Utility to set the date and time via NTP
+    #     # :          : http://www.ntp.org
+    # Описание     : ntpdate is a program for retrieving the date and time from
+    # : NTP servers.
+    # -> 'ntpdate'
+    #
+    # Краткое опис : Network UPS Tools
+    #     # :          : http://www.networkupstools.org/
+    # Описание     : These programs are part of a developing project to monitor the assortment
+    # : of UPSes that are found out there in the field. Many models have serial
+    # : ports of some kind that allow some form of state checking. This
+    # : capability has been harnessed where possible to allow for safe shutdowns,
+    # : live status tracking on web pages, and more.
+    # -> 'nut'
+    #
+    # Краткое опис : A D-Bus service which runs odd jobs on behalf of client applications
+    #     # :          : https://pagure.io/oddjob
+    # Описание     : oddjob is a D-Bus service which performs particular tasks for clients which
+    # : connect to it and issue requests using the system-wide message bus.
+    # -> 'oddjob'
+    #
+    # Краткое опис : An oddjob helper which creates and populates home directories
+    #     # :          : https://pagure.io/oddjob
+    # Описание     : This package contains the oddjob helper which can be used by the
+    # : pam_oddjob_mkhomedir module to create a home directory for a user
+    # : at login-time.
+    # -> 'oddjob-mkhomedir'
+    #
+    # Краткое опис : Versatile passive OS fingerprinting tool
+    #     # :          : http://lcamtuf.coredump.cx/p0f.shtml
+    # Описание     : P0f is a versatile passive OS fingerprinting tool. P0f can identify the
+    # : system on machines that talk thru or near your box. p0f will also check
+    # : masquerading and firewall presence, the distance to the remote system and its
+    # : uptime, other guy's network hookup (DSL, OC3, avian carriers) and his ISP.
+    'p0f'
+    #
+    # Краткое опис : PAR 2.0 compatible file verification and repair tool
+    #     # :          : https://github.com/Parchive/par2cmdline/
+    # Описание     : par2cmdline is a program for creating and using PAR2 files to detect damage
+    # : in data files and repair them if necessary. PAR2 files are usually
+    # : published in binary newsgroups on Usenet; they apply the data-recovery
+    # : capability concepts of RAID-like systems to the posting and recovery of
+    # : multi-part archives.
+    # -> 'par2cmdline'
+    #
+    # Краткое опис : Parallel implementation of bzip2
+    #     # :          : https://launchpad.net/pbzip2
+    # Описание     : PBZIP2 is a parallel implementation of the bzip2 block-sorting file
+    # : compressor that uses pthreads and achieves near-linear speedup on SMP
+    # : machines.  The output of this version is fully compatible with bzip2
+    # : v1.0.2 or newer (ie: anything compressed with pbzip2 can be
+    # : decompressed with bzip2).
+    'pbzip2'
+    #
+    # Имя          : pcp
+    # Репозиторий  : @System
+    # Из репозитор : updates
+    # Краткое опис : System-level performance monitoring and performance management
+    # URL          : https://pcp.io
+    # Лицензия     : GPLv2+ and LGPLv2+ and CC-BY
+    # Описание     : Performance Co-Pilot (PCP) provides a framework and services to support
+    # : system-level performance monitoring and performance management.
+    # :
+    # : The PCP open source release provides a unifying abstraction for all of
+    # : the interesting performance data in a system, and allows client
+    # : applications to easily retrieve and process any subset of that data.
+    # -> 'pcp'
+    #
+    # Имя          : pcp-system-tools
+    # Репозиторий  : @System
+    # Из репозитор : updates
+    # Краткое опис : Performance Co-Pilot (PCP) System and Monitoring Tools
+    # URL          : https://pcp.io
+    # Лицензия     : GPLv2+
+    # Описание     : This PCP module contains additional system monitoring tools written
+    # : in the Python language.
+    # -> 'pcp-system-tools'
+    #
+    # Краткое опис : Power consumption monitor
+    #     # :          : http://01.org/powertop/
+    # Описание     : PowerTOP is a tool that finds the software component(s) that make your
+    # : computer use more power than necessary while it is idle.
+    'powertop'
+    #
+    # Краткое опис : A tool for gathering and displaying system information
+    # Описание     : The procinfo command gets system data from the /proc directory (the
+    # : kernel filesystem), formats it and displays it on standard output.
+    # : You can use procinfo to acquire information about your system from the
+    # : kernel as it is running.
+    # :
+    # : Install procinfo if you'd like to use it to gather and display system
+    # : data.
+    'procinfo'
+    #
+    # Краткое опис : A network tool for managing many disparate systems
+    #     # :          : http://puppetlabs.com
+    # Описание     : Puppet lets you centrally manage every important aspect of your system using a
+    # : cross-platform specification language that manages all the separate elements
+    # : normally aggregated in different files, like users, cron jobs, and hosts,
+    # : along with obviously discrete elements like packages, services, and files.
+    # -> 'puppet'
+    #
+    # Краткое опис : Automatic password generation
+    #     # :          : http://sf.net/projects/pwgen
+    # Описание     : pwgen generates random, meaningless but pronounceable passwords. These
+    # : passwords contain either only lowercase letters, or upper and lower case, or
+    # : upper case, lower case and numeric digits. Upper case letters and numeric
+    # : digits are placed in a way that eases memorizing the password.
+    'pwgen'
+    #
+    # Краткое опис : Quick Database Manager
+    #     # :          : http://fallabs.com/qdbm/
+    # Описание     : QDBM is an embedded database library compatible with GDBM and NDBM.
+    # : It features hash database and B+ tree database and is developed referring
+    # : to GDBM for the purpose of the following three points: higher processing
+    # : speed, smaller size of a database file, and simpler API.
+    # -> 'qdbm'
+    #
+    # Краткое опис : Real-time Game Server Status for FPS game servers
+    #     # :          : https://github.com/multiplay/qstat
+    # Описание     : QStat is a command-line program that gathers real-time statistics
+    # : from Internet game servers. Most supported games are of the first
+    # : person shooter variety (Quake, Half-Life, etc)
+    # -> 'qstat'
+    #
+    # Краткое опис : Backlight and video output configuration tool for radeon cards
+    #     # :          : http://people.freedesktop.org/~airlied/radeontool/
+    # Описание     : radeontool is used for debugging radeon related issues. In the past it has
+    # : been used for backlight control, but this should no longer be required.
+    # -> 'radeontool'
+    #
+    # Краткое опис : X client for remote desktop into Windows Terminal Server
+    #     # :          : http://www.rdesktop.org/
+    # Описание     : rdesktop is an open source client for Windows NT Terminal Server and
+    # : Windows 2000 & 2003 Terminal Services, capable of natively speaking
+    # : Remote Desktop Protocol (RDP) in order to present the user's NT
+    # : desktop. Unlike Citrix ICA, no server extensions are required.
+    'rdesktop'
+    #
+    # Краткое опис : Convenient and transparent local/remote incremental mirror/backup
+    #     # :          : https://rdiff-backup.net/
+    # Описание     : rdiff-backup is a script, written in Python, that backs up one
+    # : directory to another and is intended to be run periodically (nightly
+    # : from cron for instance). The target directory ends up a copy of the
+    # : source directory, but extra reverse diffs are stored in the target
+    # : directory, so you can still recover files lost some time ago. The idea
+    # : is to combine the best features of a mirror and an incremental
+    # : backup. rdiff-backup can also operate in a bandwidth efficient manner
+    # : over a pipe, like rsync. Thus you can use rdiff-backup and ssh to
+    # : securely back a hard drive up to a remote location, and only the
+    # : differences from the previous backup will be transmitted.
+    'rdiff-backup'
+    #
+    # Краткое опис : Relax-and-Recover is a Linux disaster recovery and system migration tool
+    #     # :          : http://relax-and-recover.org/
+    # Описание     : Relax-and-Recover is the leading Open Source disaster recovery and system
+    # : migration solution. It comprises of a modular
+    # : frame-work and ready-to-go workflows for many common situations to produce
+    # : a bootable image and restore from backup using this image. As a benefit,
+    # : it allows to restore to different hardware and can therefore be used as
+    # : a migration tool as well.
+    # :
+    # : Currently Relax-and-Recover supports various boot media (incl. ISO, PXE,
+    # : OBDR tape, USB or eSATA storage), a variety of network protocols (incl.
+    # : sftp, ftp, http, nfs, cifs) as well as a multitude of backup strategies
+    # : (incl.  IBM TSM, MircroFocus Data Protector, Symantec NetBackup, EMC NetWorker,
+    # : Bacula, Bareos, BORG, Duplicity, rsync).
+    # :
+    # : Relax-and-Recover was designed to be easy to set up, requires no maintenance
+    # : and is there to assist when disaster strikes. Its setup-and-forget nature
+    # : removes any excuse for not having a disaster recovery solution implemented.
+    # :
+    # : Professional services and support are available.
+    'rear'
+    #
+    # Краткое опис : Remote Desktop Client
+    #     # :          : http://remmina.org
+    # Описание     : Remmina is a remote desktop client written in GTK+, aiming to be useful for
+    # : system administrators and travelers, who need to work with lots of remote
+    # : computers in front of either large monitors or tiny net-books.
+    # :
+    # : Remmina supports multiple network protocols in an integrated and consistent
+    # : user interface. Currently RDP, VNC, XDMCP and SSH are supported.
+    # :
+    # : Please don't forget to install the plugins for the protocols you want to use.
+    'remmina'
+    'remmina-plugins-nx'
+    'remmina-plugins-rdp'
+    'remmina-plugins-xdmcp'
+    #
+    # Краткое опис : Attach a running process to a new terminal
+    #     # :          : http://github.com/nelhage/reptyr
+    # Описание     : reptyr is a utility for taking an existing running program and
+    # : attaching it to a new terminal.  Started a long-running process over
+    # : ssh, but have to leave and don't want to interrupt it?  Just start a
+    # : screen, use reptyr to grab it, and then kill the ssh session and head
+    # : on home.
+    'reptyr'
+    #
+    # Краткое опис : Shell wrapper for auditing
+    #     # :          : http://sourceforge.net/projects/rootsh
+    # Описание     : Rootsh is a wrapper for shells which logs all echoed keystrokes and
+    # : terminal output to a file and/or to syslog. Its main purpose is the
+    # : auditing of users who need a shell with root privileges. They start
+    # : rootsh through the sudo mechanism.
+    'rootsh'
+    #
+    # Краткое опис : Local and remote filesystem snapshot utility
+    #     # :          : https://rsnapshot.org/
+    # Описание     : This is a remote backup program that uses rsync to take backup snapshots of
+    # : filesystems. It uses hard links to save space on disk.
+    'rsnapshot'
+    #
+    # Краткое опис : Disk scrubbing program
+    #     # :          : http://code.google.com/p/diskscrub/
+    # исание     : Scrub writes patterns on files or disk devices to make
+    # : retrieving the data more difficult.  It operates in one of three
+    # : modes: 1) the special file corresponding to an entire disk is scrubbed
+    # : and all data on it is destroyed;  2) a regular file is scrubbed and
+    # : only the data in the file (and optionally its name in the directory
+    # : entry) is destroyed; or 3) a regular file is created, expanded until
+    # : the file system is full, then scrubbed as in 2).
+    # -> 'scrub'
+    #
+    # Краткое опис : Simple Event Correlator script to filter log file entries
+    #     # :          : https://simple-evcorr.github.io/
+    # Описание     : SEC is a simple event correlation tool that reads lines from files, named
+    # : pipes, or standard input, and matches the lines with regular expressions,
+    # : Perl subroutines, and other patterns for recognizing input events.
+    # : Events are then correlated according to the rules in configuration files,
+    # : producing output events by executing user-specified shell commands, by
+    # : writing messages to pipes or files, etc.
+    # -> 'sec'
+    #
+    # Краткое опис : An iptables front end for firewall configuration
+    #     # :          : http://www.shorewall.net/
+    # Описание     : The Shoreline Firewall, more commonly known as "Shorewall", is a
+    # : Netfilter (iptables) based firewall that can be used on a dedicated
+    # : firewall system, a multi-function gateway/ router/server or on a
+    # : standalone GNU/Linux system.
+    # -> 'shorewall'
+    #
+    # Краткое опис : Bidirectional data relay between two data channels ('netcat++')
+    #     # :          : http://www.dest-unreach.org/socat/
+    # Описание     : Socat is a relay for bidirectional data transfer between two independent data
+    # : channels. Each of these data channels may be a file, pipe, device (serial line
+    # : etc. or a pseudo terminal), a socket (UNIX, IP4, IP6 - raw, UDP, TCP), an
+    # : SSL socket, proxy CONNECT connection, a file descriptor (stdin etc.), the GNU
+    # : line editor (readline), a program, or a combination of two of these.
+    'socat'
+    #
+    # Краткое опис : To provide a high-level device independent layer for speech synthesis
+    #     # :          : http://devel.freebsoft.org/speechd
+    # Описание     : * Common interface to different TTS engines
+    # : * Handling concurrent synthesis requests – requests may come
+    # :   asynchronously from multiple sources within an application
+    # :   and/or from more different applications.
+    # : * Subsequent serialization, resolution of conflicts and
+    # :   priorities of incoming requests
+    # : * Context switching – state is maintained for each client
+    # :   connection independently, event for connections from
+    # :   within one application.
+    # : * High-level client interfaces for popular programming languages
+    # : * Common sound output handling – audio playback is handled by
+    # :   Speech Dispatcher rather than the TTS engine, since most engines
+    # :   have limited sound output capabilities.
+    # -> 'speech-dispatcher'
+    # -> 'speech-dispatcher-espeak-ng'
+    # -> 'speech-dispatcher-festival'
+    # -> 'speech-dispatcher-flite'
+    #
+    # Краткое опис : Magnetic Stripe Reader
+    # :          : http://stripesnoop.sourceforge.net
+    # Описание     : Stripe Snoop is a suite of research tools that captures, modifies, validates,
+    # : generates, analyzes, and shares data from magstripe cards. Numerous readers
+    # : are supported to gather this information. In addition to simply displaying
+    # : the raw characters that are encoded on the card, Stripe Snoop has a database
+    # : of known card formats. It uses this to give you more detailed information
+    # : about the card.
+    # -> 'stripesnoop'
+    #
+    # Краткое опис : Command-line SMTP transaction tester
+    # URL          : http://www.jetmore.org/john/code/swaks
+    # Описание     : Swiss Army Knife SMTP: A command line SMTP tester.  Swaks can test
+    # : various aspects of your SMTP server, including TLS and AUTH.
+    'swaks'
+    #
+    # Краткое опис : Tool for actively monitoring log files
+    # URL          : http://swatch.sourceforge.net/
+    # Описание     : The Simple WATCHer is an automated monitoring tool that is capable
+    # : of alerting system administrators of anything that matches the
+    # : patterns described in the configuration file, whilst constantly
+    # : searching logfiles using perl.
+    'swatch'
+    #
+    # Краткое опис : Next-generation syslog server
+    # URL          : https://www.syslog-ng.com/products/open-source-log-management/
+    # Описание     : syslog-ng is an enhanced log daemon, supporting a wide range of input and
+    # : output methods: syslog, unstructured text, message queues, databases (SQL
+    # : and NoSQL alike) and more.
+    # :
+    # : Key features:
+    # :
+    # :  * receive and send RFC3164 and RFC5424 style syslog messages
+    # :  * work with any kind of unstructured data
+    # :  * receive and send JSON formatted messages
+    # :  * classify and structure logs with builtin parsers (csv-parser(),
+    # :    db-parser(), ...)
+    # :  * normalize, crunch and process logs as they flow through the system
+    # :  * hand on messages for further processing using message queues (like
+    # :    AMQP), files or databases (like PostgreSQL or MongoDB).
+    # -> 'syslog-ng'
+    #
+    # Краткое опис : Collection of performance monitoring tools for Linux
+    # URL          : http://sebastien.godard.pagesperso-orange.fr/
+    # Описание     : The sysstat package contains the sar, sadf, mpstat, iostat, tapestat,
+    # : pidstat, cifsiostat and sa tools for Linux.
+    # : The sar command collects and reports system activity information.
+    # : The information collected by sar can be saved in a file in a binary
+    # : format for future inspection. The statistics reported by sar concern
+    # : I/O transfer rates, paging activity, process-related activities,
+    # : interrupts, network activity, memory and swap space utilization, CPU
+    # : utilization, kernel activities and TTY statistics, among others. Both
+    # : UP and SMP machines are fully supported.
+    # : The sadf command may  be used to display data collected by sar in
+    # : various formats (CSV, XML, etc.).
+    # : The iostat command reports CPU utilization and I/O statistics for disks.
+    # : The tapestat command reports statistics for tapes connected to the system.
+    # : The mpstat command reports global and per-processor statistics.
+    # : The pidstat command reports statistics for Linux tasks (processes).
+    # : The cifsiostat command reports I/O statistics for CIFS file systems.
+    # -> 'sysstat'
+    #
+    # Краткое опис : A utility for removing files based on when they were last accessed
+    # URL          : https://fedorahosted.org/tmpwatch/
+    # Описание     : The tmpwatch utility recursively searches through specified
+    # : directories and removes files which have not been accessed in a
+    # : specified period of time.  Tmpwatch is normally used to clean up
+    # : directories which are used for temporarily holding files (for example,
+    # : /tmp).  Tmpwatch ignores symlinks, won't switch filesystems and only
+    # : removes empty directories and regular files.
+    'tmpwatch'
+    #
+    # Краткое опис : Tool to check and undelete partition, PhotoRec recovers lost files
+    # URL          : https://www.cgsecurity.org/wiki/TestDisk
+    # Описание     : Tool to check and undelete partition. Works with FAT12, FAT16, FAT32,
+    # : NTFS, ext2, ext3, ext4, btrfs, BeFS, CramFS, HFS, JFS, Linux Raid, Linux
+    # : Swap, LVM, LVM2, NSS, ReiserFS, UFS, XFS.
+    # : PhotoRec is a signature based file recovery utility. It handles more than
+    # : 440 file formats including JPG, MSOffice, OpenOffice documents.
+    'testdisk'
+    #
+    # Краткое опис : 5250 Telnet protocol and Terminal
+    # URL          : http://tn5250.sourceforge.net/
+    # Описание     : tn5250 is an implementation of the 5250 Telnet protocol.
+    # : It provides the 5250 library and a 5250 terminal emulation.
+    # -> 'tn5250'
+    #
+    # Краткое опис : Client part of TORQUE
+    # URL          : http://www.adaptivecomputing.com/products/open-source/torque/
+    # Описание     : TORQUE (Tera-scale Open-source Resource and QUEue manager) is a resource
+    # : manager providing control over batch jobs and distributed compute nodes.
+    # : TORQUE is based on OpenPBS version 2.3.12 and incorporates scalability,
+    # : fault tolerance, and feature extension patches provided by USC, NCSA, OSC,
+    # : the U.S. Dept of Energy, Sandia, PNNL, U of Buffalo, TeraGrid, and many
+    # : other leading edge HPC organizations.
+    # :
+    # : This package holds the command-line client programs.
+    # -> 'torque-client'
+    # -> 'torque-gui'
+    #
+    # Краткое опис : Create and remove virtual network interfaces
+    # URL          : http://tunctl.sourceforge.net/
+    # Описание     : tunctl is a tool to set up and maintain persistent TUN/TAP network
+    # : interfaces, enabling user applications access to the wire side of a
+    # : virtual nework interface. Such interfaces is useful for connecting VPN
+    # : software, virtualization, emulation and a number of other similar
+    # : applications to the network stack.
+    # :
+    # : tunctl originates from the User Mode Linux project.
+    'tunctl'
+    # Краткое опис : A tool to extract ace archives
+    # URL          : http://www.winace.com/
+    # Описание     : unace is a command line utility to extract, view, and test the
+    # : contents of an ACE archive.
+    'unace'
+    #
+    # Краткое опис : Multi-master File synchronization tool
+    # URL          : http://www.cis.upenn.edu/~bcpierce/unison
+    # Описание     : Unison is a multi-master file-synchronization tool. It allows two
+    # : replicas of a collection of files and directories to be stored on
+    # : different hosts (or different locations on the same host), modified
+    # : separately, and then brought up to date by propagating the changes
+    # : in each replica to the other.
+    # :
+    # : Note that this package contains Unison version 2.13, and
+    # : will never be upgraded to a different major version. Other packages
+    # : exist if you require a different major version.
+    # -> 'unison213'
+    #
+    # Краткое опис : Multi-master File synchronization tool
+    # URL          : http://www.cis.upenn.edu/~bcpierce/unison
+    # Описание     : Unison is a multi-master file-synchronization tool. It allows two
+    # : replicas of a collection of files and directories to be stored on
+    # : different hosts (or different locations on the same host), modified
+    # : separately, and then brought up to date by propagating the changes
+    # : in each replica to the other.
+    # :
+    # : Note that this package contains Unison version 2.27, and
+    # : will never be upgraded to a different major version. Other packages
+    # : exist if you require a different major version.
+    # -> 'unison227'
+    #
+    # Краткое опис : Utility for extracting, testing and viewing RAR archives
+    # URL          : https://www.rarlab.com/rar_add.htm
+    # Описание     : The unrar utility is a freeware program for extracting, testing and
+    # : viewing the contents of archives created with the RAR archiver version
+    # : 1.50 and above.
+    'unrar'
+    #
+    # Краткое опис : Ultimate Packer for eXecutables
+    # URL          : http://upx.sourceforge.net/
+    # Описание     : UPX is a free, portable, extendable, high-performance executable
+    # : packer for several different executable formats. It achieves an
+    # : excellent compression ratio and offers very fast decompression. Your
+    # : executables suffer no memory overhead or other drawbacks.
+    'upx'
+    #
+    # Краткое опис : A set of utilities for operations between systems
+    # URL          : http://www.airs.com/ian/uucp.html
+    # Описание     : The uucp command copies files between systems. Uucp is primarily used
+    # : by remote machines downloading and uploading email and news files to
+    # : local machines.
+    # -> 'uucp'
+    #
+    # Краткое опис : Console-based network traffic monitor
+    # URL          : http://humdi.net/vnstat/
+    # Описание     : vnStat is a console-based network traffic monitor that keeps a log of daily
+    # : network traffic for the selected interface(s). vnStat isn't a packet sniffer.
+    # : The traffic information is analyzed from the /proc file-system, so vnStat can
+    # : be used without root permissions. See the web-page for few 'screenshots'.
+    'vnstat'
+    #
+    # Краткое опис : Tool for scanning DVB transponders
+    # URL          : http://wirbel.htpc-forum.de/w_scan/index2.html
+    # Описание     : The w_scan tool is similar to dvbscan from dvb-apps. However it does not
+    # : require initial tuning data and thus is able to find more channels.
+    # -> 'w_scan'
+    #
+    # Краткое опис : A compatibility layer for windows applications
+    # URL          : https://www.winehq.org/
+    # Описание     : Wine as a compatibility layer for UNIX to run Windows applications. This
+    # : package includes a program loader, which allows unmodified Windows
+    # : 3.x/9x/NT binaries to run on x86 and x86_64 Unixes. Wine can use native system
+    # : .dll files if they are available.
+    # :
+    # : In Fedora wine is a meta-package which will install everything needed for wine
+    # : to work smoothly. Smaller setups can be achieved by installing some of the
+    # : wine-* sub packages.
+    # -> 'wine'
+    #
+    # Краткое опис : Network traffic analyzer
+    # URL          : http://www.wireshark.org/
+    # Описание     : Wireshark allows you to examine protocol data stored in files or as it is
+    # : captured from wired or wireless (WiFi or Bluetooth) networks, USB devices,
+    # : and many other sources.  It supports dozens of protocol capture file formats
+    # : and understands more than a thousand protocols.
+    # :
+    # : It has many powerful features including a rich display filter language
+    # : and the ability to reassemble multiple protocol packets in order to, for
+    # : example, view a complete TCP stream, save the contents of a file which was
+    # : transferred over HTTP or CIFS, or play back an RTP audio stream.
+    'wireshark'
+    #
+    # Краткое опис : IBM 3278/3279 terminal emulator for the X Window System
+    # URL          : http://x3270.sourceforge.net/
+    # Описание     : The x3270 program opens a window in the X Window System which emulates
+    # : the actual look of an IBM 3278/3279 terminal, commonly used with
+    # : mainframe applications.  x3270 also allows you to telnet to an IBM
+    # : host from the x3270 window.
+    # :
+    # : Install the x3270-x11 package if you need to access IBM hosts using an IBM
+    # : 3278/3279 terminal emulator from X11.
+    # -> 'x3270-x11'
+    # Краткое опис : Command line clipboard grabber
+    # URL          : http://sourceforge.net/projects/xclip
+    # Описание     : xclip is a command line utility that is designed to run on any system with an
+    # : X11 implementation. It provides an interface to X selections ("the clipboard")
+    # : from the command line. It can read data from standard in or a file and place it
+    # : in an X selection for pasting into other X applications. xclip can also print
+    # : an X selection to standard out, which can then be redirected to a file or
+    # : another program.
+    'xclip'
+    #
+    # Краткое опис : A minimalistic text-based status bar
+    # URL          : https://hackage.haskell.org/package/xmobar
+    # Описание     : Xmobar is a minimalistic text based status bar.
+    # :
+    # : Inspired by the Ion3 status bar, it supports similar features, like dynamic
+    # : color management, output templates, and extensibility through plugins.
+    # -> 'xmobar'
+    #
+    # Краткое опис : Command line clipboard and X selection tool
+    # URL          : http://www.vergenet.net/~conrad/software/xsel/
+    # Описание     : XSel is a command line or script utility, similar to xclip, that can copy the
+    # : primary and secondary X selection, or any highlighted text, to or from a file,
+    # : stdin or stdout. It can also append to and delete the clipboard or buffer that
+    # : you would paste with the middle mouse button.
+    'xsel'
+    #
+    # Краткое опис : Zorba's Incredible Data Repairer And Verifier
+    # URL          : https://sourceforge.net/projects/zidrav
+    # Описание     : ZIDRAV stands for "Zorba's Incredible Data Repairer And Verifier", and is an
+    # : extremely useful tool for cross-checking files that have been transfered via
+    # : HTTP, FTP, or some other method. What it does, is generates a checksum file,
+    # : and then by comparing that checksum with the original file, it creates a patch
+    # : file that can repair the corrupted file. Very cool, and saves re-downloading.
+    'zidrav'
+    #
+    # Имя          : heaptrack
+    # Репозиторий  : fedora
+    # Краткое опис : A heap memory profiler for Linux
+    # URL          : https://cgit.kde.org/heaptrack.git/
+    # Лицензия     : GPLv2+
+    # Описание     : Heaptrack traces all memory allocations and annotates these events with stack
+    # : traces.Dedicated analysis tools then allow you to interpret the heap memory
+    # : profile to:
+    # : - find hotspots that need to be optimized to reduce the memory footprint of your
+    # :   application
+    # : - find memory leaks, i.e. locations that allocate memory which is never
+    # :   deallocated
+    # : - find allocation hotspots, i.e. code locations that trigger a lot of memory
+    # :   allocation calls
+    # : - find temporary allocations, which are allocations that are directly followed
+    # :   by their deallocation
+    # -> 'heaptrack'
+    #
+    # Имя          : accerciser
+    # Репозиторий  : fedora
+    # Краткое опис : Interactive Python accessibility explorer for the GNOME desktop
+    # URL          : https://wiki.gnome.org/Apps/Accerciser
+    # Лицензия     : BSD
+    # Описание     : Accerciser is an interactive Python accessibility explorer for the GNOME
+    # : desktop. It uses AT-SPI to inspect and control widgets, allowing you to check
+    # : if an application is providing correct information to assistive technologies
+    # : and automated test frameworks. Accerciser has a simple plugin framework which
+    # : you can use to create custom views of accessibility information.
+    'accerciser'
+    #
+    # Имя          : kuiviewer
+    # Репозиторий  : fedora
+    # Краткое опис : Displays designer UI files
+    # URL          : https://cgit.kde.org/kde-dev-utils.git
+    # Лицензия     : GPLv2+ and LGPLv2+
+    # Описание     : Displays designer UI files.
+    # -> 'kuiviewer'
+    #
+    # Имя          : edb
+    # Репозиторий  : fedora
+    # Краткое опис : A debugger based on the ptrace API and Qt
+    # URL          : https://github.com/eteran/edb-debugger
+    # Лицензия     : GPLv2+
+    # Описание     : edb a debugger based on the ptrace API.
+    # :
+    # : One of the main goals of this debugger is modularity.
+    # : The interface is written in Qt and thus source portable to many platforms.
+    # : The debugger core is a plugin and the platform specific code is isolated
+    # : to just a few files, porting to a new OS would require porting these few
+    # : files and implementing a plugin which implements the
+    # : DebuggerCoreInterface interface. Also, because the plugins are based
+    # : on the QPlugin API, and do their work through the DebuggerCoreInterface
+    # : object, they are almost always portable with just a simple recompile.
+    'edb'
+    #
+    # Имя          : dconf
+    # Репозиторий  : fedora
+    # Краткое опис : A configuration system
+    # URL          : https://wiki.gnome.org/Projects/dconf
+    # Лицензия     : LGPLv2+ and GPLv2+ and GPLv3+
+    # Описание     : dconf is a low-level configuration system. Its main purpose is to provide a
+    # : backend to the GSettings API in GLib.
+    'dconf'
+    'dconf-editor'
+    #
+    # Имя          : gconf-editor
+    # Репозиторий  : @System
+    # Из репозитор : fedora
+    # Краткое опис : Editor/admin tool for GConf
+    # URL          : http://www.gnome.org
+    # Лицензия     : GPLv2+ and GFDL
+    # Описание     : gconf-editor allows you to browse and modify GConf configuration
+    # : sources.
+    'gconf-editor'
+    # Имя          : devhelp
+    # Краткое опис : API documentation browser
+    # URL          : https://wiki.gnome.org/Apps/Devhelp
+    # Лицензия     : GPLv2+ and LGPL2+
+    # Описание     : Devhelp is an API documentation browser for the GNOME desktop.
+    #              : It works natively with API documentation generated by gtk-doc.
+    'devhelp'
+    #
+    # Имя          : xosd
+    # Репозиторий  : fedora
+    # Краткое опис : On-screen display library for X
+    # URL          : https://sourceforge.net/projects/libxosd/
+    # Лицензия     : GPLv2+
+    # Описание     : XOSD displays text on your screen, sounds simple right? The difference
+    #              : is it is unmanaged and shaped, so it appears transparent. This gives
+    #              : the effect of an On Screen Display, like your TV/VCR etc.
+    'xosd'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/system-and-programming-tools.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_system_and_programming_tools_script_source() {
+
+  # printf "Initialise main function of system-and-programming-tools script source\n";
+
+  install_system_and_programming_tools "$@"
+
+}
+
+main_system_and_programming_tools_script_source "$@"

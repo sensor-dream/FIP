@@ -1,0 +1,384 @@
+Установленные пакеты
+Имя          : GraphicsMagick
+Версия       : 1.3.36
+Выпуск       : 1.fc33
+Архитектура  : x86_64
+Размер       : 4.9 M
+Источник     : GraphicsMagick-1.3.36-1.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : updates
+Краткое опис : An ImageMagick fork, offering faster image generation and better quality
+URL          : http://www.graphicsmagick.org/
+Лицензия     : MIT
+Описание     : GraphicsMagick is a comprehensive image processing package which is initially
+             : based on ImageMagick 5.5.2, but which has undergone significant re-work by
+             : the GraphicsMagick Group to significantly improve the quality and performance
+             : of the software.
+
+Имя          : ImageMagick
+Эпоха        : 1
+Версия       : 6.9.11.27
+Выпуск       : 1.fc33
+Архитектура  : x86_64
+Размер       : 641 k
+Источник     : ImageMagick-6.9.11.27-1.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : An X application for displaying and manipulating images
+URL          : http://www.imagemagick.org/
+Лицензия     : ImageMagick
+Описание     : ImageMagick is an image display and manipulation tool for the X
+             : Window System. ImageMagick can read and write JPEG, TIFF, PNM, GIF,
+             : and Photo CD image formats. It can resize, rotate, sharpen, color
+             : reduce, or add special effects to an image, and when finished you can
+             : either save the completed work in the original format or a different
+             : one. ImageMagick also includes command line programs for creating
+             : animated or transparent .gifs, creating composite images, creating
+             : thumbnail images, and more.
+             : 
+             : ImageMagick is one of your choices if you need a program to manipulate
+             : and display images. If you want to develop your own applications
+             : which use ImageMagick code or APIs, you need to install
+             : ImageMagick-devel as well.
+
+Имя          : gawk
+Версия       : 5.1.0
+Выпуск       : 2.fc33
+Архитектура  : x86_64
+Размер       : 1.6 M
+Источник     : gawk-5.1.0-2.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : anaconda
+Краткое опис : The GNU version of the AWK text processing utility
+URL          : https://www.gnu.org/software/gawk/
+Лицензия     : GPLv3+ and GPLv2+ and LGPLv2+ and BSD
+Описание     : The gawk package contains the GNU version of AWK text processing utility. AWK is
+             : a programming language designed for text processing and typically used as a data
+             : extraction and reporting tool.
+             : 
+             : The gawk utility can be used to do quick and easy text pattern matching,
+             : extracting or reformatting. It is considered to be a standard Linux tool for
+             : text processing.
+
+Имя          : git
+Версия       : 2.29.2
+Выпуск       : 3.fc33
+Архитектура  : x86_64
+Размер       : 369 k
+Источник     : git-2.29.2-3.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : updates
+Краткое опис : Fast Version Control System
+URL          : https://git-scm.com/
+Лицензия     : GPLv2
+Описание     : Git is a fast, scalable, distributed revision control system with an
+             : unusually rich command set that provides both high-level operations
+             : and full access to internals.
+             : 
+             : The git rpm installs common set of tools which are usually using with
+             : small amount of dependencies. To install all git packages, including
+             : tools for integrating with other SCMs, install the git-all meta-package.
+
+Имя          : glib2-devel
+Версия       : 2.66.4
+Выпуск       : 1.fc33
+Архитектура  : x86_64
+Размер       : 2.9 M
+Источник     : glib2-2.66.4-1.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : updates
+Краткое опис : A library of handy utility functions
+URL          : http://www.gtk.org
+Лицензия     : LGPLv2+
+Описание     : The glib2-devel package includes the header files for the GLib library.
+
+Имя          : gnome-extensions-app
+Версия       : 3.38.0
+Выпуск       : 1.fc33
+Архитектура  : x86_64
+Размер       : 324 k
+Источник     : gnome-extensions-app-3.38.0-1.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : Manage GNOME Shell extensions
+URL          : https://gitlab.gnome.org/GNOME/gnome-shell
+Лицензия     : GPLv2+
+Описание     : GNOME Extensions is an application for configuring and removing
+             : GNOME Shell extensions.
+
+Имя          : gnome-menus
+Версия       : 3.36.0
+Выпуск       : 3.fc33
+Архитектура  : x86_64
+Размер       : 620 k
+Источник     : gnome-menus-3.36.0-3.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : anaconda
+Краткое опис : A menu system for the GNOME project
+URL          : https://gitlab.gnome.org/GNOME/gnome-menus
+Лицензия     : LGPLv2+
+Описание     : gnome-menus is an implementation of the draft "Desktop
+             : Menu Specification" from freedesktop.org. This package
+             : also contains the GNOME menu layout configuration files,
+             : .directory files and assorted menu related utility programs
+             : and a simple menu editor.
+
+Имя          : gnome-themes-extra
+Версия       : 3.28
+Выпуск       : 9.fc33
+Архитектура  : x86_64
+Размер       : 4.3 M
+Источник     : gnome-themes-extra-3.28-9.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : anaconda
+Краткое опис : GNOME Extra Themes
+URL          : https://gitlab.gnome.org/GNOME/gnome-themes-extra
+Лицензия     : LGPLv2+
+Описание     : This module houses themes and theme-y tidbits that don’t really fit in anywhere
+             : else, or deserve their own module. At the moment this consists of:
+             : 
+             :  * The GTK+ 2 version of Adwaita
+             :  * Adwaita-dark as a separate theme, along with its GTK+ 2 equivalent
+             :  * GTK+ 2 versions of the HighContrast themes
+             :  * The legacy HighContrast icon theme
+             :  * Index files needed for Adwaita to be used outside of GNOME
+             : 
+             : Once named gnome-themes-standard, this module used to contain various
+             : components of the default GNOME 3 theme. However, at this point, most it has
+             : moved elsewhere. The GTK+ 3 versions of the Adwaita and HighContrast themes are
+             : now part of GTK+ 3 itself, and the HighContrastInverse and LowConstrast themes
+             : have been discontinued.
+             : 
+             : Not to be confused with gnome-themes-extras.
+
+Имя          : gnome-tweaks
+Версия       : 3.34.1
+Выпуск       : 1.fc33
+Архитектура  : noarch
+Размер       : 1.4 M
+Источник     : gnome-tweaks-3.34.1-1.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : updates
+Краткое опис : Customize advanced GNOME 3 options
+URL          : https://wiki.gnome.org/action/show/Apps/Tweaks
+Лицензия     : GPLv3 and CC0
+Описание     : GNOME Tweaks allows adjusting advanced configuration settings in GNOME 3. This
+             : includes things like the fonts used in user interface elements, alternative user
+             : interface themes, changes in window management behavior, GNOME Shell appearance
+             : and extension, etc.
+
+Имя          : gtk-murrine-engine
+Версия       : 0.98.2
+Выпуск       : 20.fc33
+Архитектура  : x86_64
+Размер       : 457 k
+Источник     : gtk-murrine-engine-0.98.2-20.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : Murrine GTK2 engine
+URL          : http://www.cimitan.com/murrine/
+Лицензия     : LGPLv2 or LGPLv3
+Описание     : Murrine Engine is a Gtk2 theme engine, using the Cairo vector graphics
+             : library. It comes by default with a modern glassy look, inspired by
+             : Venetian glass artworks, and is extremely customizable.
+
+Имя          : gtk-update-icon-cache
+Версия       : 3.24.24
+Выпуск       : 1.fc33
+Архитектура  : x86_64
+Размер       : 66 k
+Источник     : gtk3-3.24.24-1.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : updates
+Краткое опис : Icon theme caching utility
+URL          : http://www.gtk.org
+Лицензия     : LGPLv2+
+Описание     : GTK+ can use the cache files created by gtk-update-icon-cache to avoid a lot of
+             : system call and disk seek overhead when the application starts. Since the
+             : format of the cache files allows them to be mmap()ed shared between multiple
+             : applications, the overall memory consumption is reduced as well.
+
+Имя          : gtk2-engines
+Версия       : 2.20.2
+Выпуск       : 21.fc33
+Архитектура  : x86_64
+Размер       : 1.1 M
+Источник     : gtk2-engines-2.20.2-21.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : Theme engines for GTK+ 2.0
+URL          : http://download.gnome.org/sources/gtk-engines
+Лицензия     : LGPLv2+
+Описание     : The gtk2-engines package contains shared objects and configuration
+             : files that implement a number of GTK+ theme engines. Theme engines
+             : provide different looks for GTK+, some of which resemble other
+             : toolkits or operating systems.
+
+Имя          : inkscape
+Версия       : 1.0.1
+Выпуск       : 2.fc33
+Архитектура  : x86_64
+Размер       : 189 M
+Источник     : inkscape-1.0.1-2.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : Vector-based drawing program using SVG
+URL          : https://inkscape.org/
+Лицензия     : GPLv2+ and CC-BY
+Описание     : Inkscape is a vector graphics editor, with capabilities similar to
+             : Illustrator, CorelDraw, or Xara X, using the W3C standard Scalable Vector
+             : Graphics (SVG) file format.  It is therefore a very useful tool for web
+             : designers and as an interchange format for desktop publishing.
+             : 
+             : Inkscape supports many advanced SVG features (markers, clones, alpha
+             : blending, etc.) and great care is taken in designing a streamlined
+             : interface. It is very easy to edit nodes, perform complex path operations,
+             : trace bitmaps and much more.
+
+Имя          : libX11-devel
+Версия       : 1.6.12
+Выпуск       : 3.fc33
+Архитектура  : x86_64
+Размер       : 1.0 M
+Источник     : libX11-1.6.12-3.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : updates
+Краткое опис : Development files for libX11
+URL          : http://www.x.org
+Лицензия     : MIT
+Описание     : X.Org X11 libX11 development package
+
+Имя          : libXcursor-devel
+Версия       : 1.2.0
+Выпуск       : 3.fc33
+Архитектура  : x86_64
+Размер       : 18 k
+Источник     : libXcursor-1.2.0-3.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : Development files for libXcursor
+URL          : http://www.x.org
+Лицензия     : MIT
+Описание     : libXcursor development package.
+
+Имя          : libgnome-devel
+Версия       : 2.32.1
+Выпуск       : 21.fc33
+Архитектура  : x86_64
+Размер       : 569 k
+Источник     : libgnome-2.32.1-21.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : Libraries and headers for libgnome
+URL          : http://www.gnome.org
+Лицензия     : LGPLv2+
+Описание     : You should install the libgnome-devel package if you would like to
+             : compile GNOME applications. You do not need to install libgnome-devel
+             : if you just want to use the GNOME desktop environment.
+
+Имя          : libgnome-keyring-devel
+Версия       : 3.12.0
+Выпуск       : 20.fc33
+Архитектура  : x86_64
+Размер       : 932 k
+Источник     : libgnome-keyring-3.12.0-20.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : Development files for libgnome-keyring
+URL          : http://live.gnome.org/GnomeKeyring
+Лицензия     : LGPLv2+
+Описание     : The libgnome-keyring-devel package contains the libraries and
+             : header files needed to develop applications that use libgnome-keyring.
+
+Имя          : libgnomekbd-devel
+Версия       : 3.26.1
+Выпуск       : 4.fc33
+Архитектура  : x86_64
+Размер       : 121 k
+Источник     : libgnomekbd-3.26.1-4.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : Development files for libgnomekbd
+URL          : http://gswitchit.sourceforge.net
+Лицензия     : LGPLv2+
+Описание     : The libgnomekbd-devel package contains libraries and header files for
+             : developing applications that use libgnomekbd.
+
+Имя          : libgnomeui-devel
+Версия       : 2.24.5
+Выпуск       : 23.fc33
+Архитектура  : x86_64
+Размер       : 2.8 M
+Источник     : libgnomeui-2.24.5-23.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : Libraries and headers for libgnome
+URL          : http://www.gnome.org
+Лицензия     : LGPLv2+
+Описание     : You should install the libgnomeui-devel package if you would like to
+             : compile GNOME applications. You do not need to install
+             : libgnomeui-devel if you just want to use the GNOME desktop
+             : environment.
+
+Имя          : libpng-devel
+Эпоха        : 2
+Версия       : 1.6.37
+Выпуск       : 6.fc33
+Архитектура  : x86_64
+Размер       : 884 k
+Источник     : libpng-1.6.37-6.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : updates
+Краткое опис : Development tools for programs to manipulate PNG image format files
+URL          : http://www.libpng.org/pub/png/
+Лицензия     : zlib
+Описание     : The libpng-devel package contains header files and documentation necessary
+             : for developing programs using the PNG (Portable Network Graphics) library.
+             : 
+             : If you want to develop programs which will manipulate PNG image format
+             : files, you should install libpng-devel.  You'll also need to install
+             : the libpng package.
+
+Имя          : python3-pip
+Версия       : 20.2.2
+Выпуск       : 1.fc33
+Архитектура  : noarch
+Размер       : 8.4 M
+Источник     : python-pip-20.2.2-1.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : anaconda
+Краткое опис : A tool for installing and managing Python3 packages
+URL          : https://pip.pypa.io/
+Лицензия     : MIT and Python and ASL 2.0 and BSD and ISC and LGPLv2 and MPLv2.0 and (ASL 2.0 or BSD)
+Описание     : pip is a package management system used to install and manage software packages
+             : written in Python. Many packages can be found in the Python Package Index
+             : (PyPI). pip is a recursive acronym that can stand for either "Pip Installs
+             : Packages" or "Pip Installs Python".
+
+Имя          : xorg-x11-apps
+Версия       : 7.7
+Выпуск       : 28.fc33
+Архитектура  : x86_64
+Размер       : 998 k
+Источник     : xorg-x11-apps-7.7-28.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : X.Org X11 applications
+URL          : https://www.x.org
+Лицензия     : MIT
+Описание     : A collection of common X Window System applications.
+
+Имя          : xorg-x11-utils
+Версия       : 7.5
+Выпуск       : 35.fc33
+Архитектура  : x86_64
+Размер       : 278 k
+Источник     : xorg-x11-utils-7.5-35.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : anaconda
+Краткое опис : X.Org X11 X client utilities
+URL          : http://www.x.org
+Лицензия     : MIT
+Описание     : A collection of client utilities which can be used to query the X server for
+             : various information.
+

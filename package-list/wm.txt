@@ -1,0 +1,3 @@
+awesome
+awesome-doc
+awesome-vim-colorschemes

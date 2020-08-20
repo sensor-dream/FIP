@@ -1,0 +1,4 @@
+bibata-cursor-themes
+libpng-devel
+libX11-devel
+libXcursor-devel

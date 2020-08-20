@@ -1,0 +1,211 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: gsettings-preparation
+## @Creation date file: 21.12.2020, 06:26:28
+
+[[ -z "${gsettings_preparation_script_source}" ]] && declare -rx gsettings_preparation_script_source="$BASH_SOURCE"
+
+if [[ -z "${gsettings_preparation_script_source_path}" ]]; then
+  temp_one="$(dirname ${gsettings_preparation_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx gsettings_preparation_script_source_path="$(pwd)"
+  else
+    declare -rx gsettings_preparation_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function main_gsettings_preparation_script_source() {
+
+  printf "Initialise main function of gsettings-preparation script source\n"
+
+  echo 'No run TODO'
+
+  exit 1
+
+  local gsettings_data=(
+    "org.gnome.gedit.preferences.encodings candidate-encodings ['UTF-8', 'WINDOWS-1251', 'KOI8-R', 'CURRENT', 'ISO-8859-15', 'UTF-16']"
+    "org.gnome.desktop.wm.preferences button-layout appmenu:minimize,maximize,close"
+    "org.gnome.desktop.wm.preferences disable-workarounds true"
+    "org.gnome.desktop.wm.preferences titlebar-uses-system-font true"
+    "org.gnome.desktop.screensaver lock-delay 0"
+    "org.gnome.desktop.screensaver show-full-name-in-top-bar true"
+    "org.gnome.desktop.screensaver status-message-enabled true"
+    "org.gnome.desktop.screensaver user-switch-enabled true"
+    "org.gnome.desktop.interface clock-format '24h'"
+    "org.gnome.desktop.interface clock-show-date true"
+    "org.gnome.desktop.interface clock-show-seconds true"
+    "org.gnome.desktop.interface clock-show-weekday true"
+    "org.gnome.desktop.interface cursor-blink true"
+    "org.gnome.desktop.wm.preferences titlebar-font 'Cantarell Bold 12'"
+    "org.gnome.desktop.interface document-font-name 'Cantarell 12'"
+    "org.gnome.desktop.interface font-name 'Cantarell 12'"
+    "org.gnome.desktop.interface monospace-font-name 'Source Code Pro 11'"
+    "org.gnome.desktop.wm.preferences theme 'Yaru-dark'"
+    "org.gnome.desktop.interface gtk-theme 'Yaru-dark'"
+    "org.gnome.desktop.interface icon-theme 'Yaru'"
+    "org.gnome.settings-daemon.plugins.xsettings antialiasing 'rgba'"
+    "org.gnome.settings-daemon.plugins.xsettings rgba-order 'rgb'"
+    "org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'"
+    "org.gnome.shell.app-switcher current-workspace-only false"
+    "org.gnome.shell development-tools true"
+    "org.gnome.shell disable-user-extensions false"
+    "org.gnome.shell disable-extension-version-validation true"
+    "org.gnome.shell enabled-extensions ['CoverflowAltTab@palatis.blogspot.com', 'big-avatar@gustavoperedo.org', 'dash-to-dock@micxgx.gmail.com', 'freon@UshakovVasilii_Github.yahoo.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'openweather-extension@jenslody.de']"
+    "org.gnome.shell favorite-apps ['firefox.desktop', 'code.desktop', 'org.kde.krusader.desktop', 'gnome-system-monitor.desktop', 'org.gnome.Software.desktop']"
+    "org.gnome.shell disabled-extensions ['panel-osd@berend.de.schouwer.gmail.com']"
+    "org.gnome.shell.extensions.freon drive-utility 'udisks2'"
+    "org.gnome.shell.extensions.freon gpu-utility 'nvidia-settings'"
+    "org.gnome.shell.extensions.freon group-temperature true"
+    "org.gnome.shell.extensions.freon group-voltage true"
+    "org.gnome.shell.extensions.freon hot-sensors ['Core 0', 'Core 1', 'GeForce GTS 250', 'ST500DM002-1BD142', 'fan2']"
+    "org.gnome.shell.extensions.freon position-in-panel 'right'"
+    "org.gnome.shell.extensions.freon show-decimal-value true"
+    "org.gnome.shell.extensions.freon show-degrees-on-panel true"
+    "org.gnome.shell.extensions.freon show-fan-rpm true"
+    "org.gnome.shell.extensions.freon show-icon-on-panel true"
+    "org.gnome.shell.extensions.freon show-voltage true"
+    "org.gnome.shell.extensions.freon unit 'centigrade'"
+    "org.gnome.shell.extensions.freon update-time 3"
+    "org.gnome.shell.extensions.freon panel-box-index 0"
+    "org.gnome.shell.extensions.openweather center-forecast true"
+    "org.gnome.shell.extensions.openweather city '54.79694,79.091942>Верх-Каргат, Верх-Каргатский сельсовет, Здвинский район, Новосибирская область, Сибирский федеральный округ, Россия >-1'"
+    "org.gnome.shell.extensions.openweather days-forecast 3"
+    "org.gnome.shell.extensions.openweather decimal-places 1"
+    "org.gnome.shell.extensions.openweather geolocation-provider 'openstreetmaps'"
+    "org.gnome.shell.extensions.openweather position-in-panel 'center'"
+    "org.gnome.shell.extensions.openweather pressure-unit 'mmHg'"
+    "org.gnome.shell.extensions.openweather refresh-interval-current 600"
+    "org.gnome.shell.extensions.openweather refresh-interval-forecast 3600"
+    "org.gnome.shell.extensions.openweather show-comment-in-forecast true"
+    "org.gnome.shell.extensions.openweather show-comment-in-panel true"
+    "org.gnome.shell.extensions.openweather show-text-in-panel true"
+    "org.gnome.shell.extensions.openweather translate-condition true"
+    "org.gnome.shell.extensions.openweather unit 'celsius'"
+    "org.gnome.shell.extensions.openweather use-default-owm-key true"
+    "org.gnome.shell.extensions.openweather use-symbolic-icons true"
+    "org.gnome.shell.extensions.openweather weather-provider 'openweathermap'"
+    "org.gnome.shell.extensions.openweather wind-direction true"
+    "org.gnome.shell.extensions.openweather wind-speed-unit 'm/s'"
+    "org.gnome.shell.extensions.openweather actual-city 0"
+    "/org/gnome/shell/extensions/big-avatar/fontsize 18"
+    "/org/gnome/shell/extensions/big-avatar/picturesize 180"
+    "org.gnome.shell.extensions.dash-to-dock apply-custom-theme true"
+    "org.gnome.shell.extensions.dash-to-dock custom-theme-running-dots-border-color ''"
+    "org.gnome.shell.extensions.dash-to-dock custom-theme-running-dots-color ''"
+    "org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 47"
+    "org.gnome.shell.extensions.dash-to-dock extend-height false"
+    "org.gnome.shell.extensions.dash-to-dock height-fraction 0.90000000000000002"
+    "org.gnome.shell.extensions.dash-to-dock multi-monitor true"
+    "org.gnome.shell.extensions.dash-to-dock show-mounts false"
+    "org.gnome.shell.extensions.dash-to-dock show-trash false"
+    "org.gnome.shell.app-switcher current-workspace-only false"
+    "org.gnome.shell.window-switcher current-workspace-only false"
+    "org.gnome.system.location enabled true"
+    "org.gnome.gnome-system-monitor maximized true"
+    "org.gnome.gnome-system-monitor show-whose-processes 'all'"
+    "org.gnome.gnome-system-monitor solaris-mode true"
+    "org.gnome.gnome-system-monitor current-tab 'processes'"
+    "org.gnome.gnome-system-monitor cpu-stacked-area-chart true"
+    "org.fedorahosted.background-logo-extension logo-always-visible false"
+    "org.gtk.Settings.FileChooser date-format 'regular'"
+    "org.gtk.Settings.FileChooser location-mode 'path-bar'"
+    "org.gtk.Settings.FileChooser show-hidden true"
+    "org.gtk.Settings.FileChooser show-size-column true"
+    "org.gtk.Settings.FileChooser show-type-column true"
+    "org.gnome.Terminal.Legacy.Settings theme-variant 'dark'"
+    "org.gnome.Terminal.Legacy.Settings shell-integration-enabled true"
+    "guake.general abbreviate-tab-names true"
+    "guake.general display-n 0"
+    "guake.general focus-if-open true"
+    "guake.general gtk-prefer-dark-theme true"
+    "guake.general max-tab-name-length 100"
+    "guake.general restore-tabs-notify true"
+    "guake.general restore-tabs-startup false"
+    "guake.general save-tabs-when-changed true"
+    "guake.general set-window-title true"
+    "guake.general start-at-login true"
+    "guake.general tab-close-buttons true"
+    "guake.general use-audible-bell true"
+    "guake.general use-default-font false"
+    "guake.general use-popup true"
+    "guake.general use-scrollbar true"
+    "guake.general use-trayicon true"
+    "guake.general window-halignment 0"
+    "guake.general window-height 76"
+    "guake.general window-losefocus false"
+    "guake.general window-ontop true"
+    "guake.general window-refocus true"
+    "guake.general window-tabbar true"
+    "guake.general window-width 100"
+    "guake.general workspace-specific-tab-sets true"
+    "guake.hooks show ''"
+    "guake.style.background transparency 74"
+    "guake.style.font allow-bold true"
+    "guake.style.font bold-is-bright true"
+    "guake.style.font palette '#000000000000:#FFFF55555555:#5555FFFF5555:#FFFFFFFF5555:#55555555FFFF:#FFFF5555FFFF:#5555FFFFFFFF:#BBBBBBBBBBBB:#555555555555:#FFFF55555555:#5555FFFF5555:#FFFFFFFF5555:#55555555FFFF:#FFFF5555FFFF:#5555FFFFFFFF:#FFFFFFFFFFFF:#FFFFFFFFFFFF:#000000000000'"
+    "guake.style.font palette-name 'Dark Pastel'"
+    "guake.style.font style 'Monospace 12'"
+    "org.gnome.login-screen banner-message-enable true"
+    "org.gnome.login-screen banner-message-text 'Welcome at Sensor-Dream Boxed System'"
+    "org.gnome.login-screen enable-password-authentication true"
+    "org.gnome.login-screen enable-smartcard-authentication false"
+    "org.gnome.login-screen enable-fingerprint-authentication true"
+    "org.gnome.packagekit enable-autoremove true"
+    "org.gnome.packagekit enable-codec-helper true"
+    "org.gnome.packagekit enable-font-helper true"
+    "org.gnome.packagekit filter-arch true"
+    "org.gnome.packagekit filter-basename false"
+    "org.gnome.packagekit only-newest true"
+    "org.gnome.packagekit repo-show-details true"
+    "org.gnome.packagekit show-all-packages true"
+    "org.gnome.packagekit show-depends true"
+    "org.gnome.settings-daemon.plugins.power power-button-action 'interactive'"
+    "org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 3600"
+    "org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'"
+    "org.gnome.libdevhelp-3.contents:/org/gnome/devhelp/state/main/contents/ group-books-by-language true"
+  )
+
+  for i in ${!gsettings_data[@]}; do
+    echo "gsettings set ${gsettings_data[$i]}"
+    gsettings set ${gsettings_data[$i]}
+  done
+}
+
+main_gsettings_preparation_script_source "$@"

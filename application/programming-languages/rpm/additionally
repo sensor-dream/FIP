@@ -1,0 +1,114 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: additionally
+## @Creation date file: 13.11.2020, 00:39:56
+
+[[ -z "${additionally_script_source}" ]] && declare -rx additionally_script_source="$BASH_SOURCE"
+
+if [[ -z "${additionally_script_source_path}" ]]; then
+  temp_one="$(dirname ${additionally_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx additionally_script_source_path="$(pwd)"
+  else
+    declare -rx additionally_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_additionally() {
+
+  local install_pkg=(
+    # Краткое опис : High Performance, Distributed Memory Object Cache
+    # URL          : https://www.memcached.org/
+    #Лицензия     : BSD
+    # Описание     : memcached is a high-performance, distributed memory object caching
+    # : system, generic in nature, but intended for use in speeding up dynamic
+    # : web applications by alleviating database load.
+    'memcached'
+    # Краткое опис : YAML 1.1 parser and emitter written in C
+    # URL          : https://github.com/yaml/libyaml
+    # Лицензия     : MIT
+    # Описание     : YAML is a data serialization format designed for human readability and
+    # : interaction with scripting languages.  LibYAML is a YAML parser and
+    # : emitter written in C.
+    'libyaml'
+    'libyaml-devel'
+    # Краткое опис : A linter for YAML files
+    # URL          : https://github.com/adrienverge/yamllint
+    # Лицензия     : GPLv3+
+    # Описание     : A linter for YAML files.
+    # :
+    # : yamllint does not only check for syntax validity, but for weirdnesses like key
+    # : repetition and cosmetic problems such as lines length, trailing spaces,
+    # : indentation, etc.
+    'yamllint'
+    # Краткое опис : Graph Visualization Tools
+    # URL          : http://www.graphviz.org/
+    # Лицензия     : EPL-1.0
+    # Описание     : A collection of tools for the manipulation and layout of graphs (as in nodes
+    # : and edges, not as in barcharts).
+    'graphviz'
+    # Краткое опис : A graphics library for quick creation of PNG or JPEG images
+    # URL : http://libgd.github.io/
+    # Лицензия : MIT
+    # Описание : The gd graphics library allows your code to quickly draw images
+    # : complete with lines, arcs, text, multiple colors, cut and paste from
+    # : other images, and flood fills, and to write out the result as a PNG or
+    # : JPEG file. This is particularly useful in Web applications, where PNG
+    # : and JPEG are two of the formats accepted for inline images by most
+    # : browsers. Note that gd is not a paint program.
+    'gd'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/additionally.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_additionally_script_source() {
+
+  # printf "Initialise main function of additionally script source\n";
+
+  . "${main_project_path}/application/installation/rpm/ImageMagick"
+  . "${main_project_path}/application/installation/rpm/GraphicsMagick"
+  install_additionally "$@"
+
+}
+
+main_additionally_script_source "$@"

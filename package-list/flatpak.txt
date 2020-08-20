@@ -1,0 +1,11 @@
+flatpak
+flatpak-builder
+flatpak-devel
+flatpak-libs
+flatpak-module-tools
+flatpak-rpm-macros
+flatpak-runtime-config
+flatpak-selinux
+flatpak-session-helper
+flatpak-tests
+flatpak-xdg-utils

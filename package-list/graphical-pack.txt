@@ -1,0 +1,6 @@
+freeimage
+freeimage-devel
+gd
+tk
+turbojpeg
+webp-pixbuf-loader

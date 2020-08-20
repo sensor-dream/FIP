@@ -1,0 +1,4 @@
+openal-soft
+openal-soft-devel
+openal-soft-examples
+openal-soft-qt

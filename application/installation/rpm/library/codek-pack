@@ -1,0 +1,139 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: codek-pack
+## @Creation date file: 13.11.2020, 01:23:40
+
+[[ -z "${codek_pack_script_source}" ]] && declare -rx codek_pack_script_source="$BASH_SOURCE"
+
+if [[ -z "${codek_pack_script_source_path}" ]]; then
+  temp_one="$(dirname ${codek_pack_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx codek_pack_script_source_path="$(pwd)"
+  else
+    declare -rx codek_pack_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_codek_pack() {
+
+  local install_pkg=(
+    # Краткое опис : MPEG-2 decoder libraries
+    # URL          : http://libmpeg2.sourceforge.net
+    # Лицензия     : GPLv2+
+    # Описание     : libmpeg2 is a free library for decoding mpeg-2 and mpeg-1 video
+    # : streams. It is released under the terms of the GPL license.
+    'libmpeg2'
+    'libmpeg2-devel'
+    #
+    # Summary      : Decoder of various derivatives of MPEG standards
+    # URL          : http://heroinewarrior.com/libmpeg3.php3
+    # Лицензия     : GPLv2+
+    # Description  : LibMPEG3 decodes the many many derivatives of MPEG standards into
+    # : uncompressed data suitable for editing and playback.
+    # :
+    # : libmpeg3 currently decodes:
+    # :  - MPEG-1 Layer II/III Audio and program streams
+    # :  - MPEG-2 Layer III Audio, program streams and transport streams
+    # :  - MPEG-1 and MPEG-2 Video
+    # :  - AC3 Audio
+    # :  - IFO files
+    # :  - VOB files
+    'libmpeg3'
+    # 'libmpeg3-devel'
+    'libmpeg3-utils'
+    #
+    # Summary      : Libraries for the mp3Splt project
+    # URL          : http://mp3splt.sourceforge.net/
+    # Лицензия     : GPLv2
+    # Description  : The mp3Splt project provides utilities to split mp3 and ogg files,
+    # : by selecting a begin and an end time position, without decoding.
+    # : It is very useful to split large mp3/ogg into smaller files,
+    # : or to split entire albums to obtain original tracks.
+    # : To split an album, the split points and filenames can be selected
+    # : manually or automatically from CDDB (internet or a local file),
+    # : or from .cue files.
+    # :
+    # : It supports automatic silence detection, which can be used
+    # : to adjust cddb/cue split points. It is also possible to extract
+    # : tracks from Mp3Wrap or AlbumWrap files in a few seconds.
+    # :
+    # : The mp3splt project is divided in 3 parts:
+    # : libmp3splt, mp3splt and mp3splt-gtk.
+    'libmp3splt'
+    # 'libmp3splt-devel'
+    #
+    # Summary      : Library for working with files using the mp4 container format
+    # URL          : http://code.google.com/p/mp4v2
+    # Лицензия     : MPLv1.1
+    # Description  : The libmp4v2 library provides an abstraction layer for working with files
+    # : using the mp4 container format. This library is developed by mpeg4ip project
+    # : and is an exact copy of the library distributed in the mpeg4ip package.
+    'libmp4v2'
+    # 'libmp4v2-devel'
+    #
+    # Summary      : Musepack audio decoding library
+    # URL          : http://www.musepack.net/
+    # Лицензия     : BSD
+    # Description  : Musepack is an audio compression format with a strong emphasis on high quality.
+    # : It's not lossless, but it is designed for transparency, so that you won't be
+    # : able to hear differences between the original wave file and the much smaller
+    # : MPC file.
+    # : It is based on the MPEG-1 Layer-2 / MP2 algorithms, but has rapidly developed
+    # : and vastly improved and is now at an advanced stage in which it contains
+    # : heavily optimized and patentless code.
+    'libmpcdec'
+    # 'libmpcdec-devel'
+    #
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/codek-pack.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_codek_pack_script_source() {
+
+  # printf "Initialise main function of codek-pack script source\n";
+
+  install_codek_pack "$@"
+
+}
+
+main_codek_pack_script_source "$@"

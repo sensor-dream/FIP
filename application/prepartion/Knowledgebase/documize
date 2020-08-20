@@ -1,0 +1,160 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: documize
+## @Creation date file: 14.12.2020, 19:43:00
+
+[[ -z "${documize_script_source}" ]] && declare -rx documize_script_source="$BASH_SOURCE"
+
+if [[ -z "${documize_script_source_path}" ]]; then
+  temp_one="$(dirname ${documize_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx documize_script_source_path="$(pwd)"
+  else
+    declare -rx documize_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_documize() {
+
+  printf "\n%s\n" 'Documize is an \‘Intelligent Document Environment\’ that blends document authoring and wiki software with project management best practices.
+It was built by developers in EmberJS and Go. They wanted to improve the documentation process in software engineering, as well as how documents are shared.
+Anyone can fork their open source core codebase and submit a pull request for a new data integration.
+They then ship the update to every Documize user automatically with the next product release.
+In fact, they encourage developers to explore their code base.
+Their code is always open source and their pricing starts from free plans for the first ten users.'
+
+  echo -e "\n Please read: https://www.documize.com/downloads\n"
+  echo -e "Activate Service\nGet your free 10 user activation key\nUnlocks enterprise edition features\n"
+
+  [[ -z "${cfg-personal-information}" ]] && . "${main_project_path}/hidden/cfg-personal-information"
+  [[ -z "${cfg_www_public_path_name}" ]] && . "${main_project_path}/hidden/cfg-storage-information"
+
+  # local documize_version='documize-community-linux-amd64'
+  local documize_version='documize-enterprise-linux-amd64'
+
+  local www="${cfg_storage_path}/${cfg_development_path_name}/${cfg_www_public_path_name}/$(printf '%s\n' ${cfg_docfg//./ } | tac | tr '\n' '/')documize"
+
+  # if [[ ! -d "${www}/www/backups" ]]; then
+  [[ -d "${www}/www/working" ]] || sudo mkdir -m 0775 -p "${www}/www/working"
+  [[ -d "${www}/www/cgi-bin" ]] || sudo mkdir -m 0775 -p "${www}/cgi-bin"
+  [[ -d "${www}/www/tmp" ]] || sudo mkdir -m 0775 -p "${www}/tmp"
+  [[ -d "${www}/www/nginx" ]] || sudo mkdir -m 0775 -p "${www}/logs/nginx"
+  [[ -d "${www}/www/unit" ]] || sudo mkdir -m 0775 -p "${www}/logs/unit"
+  [[ -d "${www}/www/statistics" ]] || sudo mkdir -m 0775 -p "${www}/logs/statistics"
+  [[ -L "${www}/www/main-utilites" ]] || ln -s "../../../../../repo_share/FIP/tools" "${www}/www/main-utilites"
+  [[ -L "${www}/www/main-utilites" ]] || ln -s "../../../../../repo_share/FIP/tools" "${www}/www/main-utilites"
+  [[ -L "${www}/www/push" ]] || ln -s "main-utilites/.push" "${www}/www/push"
+  [[ -L "${www}/www/setperm" ]] || ln -s "main-utilites/setperm.bash" "${www}/www/setperm"
+  sudo chown -P -R ${cfg_user}:apache "${www}/www"
+  # fi
+
+  if [[ ! -f "${main_project_path}/application/installation/src/Documize/${documize_version}" ]]; then
+    wget -O "${main_project_path}/application/installation/src/Documize/${documize_version}" "https://documize.s3-eu-west-1.amazonaws.com/downloads/${documize_version}"
+    chmod +x "${main_project_path}/application/installation/src/Documize/${documize_version}"
+    echo -e "File - ${documize_version} download to ${main_project_path}/application/installation/src/Documize/${documize_version}\n"
+  else
+    echo -e "File - ${documize_version} already downloaded to ${main_project_path}/application/installation/src/Documize/${documize_version}\n"
+  fi
+
+  if [[ ! -f "${main_project_path}/application/installation/src/Documize/config-mysql.conf" ]]; then
+    wget -O "${main_project_path}/application/installation/src/Documize/config-mysql.conf" "docs.documize.com/api/public/attachment/8SwAtYoB/bj3ggv67m02fu20qv1q0"
+    echo -e "File - config-mysql.conf download to ${main_project_path}/application/installation/src/Documize/config-mysql.conf\n"
+  else
+    echo -e "File - config-mysql.conf already downloaded to ${main_project_path}/application/installation/src/Documize/config-mysql.conf\n"
+  fi
+
+  if [[ ! -f "${www}/www//${documize_version}" ]]; then
+    cp "${main_project_path}/application/installation/src/Documize/${documize_version}" "${www}/www/${documize_version}"
+    echo -e "File - ${documize_version} to ${www}/www/${documize_version}\n"
+  fi
+
+  if [[ ! -f "${main_project_path}/hidden/cfg-documize-config-mysql.conf" ]]; then
+    cp "${main_project_path}/application/installation/src/Documize/config-mysql.conf" "${main_project_path}/hidden/cfg-documize-config-mysql.conf"
+    echo -e "File - config-mysql.conf create symlink to ${main_project_path}/hidden/cfg-documize-config-mysql.conf\n"
+    sed -i -e 's%root:admin%ru.sensor-dream.documize:ru.sensor-dream.documize%g; s%salt.*$%salt ="'$(uuid | sed 's/-//g')'"%g; s/location.*$/location = "documize.'${cfg_docfg}'"/g; s%3306[)]/documize%3306)/ru.sensor-dream.documize%g' "${main_project_path}/hidden/cfg-documize-config-mysql.conf"
+  fi
+
+  [[ -f "${main_project_path}/application/installation/src/Documize/documize.service" ]] && rm -f "${main_project_path}/application/installation/src/Documize/documize.service"
+
+  # /usr/lib/systemd/system/ – юниты из установленных пакетов RPM — всякие nginx, apache, mysql и прочее
+  # /run/systemd/system/ — юниты, созданные в рантайме — тоже, наверное, нужная штука
+  # /etc/systemd/system/ — юниты, созданные системным администратором — а вот сюда мы и положим свой юнит.
+
+  if [[ ! -f "${main_project_path}/application/installation/src/Documize/documize.service" ]]; then
+    cat <<EOF >"${main_project_path}/application/installation/src/Documize/documize.service"
+[Unit]
+Description=documize
+After=network.target
+
+[Service]
+Type=simple
+User=apache
+ExecStart=${www}/www/${documize_version} ${main_project_path}/hidden/cfg-documize-config-mysql.conf
+WorkingDirectory=${www}/www/working
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+  fi
+
+  [[ -L "/usr/lib/systemd/system/documize.service" ]] || sudo ln -s "${main_project_path}/application/installation/src/Documize/documize.service" "/usr/lib/systemd/system/documize.service"
+
+  sudo systemctl daemon-reload
+
+  [[ "$(systemctl is-enabled documize)" ]] || systemctl enable documize
+
+  if [[ "$(systemctl is-active documize)" == 'active' ]]; then
+    sudo systemctl restart documize
+  else
+    sudo systemctl start documize
+  fi
+
+}
+
+function main_documize_script_source() {
+
+  # printf "Initialise main function of documize script source\n";
+
+  install_documize "$@"
+
+}
+
+main_documize_script_source "$@"

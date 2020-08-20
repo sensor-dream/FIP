@@ -1,0 +1,9 @@
+baobab
+blivet-data
+blivet-gui
+blivet-gui-runtime
+fstransform
+gnome-disk-utility
+gparted
+nvme-cli
+nvmetcli

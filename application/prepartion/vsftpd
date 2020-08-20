@@ -1,0 +1,134 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: vsftpd
+## @Creation date file: 11.12.2020, 16:17:54
+
+[[ -z "${vsftpd_script_source}" ]] && declare -rx vsftpd_script_source="$BASH_SOURCE"
+
+if [[ -z "${vsftpd_script_source_path}" ]]; then
+  temp_one="$(dirname ${vsftpd_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx vsftpd_script_source_path="$(pwd)"
+  else
+    declare -rx vsftpd_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function create_ftp_user_db() {
+
+  local user_file="${main_project_path}/hidden/cfg-ftp-user-information"
+
+  [[ -f "${user_file}" ]] || touch "${user_file}"
+
+  echo -e "\nFile change: ${user_file}\n"
+
+  sudo rm -f /etc/vsftpd/login.db
+  sudo db_load -T -t hash -f "${user_file}" /etc/vsftpd/login.db
+
+}
+
+function preparate_vsftpd() {
+
+  temp_two='/etc/vsftpd/vsftpd.conf'
+  echo -e "\nFile change: ${temp_two}\n"
+
+  [[ -f "${temp_two}.back" ]] || sudo cp "${temp_two}" "${temp_two}.back"
+
+  create_ftp_user_db
+
+  #auth required /lib64/security/pam_userdb.so crypt=none db=/etc/vsftpd/login
+  #account required /lib64/security/pam_userdb.so crypt=none db=/etc/vsftpd/login
+
+  temp_one="$(sudo cat ${temp_two})"
+
+  insert_or_replace_substring_in_string_data '^([# ]*)?anonymous_enable.*$' 'anonymous_enable=YES' # наш сервер будет анонимным
+  insert_or_replace_substring_in_string_data '^([# ]*)?local_enable.*$' 'local_enable=YES'
+  insert_or_replace_substring_in_string_data '^([# ]*)?write_enable.*$' 'write_enable=YES'
+  insert_or_replace_substring_in_string_data '^([# ]*)?local_root.*$' 'local_root=/mnt/sda/Temp' # папка по умолчанию
+  insert_or_replace_substring_in_string_data '^([# ]*)?anon_upload_enable.*$' 'anon_upload_enable=YES'
+  insert_or_replace_substring_in_string_data '^([# ]*)?anon_mkdir_write_enable.*$' 'anon_mkdir_write_enable=NO'
+  insert_or_replace_substring_in_string_data '^([# ]*)?anon_other_write_enable.*$' 'anon_other_write_enable=NO'
+  insert_or_replace_substring_in_string_data '^([# ]*)?chroot_local_user.*$' 'chroot_local_user=YES'
+  insert_or_replace_substring_in_string_data '^([# ]*)?guest_enable.*$' 'guest_enable=YES' # т.к. будем использовать виртуальных пользователей то нужно привести их к пользователю сервера с минимальными правами
+  insert_or_replace_substring_in_string_data '^([# ]*)?guest_username.*$' 'guest_username=apache'
+  insert_or_replace_substring_in_string_data '^([# ]*)?pam_service_name.*$' 'pam_service_name=apache'
+  insert_or_replace_substring_in_string_data '^([# ]*)?user_config_dir.*$' 'user_config_dir=/etc/vsftpd/users/' # укажем папку для хранения дополнительных конфигов
+  insert_or_replace_substring_in_string_data '^([# ]*)?virtual_use_local_privs.*$' 'virtual_use_local_privs=YES'
+  insert_or_replace_substring_in_string_data '^([# ]*)?chmod_enable.*$' 'chmod_enable=YES'
+  insert_or_replace_substring_in_string_data '^([# ]*)?chown_uploads.*$' 'chown_uploads=YES'
+  insert_or_replace_substring_in_string_data '^([# ]*)?chown_username.*$' 'chown_username=apache'
+  insert_or_replace_substring_in_string_data '^([# ]*)?local_umask.*$' 'local_umask=0022' # # маска создание и чтение файлов - очень важные параметры я убил 2 дня на поиски решения (при #создании каталогов -  ользователи не могли в # них попасть т.к. не было прав)
+  insert_or_replace_substring_in_string_data '^([# ]*)?local_umask.*$' 'local_umask=0022'
+  insert_or_replace_substring_in_string_data '^([# ]*)?anon_umask.*$' 'anon_umask=0007'
+  insert_or_replace_substring_in_string_data '^([# ]*)?file_open_mode.*$' 'file_open_mode=0777'
+  insert_or_replace_substring_in_string_data '^([# ]*)?listen.*$' 'listen=YES'
+  insert_or_replace_substring_in_string_data '^([# ]*)?listen_port.*$' 'listen_port=21'
+  insert_or_replace_substring_in_string_data '^([# ]*)?pasv_min_port.*$' 'pasv_min_port=30000'
+  insert_or_replace_substring_in_string_data '^([# ]*)?pasv_max_port.*$' 'pasv_max_port=30999'
+  insert_or_replace_substring_in_string_data '^([# ]*)?xferlog_std_format.*$' 'xferlog_std_format=YES'
+  insert_or_replace_substring_in_string_data '^([# ]*)?xferlog_file.*$' 'xferlog_file=/var/log/vsftpd.log'
+  insert_or_replace_substring_in_string_data '^([# ]*)?tcp_wrappers.*$' 'tcp_wrappers=NO'
+  insert_or_replace_substring_in_string_data '^([# ]*)?dirmessage_enable.*$' 'dirmessage_enable=YES'
+  insert_or_replace_substring_in_string_data '^([# ]*)?ftpd_banner.*$' "ftpd_banner='Welcome to Sensor-Dream Boxed System'"
+
+  echo "${temp_one}" | sudo tee "${temp_two}" >/dev/null
+
+  temp_two="/etc/pam.d/vsftpd"
+  echo -e "\nFile change: ${temp_two}\n"
+
+  [[ -f "${temp_two}.back" ]] || sudo cp "${temp_two}" "${temp_two}.back"
+  temp_one="$(sudo cat ${temp_two})"
+  insert_or_replace_substring_in_string_data 'auth.*required.*pam_listfile.so.*$' 'auth required pam_listfile.so item=user sense=deny file=/etc/vsftpd/users/home.sensor-dream.ru_wordpress 'onerr=succeed
+  echo "${temp_one}" | sudo tee "${temp_two}" >/dev/null
+
+  sudo systemctl restart vsftpd
+
+}
+
+function main_vsftpd_script_source() {
+
+  # printf "Initialise main function of vsftpd script source\n";
+
+  . "${main_project_path}/application/installation/rpm/vsftpd" "$@"
+  preparate_vsftpd "$@"
+
+}
+
+main_vsftpd_script_source "$@"

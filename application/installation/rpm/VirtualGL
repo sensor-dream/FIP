@@ -1,0 +1,103 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: VirtualGL
+## @Creation date file: 11.11.2020, 21:13:46
+
+[[ -z "${VirtualGL_script_source}" ]] && declare -rx VirtualGL_script_source="$BASH_SOURCE"
+
+if [[ -z "${VirtualGL_script_source_path}" ]]; then
+  temp_one="$(dirname ${VirtualGL_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx VirtualGL_script_source_path="$(pwd)"
+  else
+    declare -rx VirtualGL_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_VirtualGL() {
+
+  local install_pkg=(
+    # Краткое опис : A toolkit for displaying OpenGL applications to thin clients
+    # URL          : http://www.virtualgl.org/
+    # Описание     : VirtualGL is a toolkit that allows most Unix/Linux OpenGL applications to be
+    # : remotely displayed with hardware 3D acceleration to thin clients, regardless
+    # : of whether the clients have 3D capabilities, and regardless of the size of the
+    # : 3D data being rendered or the speed of the network.
+    # :
+    # : Using the vglrun script, the VirtualGL "faker" is loaded into an OpenGL
+    # : application at run time.  The faker then intercepts a handful of GLX calls,
+    # : which it reroutes to the server's X display (the "3D X Server", which
+    # : presumably has a 3D accelerator attached.)  The GLX commands are also
+    # : dynamically modified such that all rendering is redirected into a Pbuffer
+    # : instead of a window.  As each frame is rendered by the application, the faker
+    # : reads back the pixels from the 3D accelerator and sends them to the
+    # : "2D X Server" for compositing into the appropriate X Window.
+    # :
+    # : VirtualGL can be used to give hardware-accelerated 3D capabilities to VNC or
+    # : other X proxies that either lack OpenGL support or provide it through software
+    # : rendering.  In a LAN environment, VGL can also be used with its built-in
+    # : high-performance image transport, which sends the rendered 3D images to a
+    # : remote client (vglclient) for compositing on a remote X server.  VirtualGL
+    # : also supports image transport plugins, allowing the rendered 3D images to be
+    # : sent or captured using other mechanisms.
+    # :
+    # : VirtualGL is based upon ideas presented in various academic papers on
+    # : this topic, including "A Generic Solution for Hardware-Accelerated Remote
+    # : Visualization" (Stegmaier, Magallon, Ertl 2002) and "A Framework for
+    # : Interactive Hardware Accelerated Remote 3D-Visualization" (Engel, Sommer,
+    # : Ertl 2000.)
+    'VirtualGL'
+    'VirtualGL-devel'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/VirtualGL.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_VirtualGL_script_source() {
+
+  # printf "Initialise main function of VirtualGL script source\n";
+
+  install_VirtualGL "$@"
+
+}
+
+main_VirtualGL_script_source "$@"

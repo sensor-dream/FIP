@@ -1,0 +1,189 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: prometheus
+## @Creation date file: 18.10.2020, 15:43:13
+
+[[ -z "${prometheus_script_source}" ]] && declare -rx prometheus_script_source="$BASH_SOURCE"
+
+if [[ -z "${prometheus_script_source_path}" ]]; then
+  temp_one="$(dirname ${prometheus_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx prometheus_script_source_path="$(pwd)"
+  else
+    declare -rx prometheus_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_prometheus() {
+
+  local version='2.22.0'
+  local src_prometheus_path="${main_project_path}/application/installation/src/prometheus"
+  local dbpath="${cfg_storage_path}/${cfg_system_path_name}/db/prometheus"
+  local verison_node_exporter='1.0.1'
+
+  [[ -d "${src_prometheus_path}" ]] || mkdir -p "${src_prometheus_path}"
+  cd "${src_prometheus_path}"
+
+  [[ -f "prometheus-2.22.0.linux-amd64.tar.gz" ]] || wget "https://github.com/prometheus/prometheus/releases/download/v${version}/prometheus-${version}.linux-amd64.tar.gz"
+
+  [[ -d "prometheus-${version}.linux-amd64" ]] || tar xvzf "prometheus-${version}.linux-amd64.tar.gz"
+
+  [[ -z "$(id -un prometheus 2>/dev/null)" ]] && sudo useradd -rs /bin/false prometheus
+
+  cd "prometheus-${version}.linux-amd64"
+
+  if [[ -z "$(ls /usr/local/bin | grep 'prometheus')" ]]; then
+    echo "Copy /usr/local/bin/prometheus"
+    sudo cp prometheus promtool /usr/local/bin
+    sudo chown prometheus:prometheus /usr/local/bin/prometheus
+  fi
+
+  if [[ ! -d /etc/prometheus ]]; then
+    echo "Create /etc/prometheus"
+    sudo mkdir /etc/prometheus
+    sudo cp -R consoles/ console_libraries/ prometheus.yml /etc/prometheus
+    sudo chown -R prometheus.prometheus /etc/prometheus/*
+  fi
+
+  if [[ ! -d "${dbpath}" ]]; then
+    echo "Create ${dbpath}"
+    sudo mkdir -p "${dbpath}"
+    sudo chown -R prometheus.prometheus "${dbpath}"
+  fi
+
+  cd /lib/systemd/system
+  if [[ ! -f 'prometheus.service' ]]; then
+    cat <<EOF | sudo tee prometheus.service >/dev/null
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=prometheus
+Group=prometheus
+ExecStart=/usr/local/bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path="${dbpath}" --web.console.templates=/etc/prometheus/consoles --web.console.libraries=/etc/prometheus/console_libraries --web.listen-address=127.0.0.1:9090 --web.enable-admin-api --web.external-url=https://$(hostname)
+
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    sudo systemctl daemon-reload
+  fi
+
+  cd "${src_prometheus_path}"
+
+  if [[ ! -f "node_exporter-${verison_node_exporter}.linux-amd64.tar.gz" ]]; then
+    wget https://github.com/prometheus/node_exporter/releases/download/v${verison_node_exporter}/node_exporter-${verison_node_exporter}.linux-amd64.tar.gz
+    tar xvzf node_exporter-${verison_node_exporter}.linux-amd64.tar.gz
+  fi
+
+  if [[ ! -f /usr/local/bin/node_exporter ]]; then
+    cd node_exporter-${verison_node_exporter}.linux-amd64
+    sudo cp node_exporter /usr/local/bin
+    sudo useradd -rs /bin/false node_exporter
+    sudo chown node_exporter.node_exporter /usr/local/bin/node_exporter
+  fi
+
+  cd /lib/systemd/system
+
+  if [[ ! -f node_exporter.service ]]; then
+
+    cat <<EOF | sudo tee node_exporter.service >/dev/null
+    [Unit]
+    Description=Node Exporter
+    Wants=network-online.target
+    After=network-online.target
+
+    [Service]
+    Type=simple
+    User=node_exporter
+    Group=node_exporter
+    ExecStart=/usr/local/bin/node_exporter --collector.mountstats --collector.logind --collector.processes --collector.ntp --collector.systemd --collector.tcpstat
+
+    Restart=always
+
+    [Install]
+    WantedBy=multi-user.target
+EOF
+
+    sudo systemctl daemon-reload
+
+  fi
+
+  if [[ -f /etc/prometheus/prometheus.yml ]]; then
+    sudo sed -i 's%- targets.*\[.*$%  - targets: ['localhost:9090', 'localhost:9100']%' /etc/prometheus/prometheus.yml
+  fi
+
+  [[ "$(systemctl is-enabled node_exporter)" == 'enabled' ]] || sudo systemctl enable node_exporter
+  if [[ "$(systemctl is-active node_exporter)" == 'active' ]]; then
+    sudo systemctl start node_exporter
+  else
+    sudo systemctl restart node_exporter
+  fi
+
+  [[ "$(systemctl is-enabled prometheus)" == 'enabled' ]] || sudo systemctl enable prometheus
+  if [[ "$(systemctl is-active prometheus)" == 'active' ]]; then
+    sudo systemctl start prometheus
+  else
+    sudo systemctl restart prometheus
+  fi
+
+}
+
+function main_prometheus_script_source() {
+
+  # printf "Initialise main function of prometheus script source\n";
+
+  echo "Please read https://devconnected.com/how-to-setup-grafana-and-prometheus-on-linux/#b_Configuring_NGINX_as_a_reverse_proxy"
+
+  if [[ -z "${cfg_storage_name}" && -f "${main_project_path}/hidden/cfg-storage-information" ]]; then
+    . "${main_project_path}/hidden/cfg-storage-information"
+  else
+    . "${main_project_path}/tools/cfg-storage-information"
+  fi
+
+  install_prometheus "$@"
+
+}
+
+main_prometheus_script_source "$@"

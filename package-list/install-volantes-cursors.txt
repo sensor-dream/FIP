@@ -1,0 +1,4 @@
+git
+inkscape
+make
+xorg-x11-apps

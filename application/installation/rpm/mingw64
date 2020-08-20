@@ -1,0 +1,491 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: mingw64
+## @Creation date file: 07.10.2020, 04:00:54
+
+[[ -z "${mingw64_script_source}" ]] && declare -rx mingw64_script_source="$BASH_SOURCE"
+
+if [[ -z "${mingw64_script_source_path}" ]]; then
+  temp_one="$(dirname ${mingw64_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx mingw64_script_source_path="$(pwd)"
+  else
+    declare -rx mingw64_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_mingw64() {
+
+  local install_pkg=(
+    mingw64-GConf2
+    mingw64-GeographicLib
+    mingw64-LibRaw
+    mingw64-LibRaw-static
+    mingw64-LibRaw-tools
+    mingw64-OpenEXR
+    mingw64-OpenEXR-static
+    mingw64-OpenEXR-tools
+    mingw64-SDL
+    mingw64-SDL2
+    mingw64-SDL2-static
+    mingw64-SDL2_image
+    mingw64-SDL2_mixer
+    mingw64-SDL2_ttf
+    mingw64-SDL_image
+    mingw64-SDL_mixer
+    mingw64-SDL_ttf
+    mingw64-adwaita-icon-theme
+    mingw64-angleproject
+    mingw64-angleproject-static
+    mingw64-antlr
+    mingw64-antlr-static
+    mingw64-atk
+    mingw64-atk-static
+    mingw64-atkmm
+    mingw64-biblesync
+    mingw64-binutils
+    mingw64-boost
+    mingw64-boost-static
+    mingw64-brotli
+    mingw64-bsdcat
+    mingw64-bsdcpio
+    mingw64-bsdtar
+    mingw64-bzip2
+    mingw64-bzip2-static
+    mingw64-c-ares
+    mingw64-cairo
+    mingw64-cairo-static
+    mingw64-cairomm
+    mingw64-cairomm-static
+    mingw64-celt051
+    mingw64-celt051-static
+    mingw64-cfitsio
+    mingw64-cfitsio-tools
+    mingw64-clucene
+    mingw64-cmocka
+    mingw64-cmocka-static
+    mingw64-colord
+    mingw64-colord-gtk
+    mingw64-colord-gtk-static
+    mingw64-colord-static
+    mingw64-colorhug-client
+    mingw64-cpp
+    mingw64-crt
+    mingw64-curl
+    mingw64-curl-static
+    mingw64-dbus
+    mingw64-dbus-glib
+    mingw64-dbus-glib-static
+    mingw64-dbus-static
+    mingw64-djvulibre
+    mingw64-djvulibre-tools
+    mingw64-dlfcn
+    mingw64-dlfcn-static
+    mingw64-eigen3
+    mingw64-enchant
+    mingw64-enchant-static
+    mingw64-enchant2
+    mingw64-exiv2
+    mingw64-expat
+    mingw64-expat-static
+    mingw64-fcgi
+    mingw64-fftw
+    mingw64-fftw-static
+    mingw64-filesystem
+    mingw64-flac
+    mingw64-flac-tools
+    mingw64-fltk
+    mingw64-fltk-static
+    mingw64-fontconfig
+    mingw64-fontconfig-static
+    mingw64-freeglut
+    mingw64-freeimage
+    mingw64-freeimage-static
+    mingw64-freetype
+    mingw64-freetype-static
+    mingw64-freexl
+    mingw64-fribidi
+    mingw64-fribidi-static
+    mingw64-ftplib
+    mingw64-g2clib
+    mingw64-gcc
+    mingw64-gcc-c++
+    mingw64-gcc-gfortran
+    mingw64-gcc-objc
+    mingw64-gcc-objc++
+    mingw64-gdal
+    mingw64-gdal-tools
+    mingw64-gdb
+    mingw64-gdbm
+    mingw64-gdbm-static
+    mingw64-gdk-pixbuf
+    mingw64-geos
+    mingw64-gettext
+    mingw64-gettext-static
+    mingw64-giflib
+    mingw64-giflib-static
+    mingw64-giflib-tools
+    mingw64-glew
+    mingw64-glew-static
+    mingw64-glew-tools
+    mingw64-glib-networking
+    mingw64-glib2
+    mingw64-glib2-static
+    mingw64-glibmm24
+    mingw64-glibmm24-static
+    mingw64-glslang
+    mingw64-gmp
+    mingw64-gnutls
+    mingw64-goocanvas2
+    mingw64-graphite2
+    mingw64-graphite2-static
+    mingw64-gsl
+    mingw64-gsl-static
+    mingw64-gsm
+    mingw64-gsm-tools
+    mingw64-gstreamer
+    mingw64-gstreamer-plugins-bad-free
+    mingw64-gstreamer-plugins-base
+    mingw64-gstreamer-plugins-good
+    mingw64-gstreamer1
+    mingw64-gstreamer1-plugins-bad-free
+    mingw64-gstreamer1-plugins-base
+    mingw64-gstreamer1-plugins-good
+    mingw64-gtk-update-icon-cache
+    mingw64-gtk-vnc2
+    mingw64-gtk2
+    mingw64-gtk2-static
+    mingw64-gtk3
+    mingw64-gtkglext
+    mingw64-gtkglext-static
+    mingw64-gtkmm24
+    mingw64-gtkmm30
+    mingw64-gtksourceview3
+    mingw64-gtksourceviewmm3
+    mingw64-gtkspell3
+    mingw64-gtkspell3-static
+    mingw64-gtkspellmm30
+    mingw64-gtkspellmm30-static
+    mingw64-gvnc
+    mingw64-gvnc-tools
+    mingw64-hamlib
+    mingw64-harfbuzz
+    mingw64-harfbuzz-static
+    mingw64-headers
+    mingw64-hicolor-icon-theme
+    mingw64-hidapi
+    mingw64-hidapi-static
+    mingw64-hunspell
+    mingw64-hunspell-static
+    mingw64-hunspell-tools
+    mingw64-icu
+    mingw64-id3lib
+    mingw64-id3lib-tools
+    mingw64-ilmbase
+    mingw64-ilmbase-static
+    mingw64-jansson
+    mingw64-jasper
+    mingw64-jasper-static
+    mingw64-jimtcl
+    mingw64-json-glib
+    mingw64-jsoncpp
+    mingw64-jxrlib
+    mingw64-lcms
+    mingw64-lcms-static
+    mingw64-lcms2
+    mingw64-lcms2-static
+    mingw64-leptonica
+    mingw64-leptonica-static
+    mingw64-libIDL
+    mingw64-libIDL-static
+    mingw64-libarchive
+    mingw64-libarchive-static
+    mingw64-libcharset
+    mingw64-libconfuse
+    mingw64-libcroco
+    mingw64-libcroco-static
+    mingw64-libepoxy
+    mingw64-libffi
+    mingw64-libffi-static
+    mingw64-libftdi
+    mingw64-libgamerzilla
+    mingw64-libgcrypt
+    mingw64-libgcrypt-static
+    mingw64-libgeotiff
+    mingw64-libgeotiff-static
+    mingw64-libgeotiff-tools
+    mingw64-libglade2
+    mingw64-libglade2-static
+    mingw64-libgnurx
+    mingw64-libgnurx-static
+    mingw64-libgomp
+    mingw64-libgovirt
+    mingw64-libgovirt-static
+    mingw64-libgpg-error
+    mingw64-libgpg-error-static
+    mingw64-libgsf
+    mingw64-libgsf-static
+    mingw64-libgta
+    mingw64-libgusb
+    mingw64-libgusb-static
+    mingw64-libid3tag
+    mingw64-libidn
+    mingw64-libidn-static
+    mingw64-libidn2
+    mingw64-libidn2-static
+    mingw64-libjpeg-turbo
+    mingw64-libkml
+    mingw64-libltdl
+    mingw64-libmad
+    mingw64-libmicrohttpd
+    mingw64-libmicrohttpd-static
+    mingw64-libmng
+    mingw64-libmng-static
+    mingw64-libogg
+    mingw64-libosinfo
+    mingw64-libpng
+    mingw64-libpng-static
+    mingw64-libpsl
+    mingw64-librsvg2
+    mingw64-librsvg2-static
+    mingw64-libsigc++20
+    mingw64-libsigc++20-static
+    mingw64-libsoup
+    mingw64-libspatialite
+    mingw64-libsq3
+    mingw64-libsqlite3x
+    mingw64-libssh2
+    mingw64-libssh2-static
+    mingw64-libtasn1
+    mingw64-libtheora
+    mingw64-libtiff
+    mingw64-libtiff-static
+    mingw64-libunistring
+    mingw64-libusbx
+    mingw64-libusbx-static
+    mingw64-libvirt
+    mingw64-libvirt-gconfig
+    mingw64-libvirt-glib
+    mingw64-libvirt-gobject
+    mingw64-libvirt-static
+    mingw64-libvorbis
+    mingw64-libwebp
+    mingw64-libxml++
+    mingw64-libxml2
+    mingw64-libxml2-static
+    mingw64-libxslt
+    mingw64-libxslt-static
+    mingw64-libzip
+    mingw64-llvm
+    mingw64-llvm-static
+    mingw64-llvm-tools
+    mingw64-log4c
+    mingw64-mediawriter
+    mingw64-minizip
+    mingw64-mpfr
+    mingw64-nettle
+    mingw64-openal-soft
+    mingw64-openjpeg2
+    mingw64-openjpeg2-tools
+    mingw64-openssl
+    mingw64-openssl-static
+    mingw64-opus
+    mingw64-opusfile
+    mingw64-orc
+    mingw64-orc-compiler
+    mingw64-osinfo-db-tools
+    mingw64-p11-kit
+    mingw64-pango
+    mingw64-pango-static
+    mingw64-pangomm
+    mingw64-pcre
+    mingw64-pcre-static
+    mingw64-pcre2
+    mingw64-pcre2-static
+    mingw64-pdcurses
+    mingw64-physfs
+    mingw64-physfs-static
+    mingw64-pixman
+    mingw64-pixman-static
+    mingw64-pkg-config
+    mingw64-plotmm
+    mingw64-plotmm-static
+    mingw64-podofo
+    mingw64-podofo-tools
+    mingw64-polyclipping
+    mingw64-poppler
+    mingw64-poppler-cpp
+    mingw64-poppler-glib
+    mingw64-poppler-qt5
+    mingw64-portablexdr
+    mingw64-portablexdr-static
+    mingw64-portaudio
+    mingw64-postgresql
+    mingw64-postgresql-static
+    mingw64-proj
+    mingw64-proj-static
+    mingw64-python3
+    mingw64-python3-Cython
+    mingw64-python3-GeographicLib
+    mingw64-python3-gdal
+    mingw64-python3-libkml
+    mingw64-python3-numpy
+    mingw64-python3-pyqt5-sip
+    mingw64-python3-qscintilla-qt5
+    mingw64-python3-qt5
+    mingw64-python3-setuptools
+    mingw64-python3-sip
+    mingw64-qca-qt5
+    mingw64-qextserialport-qt5
+    mingw64-qscintilla-qt5
+    mingw64-qt5-qmake
+    mingw64-qt5-qmldevtools
+    mingw64-qt5-qmldevtools-devel
+    mingw64-qt5-qt3d
+    mingw64-qt5-qt3d-tools
+    mingw64-qt5-qtactiveqt
+    mingw64-qt5-qtbase
+    mingw64-qt5-qtbase-devel
+    mingw64-qt5-qtbase-static
+    mingw64-qt5-qtcharts
+    mingw64-qt5-qtdeclarative
+    mingw64-qt5-qtdeclarative-static
+    mingw64-qt5-qtgraphicaleffects
+    mingw64-qt5-qtimageformats
+    mingw64-qt5-qtlocation
+    mingw64-qt5-qtmultimedia
+    mingw64-qt5-qtquickcontrols
+    mingw64-qt5-qtquickcontrols-static
+    mingw64-qt5-qtscript
+    mingw64-qt5-qtsensors
+    mingw64-qt5-qtserialport
+    mingw64-qt5-qtsvg
+    mingw64-qt5-qttools
+    mingw64-qt5-qttools-tools
+    mingw64-qt5-qttranslations
+    mingw64-qt5-qtwebchannel
+    mingw64-qt5-qtwebkit
+    mingw64-qt5-qtwebsockets
+    mingw64-qt5-qtwinextras
+    mingw64-qt5-qtxmlpatterns
+    mingw64-qtkeychain-qt5
+    mingw64-qtspell-qt5
+    mingw64-qtspell-qt5-static
+    mingw64-quazip-qt5
+    mingw64-quazip-qt5-static
+    mingw64-qwt-qt5
+    mingw64-qwtpolar-qt5
+    mingw64-readline
+    mingw64-readline-static
+    mingw64-rest
+    mingw64-rest-static
+    mingw64-sane-backends
+    mingw64-sane-backends-static
+    mingw64-shapelib
+    mingw64-shapelib-static
+    mingw64-shapelib-tools
+    mingw64-spatialindex
+    mingw64-speex
+    mingw64-speex-tools
+    mingw64-speexdsp
+    mingw64-spice-glib
+    mingw64-spice-gtk3
+    mingw64-spice-protocol
+    mingw64-spirv-headers
+    mingw64-spirv-tools
+    mingw64-sqlite
+    mingw64-sqlite-static
+    mingw64-svg2svgt
+    mingw64-sword
+    mingw64-taglib
+    mingw64-tcl
+    mingw64-termcap
+    mingw64-termcap-static
+    mingw64-tesseract
+    mingw64-tesseract-static
+    mingw64-tesseract-tools
+    mingw64-theora-tools
+    mingw64-tk
+    mingw64-twaindsm
+    mingw64-uriparser
+    mingw64-usbredir
+    mingw64-usbredir-static
+    mingw64-vulkan-headers
+    mingw64-vulkan-loader
+    mingw64-vulkan-tools
+    mingw64-vulkan-validation-layers
+    mingw64-wavpack
+    mingw64-wavpack-tools
+    mingw64-win-iconv
+    mingw64-win-iconv-static
+    mingw64-windows-default-manifest
+    mingw64-wine-gecko
+    mingw64-winpthreads
+    mingw64-winpthreads-static
+    mingw64-winstorecompat
+    mingw64-wpcap
+    mingw64-wxWidgets
+    mingw64-wxWidgets-static
+    mingw64-wxWidgets3
+    mingw64-wxWidgets3-static
+    mingw64-xerces-c
+    mingw64-xz
+    mingw64-xz-libs
+    mingw64-xz-libs-static
+    mingw64-yaml-cpp
+    mingw64-zfstream
+    mingw64-zlib
+    mingw64-zlib-static
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/mingw64.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_mingw64_script_source() {
+
+  # prinf "Initialise main function of mingw64 script source\n";
+
+  install_mingw64 "$@"
+
+}
+
+main_mingw64_script_source "$@"

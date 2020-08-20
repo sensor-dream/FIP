@@ -1,0 +1,119 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: tuning-gdm
+## @Creation date file: 02.02.2021, 04:02:53
+
+[[ -z "${tuning_gdm_script_source}" ]] && declare -rx tuning_gdm_script_source="$BASH_SOURCE"
+
+if [[ -z "${tuning_gdm_script_source_path}" ]]; then
+  temp_one="$(dirname ${tuning_gdm_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx tuning_gdm_script_source_path="$(pwd)"
+  else
+    declare -rx tuning_gdm_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function tuning_gdm() {
+
+  local install_pkg=(
+
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/tuning-gdm.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+  #
+  # Displaying a user prompt instead of a list of users on the GNOME login screen
+  #
+  echo
+  echo -n "Displaying a user prompt instead of a list of users on the GNOME login screen ? (N/y)"
+  read temp_one
+  if [[ "${temp_one}" == 'y' ]]; then
+
+    [[ -d '/etc/dconf/db/gdm.d' ]] || sudo mkdir '/etc/dconf/db/gdm.d'
+
+    if [[ ! -f '/etc/dconf/db/gdm.d/01-users' ]]; then
+      cat <<EOF | sudo tee /etc/dconf/db/gdm.d/01-users >/dev/null
+[org/gnome/login-screen]
+banner-message-enable=true
+banner-message-text='Welkome at ${cfg_full_org} (${cfg_org})\n'
+disable-restart-buttons=true
+disable-user-list=true
+EOF
+    fi
+
+    if [[ ! -f '/etc/dconf/profile/gdm' ]]; then
+      cat <<EOF | sudo tee /etc/dconf/profile/gdm >/dev/null
+user-db:user
+system-db:gdm
+EOF
+    fi
+
+  fi
+
+  #
+  # End Displaying a user prompt instead of a list of users on the GNOME login screen
+  #
+
+  echo -e "\n\nPlease run commands fror changed default cursor:\n\tsudo su gdm -s /bin/bash\n\tdbus-launch gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Classic'\n\n"
+
+  sudo dconf update
+
+  echo -n "Restart Gnome display manager (GDM) ? (N/y)"
+  read temp_one
+  if [[ "${temp_one}" == 'y' ]]; then
+    sudo systemctl restart gdm
+  fi
+
+}
+
+function main_tuning_gdm_script_source() {
+
+  printf "Initialise main function of tuning-gdm script source\n"
+
+  [[ -n "${cfg_full_org}" ]] || . "${main_project_path}/tools/cfg-personal-information"
+
+  echo -e "TODO: tuning GDM\n"
+  tuning_gdm "$@"
+
+}
+
+main_tuning_gdm_script_source "$@"

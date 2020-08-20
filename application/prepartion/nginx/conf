@@ -1,0 +1,228 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: conf
+## @Creation date file: 13.09.2020, 11:32:44
+
+declare -rx conf_script_source="$BASH_SOURCE"
+
+temp_one="$(dirname ${conf_script_source})"
+if [[ "${temp_one}" == '.' ]]; then
+  declare -rx conf_script_source_path="$(pwd)"
+else
+  declare -rx conf_script_source_path="${temp_one}"
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${conf_script_source})"
+
+function main_conf_script_source() {
+
+  # prinf "Initialise main function of conf script source\n";
+
+  [[ $(systemctl is-active nginx) == 'active' ]] && sudo systemctl stop nginx
+
+  # local server_name="${cfg_hostname}"
+  local server_name="_"
+  [[ -z "${nginx_script_source_path}" ]] && local nginx_script_source_path='.'
+  [[ -z "$rev_timestamp" ]] && local rev_timestamp="$(cat ${nginx_script_source_path}/rev-timestamp.txt)"
+
+  # cat > nginx.conf nginx.base.conf - <<EOF
+  #EOF
+
+  cat <<EOF | sudo tee /etc/nginx/nginx.conf >/dev/null
+# For more information on configuration, see:
+#   * Official English Documentation: http://nginx.org/en/docs/
+#   * Official Russian Documentation: http://nginx.org/ru/docs/
+
+# user nginx;
+user apache;
+worker_processes auto;
+error_log /var/log/nginx/error.log;
+worker_rlimit_nofile 8192; # should be bigger than worker_connections
+pid /run/nginx.pid;
+
+# Load dynamic modules. See /usr/share/doc/nginx/README.dynamic.
+include /usr/share/nginx/modules/*.conf;
+
+#
+# DDoS prevention in firewall
+# /sbin/iptables -A INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 20 -j REJECT --reject-with tcp-reset
+# /sbin/iptables -A INPUT -p tcp --syn --dport 443 -m connlimit --connlimit-above 20 -j REJECT --reject-with tcp-reset
+#
+
+events {
+    use epoll;
+    multi_accept on;
+    # worker_connections 2048; # default
+    # DDoS prevention
+    worker_connections 50000;
+}
+
+http {
+
+    # lua_package_path "/usr/lib64/lua/lua5.3/?.lua;;";
+
+    log_format  main  '\$remote_addr - \$remote_user [\$time_local] "\$request" '
+                      '\$status \$body_bytes_sent "\$http_referer" '
+                      '"\$http_user_agent" "\$http_x_forwarded_for"';
+
+    # log_format full_format '"\$time_iso8601"|"\$host"|"\$http_host"|"\$remote_addr"|"\$http_x_forwarded_for"|"\$request_method"|"\$request"|"\$status"|"\$upstream_status"|"\$body_bytes_sent"|"\$http_referer"|"\$request_time"|"\$upstream_response_time"|"\$upstream_http_x_cache"|"\$uri"|"\$upstream_addr"|"\$upstream_response_length"|"\$server_name"|"\$upstream_cache_status"|"\$http_user_agent"|"\$scheme://\$host\$request_uri"|"\$cookie_bar"';
+
+    # [ debug | info | notice | warn | error | crit ]
+    access_log  /var/log/nginx/access.log  main;
+    error_log /var/log/nginx/error.log info;
+
+    sendfile            on;
+    # tcp_nopush          on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout   65s;
+    types_hash_max_size 4096; # default 4096
+    types_hash_bucket_size 64; # default 64
+    # removed pound sign
+    server_tokens off;
+
+    # set default index file (can be overwritten for each site individually)
+    index index.html;
+
+    #
+    # DDoS prevention
+    #
+    # Nginx Timeout parameters
+    # Default is 60, May need to be increased for very large uploads
+    client_body_timeout 60s; # increase for very long file uploads
+    client_header_timeout 5s;
+    # Limit HTTP Request size
+    client_body_buffer_size 200K;
+    client_header_buffer_size 2k;
+    # maximum file upload size
+    # update 'upload_max_filesize' & 'post_max_size' in /etc/php/fpm/php.ini accordingly
+    client_max_body_size 100m;
+    large_client_header_buffers 3 1k;
+    fastcgi_read_timeout 160s;
+
+    # load MIME types
+    include             /etc/nginx/mime.types;
+    default_type application/octet-stream; # set default MIME type
+
+    # Load modular configuration files from the /etc/nginx/conf.d directory.
+    # See http://nginx.org/en/docs/ngx_core_module.html#include
+    # for more information.
+    include /etc/nginx/conf.d/*.conf;
+
+    # move next 3 lines to /etc/nginx/nginx.conf if you want to use fastcgi_cache across many sites
+    fastcgi_cache_path /var/run/nginx-cache levels=1:2 keys_zone=SDBS:500m inactive=60m;
+    fastcgi_cache_key "$scheme$request_method$host$request_uri";
+    fastcgi_cache_use_stale error timeout invalid_header http_500;
+
+    server {
+        listen       80 default_server;
+        listen       [::]:80 default_server;
+        server_name  ${server_name};
+        root         /usr/share/nginx/html;
+
+        location ~ ^/\.well-known/acme-challenge/([-_a-zA-Z0-9]+)$ {
+            default_type text/plain;
+            return 200 "$1.##ACME_THUMBPRINT##";
+        }
+
+        # Redirect non-https traffic to https
+        if (\$scheme != "https") {
+            return 301 https://\$host\$request_uri;
+        }
+
+    }
+
+    server {
+
+        listen       443 ssl http2 default_server;
+        listen       [::]:443 ssl http2 default_server;
+        server_name  ${server_name};
+        root         /usr/share/nginx/html;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+
+        index index.php index.html;
+
+        # signed cert plus intermediates
+        ssl_certificate "/etc/letsencrypt/live/${cfg_docfg}/fullchain.pem";
+        # private key
+        ssl_certificate_key "/etc/letsencrypt/live/${cfg_docfg}/privkey.pem";
+        # verify chain of trust of OCSP response using Root CA and Intermediate certs
+        ssl_trusted_certificate "/etc/letsencrypt/live/${cfg_docfg}/chain.pem";
+
+        # redirect server error pages to the static page /40x.html
+        #
+        error_page  404  /404.html;
+        location = /40x.html {
+          root  /usr/share/nginx/html;
+        }
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+          root  /usr/share/nginx/html;
+        }
+
+    }
+
+}
+EOF
+
+  . "conf.d/default"
+  . "default.d/default"
+
+  echo -e "\nPlease visit in:\n\thttps://www.ssllabs.com/ssltest\n\thttps://www.immuniweb.com/ssl\n\thttps://www.sslshopper.com/ssl-checker.html\n\thttps://www.digicert.com/help\n\thttps://www.wormly.com/test_ssl\n\thttps://certlogik.com/ssl-checker/"
+
+  temp_one="$(systemctl is-active nginx)"
+
+  [[ "${temp_one}" == 'inactive' ]] && sudo systemctl start nginx
+
+  # openssl s_client -connect ${cfg_docfg}:443 -servername ${cfg_docfg} -status </dev/null
+  # openssl s_client -connect ${cfg_docfg}:443 -status
+  # echo -e "\nSTATUS service NGINX - "${temp_one}"\nSTATUS OCSP responce connect ${cfg_docfg}:443\n"
+  # echo QUIT | openssl s_client -connect ${cfg_docfg}:443 -tlsextdebug -status 2>/dev/null
+  # echo QUIT | openssl s_client -servername ${cfg_docfg} -connect ${cfg_docfg}:443 -tlsextdebug -status 2>/dev/null | grep -A 17 'OCSP response:' | grep -B 17 'Next Update'
+  # echo QUIT | openssl s_client -connect ${cfg_docfg}:443 -status 2>/dev/null | grep -A 17 'OCSP response:' | grep -B 17 'Next Update'
+
+  nmap --script ssl-enum-ciphers -p 443 "${cfg_docfg}"
+
+}
+
+main_conf_script_source "$@"

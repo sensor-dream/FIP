@@ -1,0 +1,115 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: arangodb
+## @Creation date file: 09.10.2020, 04:03:08
+
+[[ -z "${arangodb_script_source}" ]] && declare -rx arangodb_script_source="$BASH_SOURCE"
+
+if [[ -z "${arangodb_script_source_path}" ]]; then
+  temp_one="$(dirname ${arangodb_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx arangodb_script_source_path="$(pwd)"
+  else
+    declare -rx arangodb_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function main_arangodb_script_source() {
+
+  # prinf "Initialise main function of arangodb script source\n";
+  . "${main_project_path}/application/installation/rpm/arangodb"
+
+  echo 0 | sudo tee "/proc/sys/vm/overcommit_memory" >/dev/null
+  if ! grep -q 'vm.overcommit_memory' '/etc/sysctl.conf'; then
+    echo 'vm.overcommit_memory = 0' | sudo tee -a '/etc/sysctl.conf' >/dev/null
+  else
+    sudo sed -i 's/vm.overcommit_memory.*$/vm.overcommit_memory = 0/' '/etc/sysctl.conf'
+  fi
+
+  sudo sysctl -w 'vm.max_map_count = 2048000'
+  if ! grep -q 'vm.max_map_count' '/etc/sysctl.conf'; then
+    echo 'vm.max_map_count = 2048000' | sudo tee -a '/etc/sysctl.conf' >/dev/null
+  else
+    sudo sed -i 's/vm.max_map_count.*$/vm.max_map_count = 2048000/' '/etc/sysctl.conf'
+  fi
+
+  echo 0 | sudo tee "/proc/sys/vm/zone_reclaim_mode" >/dev/null
+  if ! grep -q 'vm.zone_reclaim_mode' '/etc/sysctl.conf'; then
+    echo 'vm.zone_reclaim_mode = 0' | sudo tee -a '/etc/sysctl.conf' >/dev/null
+  else
+    sudo sed -i 's/vm.zone_reclaim_mode.*$/vm.zone_reclaim_mode = 0/' '/etc/sysctl.conf'
+  fi
+
+  # Disable Transparent Huge Pages
+  echo madvise | sudo tee /sys/kernel/mm/transparent_hugepage/enabled >/dev/null
+  if ! grep -q 'mm.transparent_hugepage.enabled' '/etc/sysctl.conf'; then
+    echo 'mm.transparent_hugepage.enabled = madvise' | sudo tee -a '/etc/sysctl.conf' >/dev/null
+  else
+    sudo sed -i 's/mm.transparent_hugepage.enabled.*$/mm.transparent_hugepage.enabled = madvise/' '/etc/sysctl.conf'
+  fi
+
+  echo madvise | sudo tee /sys/kernel/mm/transparent_hugepage/defrag >/dev/null
+  if ! grep -q 'mm.transparent_hugepage.defrag' '/etc/sysctl.conf'; then
+    echo 'mm.transparent_hugepage.defrag = madvise' | sudo tee -a '/etc/sysctl.conf' >/dev/null
+  else
+    sudo sed -i 's/mm.transparent_hugepage.defrag.*$/mm.transparent_hugepage.defrag = madvise/' '/etc/sysctl.conf'
+  fi
+
+  echo -n "Установить root пароль (N/y)"
+  stty -echo # скрыть отображение символов ввода
+  read password
+  stty echo # включить отображение символов ввода
+  echo -e "\n"
+  if [[ -n "${password}" && "${password}" == 'y' ]]; then
+    # export ARANGODB_DEFAULT_ROOT_PASSWORD="${cfg_password}"
+    sudo arango-secure-installation
+  fi
+
+  if [[ "$(systemctl is-active arangodb${arangodb_name_version})" == "inactive" ]]; then
+    sudo systemctl enable "arangodb${arangodb_name_version}"
+    sudo systemctl start "arangodb${arangodb_name_version}"
+    echo "ArangoDB is - $(systemctl is-active arangodb${arangodb_name_version})"
+  fi
+
+  echo 'Please visit to http://127.0.0.1:8529'
+
+}
+
+main_arangodb_script_source "$@"

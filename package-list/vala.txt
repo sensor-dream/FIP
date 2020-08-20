@@ -1,0 +1,13 @@
+augeas-vala
+libguestfs-vala
+libinsane-vala
+libvala-devel
+libvirt-designer-vala
+spice-gtk3-vala
+telepathy-glib-vala
+vala
+vala-doc
+valadoc
+valadoc-devel
+vim-syntastic-vala
+xfce4-vala

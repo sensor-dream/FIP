@@ -1,0 +1,81 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: rpmfusion
+## @Creation date file: 06.10.2020, 04:07:09
+
+[[ -z "${rpmfusion_script_source}" ]] && declare -rx rpmfusion_script_source="$BASH_SOURCE"
+
+if [[ -z "${rpmfusion_script_source_path}" ]]; then
+  temp_one="$(dirname ${rpmfusion_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx rpmfusion_script_source_path="$(pwd)"
+  else
+    declare -rx rpmfusion_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_rpmfusion() {
+
+  if [[ -z "$(check_installed_packages rpmfusion-free-release rpmfusion-nonfree-release)" ]]; then
+    # #sudo dnf config-manager --set-disabled rpmfusion-nonfree-nvidia-driver
+    # sudo dnf config-manager --set-disabled rpmfusion-nonfree-steam
+    sudo dnf install "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${os_version_id}.noarch.rpm" "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${os_version_id}.noarch.rpm" -y
+    sudo dnf config-manager --set-enabled rpmfusion-free
+    sudo dnf config-manager --set-enabled rpmfusion-free-updates
+    sudo dnf config-manager --set-enabled rpmfusion-nonfree
+    sudo dnf config-manager --set-enabled rpmfusion-nonfree-updates
+    sudo dnf groupupdate core -y
+    sudo dnf groupupdate multimedia -y
+    sudo dnf groupupdate sound-and-video -y
+  else
+    printf "Check rpmfusion repositories is OK  and aktivate is OK (if you haven't already disabled it manually :() \n"
+  fi
+
+}
+
+function main_rpmfusion_script_source() {
+
+  # prinf "Initialise main function of rpmfusion script source\n";
+
+  install_rpmfusion "$@"
+
+}
+
+main_rpmfusion_script_source "$@"

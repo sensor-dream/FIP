@@ -1,0 +1,13 @@
+clang
+clang-analyzer
+clang-devel
+clang-libs
+clang-tools-extra
+compiler-rt
+libedit
+libffi
+libomp-devel
+libstdc++
+llvm-libs
+ncurses-libs
+zlib

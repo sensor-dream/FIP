@@ -1,0 +1,306 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: nginx
+## @Creation date file: 10.09.2020, 09:51:58
+
+declare -rx nginx_script_source="$BASH_SOURCE"
+
+temp_one="$(dirname ${nginx_script_source})"
+if [[ "${temp_one}" == '.' ]]; then
+  declare -rx nginx_script_source_path="$(pwd)"
+else
+  declare -rx nginx_script_source_path="${temp_one}"
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_nginx_dependence() {
+
+  cat <<EOF >/dev/null
+  if [[ ! -f '/etc/yum.repos.d/openresty.repo' ]]; then
+    wget https://openresty.org/package/fedora/openresty.repo
+    sudo mv openresty.repo /etc/yum.repos.d/
+    sudo dnf check-update
+  fi
+EOF
+
+  local install_pkg=(
+    'libxml2'
+    'libxslt'
+    'libxml2-devel'
+    'libxslt-devel'
+    'gperftools'
+    'gperftools-devel'
+    'libmaxminddb'
+    'libmaxminddb-devel'
+    'pcre-devel'
+    'openssl-devel'
+    'gcc'
+    'curl'
+    'gd'
+    'gd-devel'
+    'perl'
+    'memcached'
+  )
+
+  # 'openresty'
+  # 'openresty-resty'
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/nginx.preparation.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_nginx_script_source() {
+
+  # prinf "Initialise main function of nginx script source\n";
+
+  if [[ "$(check_installed_packages nginx)" != 'nginx' ]]; then
+    . "${main_project_path}/application/installation/rpm/nginx"
+  else
+    printf "Check nginx is OK \n"
+  fi
+
+  if [[ "$(check_installed_packages php php-fpm)" != 'php php-fpm' ]]; then
+    . "${main_project_path}/application/programming-languages/rpm/php"
+  else
+    printf "Check php php-fpm is OK \n"
+  fi
+
+  if [[ "$(check_installed_packages GeoIP)" != 'GeoIP' ]]; then
+    . "${main_project_path}/application/installation/rpm/geoip"
+  else
+    printf "Check GeoIP is OK \n"
+  fi
+
+  if [[ "$(check_installed_packages GeoIP)" != 'mariadb' ]]; then
+    . "${main_project_path}/application/installation/rpm/mariadb"
+  else
+    printf "Check mariadb is OK \n"
+  fi
+
+  local rev_timestamp="${timestamp}"
+  echo "${rev_timestamp}" >'rev-timestamp.txt'
+
+  local nginx_version="$(rpm -qi nginx | awk '/Version/ { print $3 }')"
+  # local nginx_version='1.19.0'
+  local certbot_version="$(certbot --version)"
+  local path_lib_nginx_modules='/usr/lib64/nginx/modules'
+  local path_cfg_nginx_modules='/usr/share/nginx/modules'
+
+  local nginx_module_config=
+  local nginx_module_name=
+  local module_list=
+  local configure_arguments=
+  local src_nginx_path="${main_project_path}/application/installation/src/nginx"
+
+  [[ -z "${nginx_version}" ]] && . "${main_project_path}/application/installation/rpm/nginx"
+  [[ -z "${certbot_version}" ]] && . "${main_project_path}/application/installation/rpm/certbot"
+
+  install_nginx_dependence
+
+  echo -en "Запустить генерацию сертификатов ? (N/y)"
+  read key
+  if [[ "${key}" == "y" ]]; then
+    echo "Введите название домена (def. ${cfg_docfg})"
+    read key
+    . "${main_project_path}/application/prepartion/certbot/generate" -d "${key}"
+  else
+    echo "Запущена симуляция генерации, в файл hosts добавлены записи для домена по умолчанию: ${cfg_docfg}"
+    . "${main_project_path}/application/prepartion/certbot/generate" -g -d "${cfg_docfg}"
+  fi
+
+  [[ $(systemctl is-enabled nginx) == 'enable' ]] || sudo systemctl enable nginx
+  [[ $(systemctl is-active nginx) == 'active' ]] && sudo systemctl stop nginx
+
+  [[ -f '/usr/sbin/nginx.back' ]] || sudo mv '/usr/sbin/nginx' '/usr/sbin/nginx.back'
+
+  # DDoS prevention
+  if ! grep -q "fs.file-max" '/etc/sysctl.conf'; then
+    echo -e 'fs.file-max = 50000' | sudo tee -a '/etc/sysctl.conf'
+  else
+    sudo sed -i 's/^fs.file-max.*$/fs.file-max = 50000/im' '/etc/sysctl.conf'
+  fi
+  if ! grep -q "net.ipv4.conf.all.rp_filter" '/etc/sysctl.conf'; then
+    echo -e 'net.ipv4.conf.all.rp_filter = 1' | sudo tee -a '/etc/sysctl.conf'
+  else
+    sudo sed -i 's/^net.ipv4.conf.all.rp_filter.*$/net.ipv4.conf.all.rp_filter = 1/im' '/etc/sysctl.conf'
+  fi
+  if ! grep -q "net.ipv4.tcp_syncookies" '/etc/sysctl.conf'; then
+    echo -e 'net.ipv4.tcp_syncookies = 1' | sudo tee -a '/etc/sysctl.conf'
+  else
+    sudo sed -i 's/^net.ipv4.tcp_syncookies.*$/net.ipv4.tcp_syncookies = 1/im' '/etc/sysctl.conf'
+  fi
+
+  sudo sysctl -p
+
+  [[ -d '/etc/ssl/private' ]] || sudo mkdir -p '/etc/ssl/private'
+  [[ -f '/etc/ssl/private/dhparam.pem' ]] || sudo openssl dhparam -out '/etc/ssl/private/dhparam.pem' 4096
+  [[ -f '/etc/ssl/private/tickets.key' ]] || openssl rand 80 | sudo tee '/etc/ssl/private/tickets.key'
+  # if [[ ! -f '/etc/ssl/private/ca-certs.pem' ]]; then
+  # sudo curl 'https://letsencrypt.org/certs/isrg-root-ocsp-x1.pem' -o '/etc/ssl/isrg-root-ocsp-x1.pem'
+  # wget -O - https://letsencrypt.org/certs/isrgrootx1.pem https://letsencrypt.org/certs/lets-encrypt-x1-cross-signed.pem https://letsencrypt.org/certs/letsencryptauthorityx1.pem https://www.identrust.com/certificates/trustid/root-download-x3.html | sudo tee -a /etc/ssl/private/ca-certs.pem >/dev/null
+  # fi
+
+  [[ -d "${src_nginx_path}" ]] || mkdir -p "${src_nginx_path}"
+
+  cd "${src_nginx_path}"
+
+  if [[ -f "configure-arguments.txt" ]]; then
+    configure_arguments="$(cat configure-arguments.txt)"
+  else
+    configure_arguments=$(nginx -V 2>&1 | grep 'configure arguments' | awk -F': ' '{ print $2 }')
+    echo "${configure_arguments}" >"configure-arguments.txt"
+  fi
+
+  [[ -f "nginx-${nginx_version}.tar.gz" ]] || wget "http://nginx.org/download/nginx-${nginx_version}.tar.gz"
+  [[ -d "nginx-${nginx_version}" ]] || tar -xzvf "nginx-${nginx_version}.tar.gz"
+  [[ -d "ngx_devel_kit" ]] || git clone "https://github.com/vision5/ngx_devel_kit.git" "ngx_devel_kit"
+
+  . "${nginx_script_source_path}/list-module"
+
+  for key in ${!list_module[@]}; do
+    temp_one=(${list_module[${key}]})
+    nginx_module_config=$(cat "${key}/config")
+    nginx_module_name=($(grep -E '(ngx_module_name=).*' <<<${nginx_module_config} | sed -e 's/ngx_module_name=//g; s/"//g; s/[[:space:]]//mg;'))
+    if [[ ${nginx_module_name} == '$ngx_addon_name' || ${nginx_module_name} == '${ngx_addon_name}' ]]; then
+      nginx_module_name=($(grep -E '(ngx_addon_name=).*' <<<${nginx_module_config} | sed -e 's/ngx_addon_name=//g; s/"//g;'))
+    fi
+    nginx_module_config=$(echo ${nginx_module_name[0]} | sed -e 's/ngx_/mod-/g; s/_module/.conf/g; s/_/-/g')
+    [[ -f "${path_cfg_nginx_modules}/${nginx_module_config}" ]] && sudo rm "${path_cfg_nginx_modules}/${nginx_module_config}"
+    if [[ "${temp_one[2]}" == 'yes' ]]; then
+      [[ -d "${key}" ]] || git clone "${temp_one[0]}"
+      if [[ "${temp_one[0]}" == 'lua-nginx-module' ]]; then
+        export LUAJIT_LIB=/usr/local/lib
+        export LUAJIT_INC=/usr/local/include/luajit-2.1
+        configure_arguments="$(echo ${configure_arguments} | sed -e 's%--with-ld-opt='%--with-ld-opt='-Wl,-rpath,/usr/local/lib,%g;')"
+      fi
+      configure_arguments="${configure_arguments} ${temp_one[1]}=${main_project_path}/application/installation/src/nginx/${key}"
+      if [[ "${temp_one[1]}" == '--add-dynamic-module' ]]; then
+        for key in ${!nginx_module_name[@]}; do
+          #if [[ ${nginx_module_name[${key}]} != ngx*ngx* ]]; then
+          echo "load_module \"${path_lib_nginx_modules}/${nginx_module_name[${key}]}.so\";" | sudo tee -a "${path_cfg_nginx_modules}/${nginx_module_config}"
+          #fi
+        done
+      fi
+    fi
+  done
+
+  cd "nginx-${nginx_version}"
+
+  make clean
+
+  # echo -e "Configure argumanets:\n\t${configure_arguments}"
+  # exit
+
+  # bash -c "./configure ${configure_arguments}"
+  [[ -f "${path_cfg_nginx_modules}/mod-stream.conf" ]] && sudo sed -i 's%^load_module%# load_module%' "${path_cfg_nginx_modules}/mod-stream.conf"
+  bash -c "./configure $configure_arguments --with-stream"
+
+  make -j${number_cores}
+
+  sudo cp objs/*.so "${path_lib_nginx_modules}/"
+
+  cat <<EOF >/dev/null
+  # TODO 51Degrees Device Detection exploration
+  cd "${main_project_path}/application/installation/src/nginx"
+  [[ -d "Device-Detection" ]] || git clone "https://github.com/51Degrees/Device-Detection.git"
+  cd "Device-Detection"
+  make module pattern VERSION=${nginx_version}
+EOF
+
+  sudo cp "objs/nginx" '/usr/sbin/nginx'
+
+  cd '/usr/share/nginx/html'
+
+  temp_one="$(readlink 404.html)"
+  [[ -z "${temp_one}" ]] && temp_one='404.html'
+  [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+  . "${nginx_script_source_path}/404"
+
+  temp_one="$(readlink 50x.html)"
+  [[ -z "${temp_one}" ]] && temp_one='50x.html'
+  [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+  . "${nginx_script_source_path}/50x"
+
+  temp_one="$(readlink index.html)"
+  [[ -z "${temp_one}" ]] && temp_one='index.html'
+  [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+  . "${nginx_script_source_path}/index"
+
+  temp_one="$(readlink favicon.ico)"
+  [[ -z "${temp_one}" ]] && temp_one='favicon.ico'
+  [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+  sudo cp "${nginx_script_source_path}/favicon.ico" "${temp_one}"
+
+  temp_one="$(readlink logo.png)"
+  [[ -z "${temp_one}" ]] && temp_one='logo.png'
+  [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+  sudo cp "${nginx_script_source_path}/logo.png" "${temp_one}"
+
+  temp_one="$(readlink mail-link.png)"
+  [[ -z "${temp_one}" ]] && temp_one='mail-link.png'
+  [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+  sudo cp "${nginx_script_source_path}/mail-link.png" "${temp_one}"
+
+  temp_one="$(readlink robots.txt)"
+  [[ -z "${temp_one}" ]] && temp_one='robots.txt'
+  [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+  sudo cp "${nginx_script_source_path}/robots.txt" "${temp_one}"
+
+  temp_one="$(readlink sitemap.xml)"
+  [[ -z "${temp_one}" ]] && temp_one='sitemap.xml'
+  [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+  sudo cp "${nginx_script_source_path}/sitemap.xml" "${temp_one}"
+
+  temp_one="$(readlink manifest.json)"
+  [[ -z "${temp_one}" ]] && temp_one='manifest.json'
+  [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+  . "${nginx_script_source_path}/zero-webmanifest"
+
+  cd "${nginx_script_source_path}"
+
+  . "conf"
+
+  [[ $(systemctl is-active nginx) == 'active' ]] || sudo systemctl start nginx
+
+  cd "${main_run_script_path}"
+
+}
+
+main_nginx_script_source "$@"

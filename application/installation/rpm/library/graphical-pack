@@ -1,0 +1,117 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: graphical-pack
+## @Creation date file: 13.11.2020, 01:30:21
+
+[[ -z "${graphical_pack_script_source}" ]] && declare -rx graphical_pack_script_source="$BASH_SOURCE"
+
+if [[ -z "${graphical_pack_script_source_path}" ]]; then
+  temp_one="$(dirname ${graphical_pack_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx graphical_pack_script_source_path="$(pwd)"
+  else
+    declare -rx graphical_pack_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_graphical_pack() {
+
+  local install_pkg=(
+    # Краткое опис : A graphics library for quick creation of PNG or JPEG images
+    # URL          : http://libgd.github.io/
+    # Лицензия     : MIT
+    # Описание     : The gd graphics library allows your code to quickly draw images
+    # : complete with lines, arcs, text, multiple colors, cut and paste from
+    # : other images, and flood fills, and to write out the result as a PNG or
+    # : JPEG file. This is particularly useful in Web applications, where PNG
+    # : and JPEG are two of the formats accepted for inline images by most
+    # : browsers. Note that gd is not a paint program.
+    'gd'
+    # 'gd-devel'
+    #
+    # Краткое опис : The graphical toolkit for the Tcl scripting language
+    # URL          : http://tcl.sourceforge.net
+    # Лицензия     : TCL
+    # Описание     : When paired with the Tcl scripting language, Tk provides a fast and powerful
+    #  : way to create cross-platform GUI applications.
+    'tk'
+    # Краткое опис : TurboJPEG library
+    # URL          : http://sourceforge.net/projects/libjpeg-turbo
+    # Лицензия     : IJG
+    # Описание     : The turbojpeg package contains the TurboJPEG shared library.
+    'turbojpeg'
+    # 'turbojpeg-devel'
+    #
+    # Имя          : freeimage
+    # Репозиторий  : fedora
+    # Краткое опис : Multi-format image decoder library
+    # URL          : http://freeimage.sourceforge.net/
+    # Лицензия     : GPLv2 or GPLv3 or MPLv1.0
+    # Описание     : FreeImage is a library for developers who would like to support popular
+    #              : graphics image formats like PNG, BMP, JPEG, TIFF and others as needed by
+    #              : today's multimedia applications.
+    'freeimage'
+    'freeimage-devel'
+    #
+    # Имя          : webp-pixbuf-loader
+    # Репозиторий  : fedora
+    # Краткое опис : WebP image loader for GTK+ applications
+    # URL          : https://github.com/aruiz/webp-pixbuf-loader
+    # Лицензия     : LGPLv2+
+    # Описание     : webp-pixbuf-loader contains a plugin to load WebP images in GTK+ applications
+    'webp-pixbuf-loader'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/graphical-pack.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_graphical_pack_script_source() {
+
+  # printf "Initialise main function of graphical-pack script source\n";
+
+  . "${main_project_path}/application/installation/rpm/ImageMagick"
+  . "${main_project_path}/application/installation/rpm/GraphicsMagick"
+  install_graphical_pack "$@"
+
+}
+
+main_graphical_pack_script_source "$@"

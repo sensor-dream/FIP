@@ -1,0 +1,8 @@
+ImageMagick
+ImageMagick-c++
+ImageMagick-c++-devel
+ImageMagick-devel
+ImageMagick-djvu
+ImageMagick-doc
+ImageMagick-libs
+ImageMagick-perl

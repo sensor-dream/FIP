@@ -1,0 +1,13 @@
+alsamixergui
+cantata
+ffmpeg
+ffmpeg-devel
+ffmpeg-libs
+ffmpegthumbnailer
+ffmpegthumbnailer-devel
+libavdevice
+mencoder
+mplayer
+mplayer-common
+mplayer-gui
+mplayer-tools

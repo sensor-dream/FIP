@@ -1,0 +1,140 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: iptables
+## @Creation date file: 15.10.2020, 17:44:35
+
+[[ -z "${iptables_script_source}" ]] && declare -rx iptables_script_source="$BASH_SOURCE"
+
+if [[ -z "${iptables_script_source_path}" ]]; then
+  temp_one="$(dirname ${iptables_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx iptables_script_source_path="$(pwd)"
+  else
+    declare -rx iptables_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_iptables() {
+
+  [[ "$(rpm -qa 'sshguard-nftables' | awk -F'-' '{ print $1 }')" == 'sshguard' ]] && sudo dnf remove sshguard-nftables
+
+  local install_pkg=(
+    # Краткое опис : Tools for managing Linux kernel packet filtering capabilities
+    # URL          : http://www.netfilter.org/projects/iptables
+    # Лицензия     : GPLv2 and Artistic Licence 2.0 and ISC
+    # Описание     : The iptables utility controls the network packet filtering code in the
+    # : Linux kernel. If you need to set up firewalls and/or IP masquerading,
+    # : you should install this package.
+    'iptables'
+    # Краткое опис : Development package for iptables
+    # URL          : http://www.netfilter.org/projects/iptables
+    # Лицензия     : GPLv2 and Artistic Licence 2.0 and ISC
+    # Описание     : iptables development headers and libraries.
+    # :
+    # : The iptc libraries are marked as not public by upstream. The interface is not
+    # : stable and may change with every new version. It is therefore unsupported.
+    'iptables-devel'
+    # Краткое опис : iptables libraries
+    # URL          : http://www.netfilter.org/projects/iptables
+    # Лицензия     : GPLv2 and Artistic Licence 2.0 and ISC
+    # Описание     : iptables libraries.
+    # :
+    # : Please remember that libip*tc libraries do neither have a stable API nor a real so version.
+    # :
+    # : For more information about this, please have a look at
+    # :
+    # :   http://www.netfilter.org/documentation/FAQ/netfilter-faq-4.html#ss4.5
+    'iptables-libs'
+    # Краткое опис : nftables compatibility for iptables, arptables and ebtables
+    # URL          : http://www.netfilter.org/projects/iptables
+    # Лицензия     : GPLv2 and Artistic Licence 2.0 and ISC
+    # Описание     : nftables compatibility for iptables, arptables and ebtables.
+    'iptables-nft'
+    # Краткое опис : iptables and ip6tables services for iptables
+    # URL          : http://www.netfilter.org/projects/iptables
+    # Лицензия     : GPLv2 and Artistic Licence 2.0 and ISC
+    # Описание     : iptables services for IPv4 and IPv6
+    # :
+    # : This package provides the services iptables and ip6tables that have been split
+    # : out of the base package since they are not active by default anymore.
+    'iptables-services'
+    # Краткое опис : iptables and ip6tables services for iptables
+    # URL          : http://www.netfilter.org/projects/iptables
+    # Лицензия     : GPLv2 and Artistic Licence 2.0 and ISC
+    # Описание     : Utils for iptables
+    # :
+    # : This package provides nfnl_osf with the pf.os database and nfbpf_compile,
+    # : a bytecode generator for use with xt_bpf.
+    'iptables-utils'
+    # Краткое опис : Configuration for iptables backend of SSHGuard
+    # URL          : http://www.sshguard.net
+    # Лицензия     : BSD and GPLv2+
+    # Описание     : Sshguard-iptables provides a configuration file for SSHGuard to use iptables
+    # : as the firewall backend.
+    'sshguard-iptables'
+    # Краткое опис : Protects hosts from brute-force attacks against SSH and other services
+    # URL          : http://www.sshguard.net
+    # Лицензия     : BSD and GPLv2+
+    # Описание     : Sshguard protects hosts from brute-force attacks against SSH and other
+    # : services. It aggregates system logs and blocks repeat offenders using one of
+    # : several firewall backends.
+    # :
+    # : Sshguard can read log messages from standard input or monitor one or more log
+    # : files. Log messages are parsed, line-by-line, for recognized patterns. If an
+    # : attack, such as several login failures within a few seconds, is detected, the
+    # : offending IP is blocked. Offenders are unblocked after a set interval, but can
+    # : be semi-permanently banned using the blacklist option.
+    'sshguard'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/iptables.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_iptables_script_source() {
+
+  # prinf "Initialise main function of iptables script source\n";
+
+  install_iptables "$@"
+
+}
+
+main_iptables_script_source "$@"

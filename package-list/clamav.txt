@@ -1,0 +1,7 @@
+clamav
+clamav-data
+clamav-devel
+clamav-filesystem
+clamav-lib
+clamav-unofficial-sigs
+clamav-update

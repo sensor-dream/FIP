@@ -1,0 +1,296 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: nvidia-videocard-drv-340xx
+## @Creation date file: 21.08.2020, 03:11:14
+
+#
+#   Декларируем имя файла
+#
+
+declare -rx nvidia_videocard_drv_340xx_script_source="$BASH_SOURCE"
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path:\n\t%s\n" "${main_run_script_path}"
+fi
+
+#
+#   Подключаем общую библиотеку и общую конфигурацию
+#
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading:\n\t%s\n" "$(readlink -m ${nvidia_videocard_drv_340xx_script_source})"
+
+function preinstall_nvidia_videocard_drv_340xx() {
+
+  local install_pkg=(
+    'kernel-devel'
+    'kernel-headers'
+    'gcc'
+    'make'
+    'dkms'
+    'acpid'
+    'libglvnd-glx'
+    'libglvnd-opengl'
+    'libglvnd-devel'
+    'pkgconf-pkg-config'
+    'libdrm'
+    'libdrm-devel'
+    'drm-utils'
+    'glibc'
+    'libX11'
+    'libXau'
+    'libXext'
+    'libgcc'
+    'libxcb'
+    'patch'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/nvidia-videocard-drv-340xx.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+  install_pkg=(
+    'libvdpau'
+    # Tool to query the capabilities of a VDPAU implementation.
+    'vdpauinfo'
+    # VDPAU Backend for Video Acceleration (VA) API.
+    'libva-vdpau-driver'
+    # Tools for VAAPI (including vainfo)
+    'libva-utils'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/nvidia-videocard-drv-340xx.txt"
+  pm "$@" -- "${install_pkg[@]}"
+}
+
+function install_nvidia_videocard_drv_340xx() {
+
+  local install_pkg=(
+    #
+    # FOR NVIDIA CARD
+    # Querying OpenGL resource usage of applications using the NVIDIA OpenGL driver
+    'nvidia-query-resource-opengl-lib'
+    'nvidia-query-resource-opengl'
+    # Libraries for xorg-x11-drv-nvidia-340xx
+    'xorg-x11-drv-nvidia-340xx-libs'
+    # Akmod package for nvidia-340xx kernel module(s)
+    'akmod-nvidia-340xx'
+    # Metapackage which tracks in nvidia-340xx kernel module for newest kernel
+    'kmod-nvidia-340xx'
+    # NVIDIA's 340xx series proprietary display driver for NVIDIA graphic cards
+    'xorg-x11-drv-nvidia-340xx'
+    # CUDA libraries for xorg-x11-drv-nvidia-340xx
+    # optional for cuda up to 6.5 support
+    'xorg-x11-drv-nvidia-340xx-cuda'
+    # Development files for xorg-x11-drv-nvidia-340xx
+    'xorg-x11-drv-nvidia-340xx-devel'
+    # xorg-x11-drv-nvidia-340xx kernel module source code
+    'xorg-x11-drv-nvidia-340xx-kmodsrc'
+    # This package provides the shared libraries i686 for xorg-x11-drv-nvidia xorg-x11-drv-nvidia-libs
+    'xorg-x11-drv-nvidia-340xx-libs*i686'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/nvidia-videocard-drv-340xx.txt"
+  pm "$@" -- "${install_pkg[@]}"
+  # sudo dnf reinstall "${install_pkg[@]}"
+
+}
+
+function install_nvidia_videocard_drv_340xx_source() {
+
+  [[ -d "${main_project_path}/application/installation/src/NVIDIA" ]] || mkdir -p "${main_project_path}/application/installation/src/NVIDIA"
+
+  cd "${main_project_path}/application/installation/src/NVIDIA"
+
+  echo -n "Обновить inttf-nvidia-patcher.sh ? (N/y)"
+  read temp_one
+  if [[ -n "${temp_one}" ]]; then
+    rm -f "inttf-nvidia-patcher.sh"
+    [[ -d NVIDIA-340xx ]] && rm -f -r 'NVIDIA-340xx'
+    [[ -d NVIDIA-Linux-x86_64* ]] && rm -f -r NVIDIA-Linux-x86_64*
+    [[ -f NVIDIA-Linux-x86_64* ]] && rm -f NVIDIA-Linux-x86_64*
+  fi
+
+  if [[ ! -f "inttf-nvidia-patcher.sh" ]]; then
+    wget -O inttf-nvidia-patcher.sh https://nvidia.if-not-true-then-false.com/patcher/inttf-nvidia-patcher.sh
+    chmod +x inttf-nvidia-patcher.sh
+    printf '\n%s\n' "Get and patch NVIDIA 340.108 for kernel $(uname -r)"
+    ./inttf-nvidia-patcher.sh -v 340.108
+  fi
+
+  if [[ "$(systemctl get-default)" == 'graphical.target' ]]; then
+    if [[ -f "/etc/modprobe.d/nvidia-340xx-blacklist.conf" ]]; then
+      echo "blacklist nouveau is done"
+    else
+      echo "blacklist nouveau" | sudo tee -a "/etc/modprobe.d/nvidia-340xx-blacklist.conf" >/dev/null
+    fi
+
+    if ! grep -Eq "rd.driver.blacklist=nouveau" /etc/default/grub; then
+      [[ -f "/etc/default/grub.back" ]] || sudo cp "/etc/default/grub" "/etc/default/grub.back"
+      sudo sed -i -e '/rhgb quiet/s/rhgb quiet/rd.driver.blacklist=nouveau modprobe.blacklist=nouveau nvidia-modeset.drm=1 rhgb quiet/' /etc/default/grub
+      ## Реконфигурем загрузчик
+      sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+    fi
+
+    [[ "$(check_installed_packages xorg-x11-drv-nouveau)" == 'xorg-x11-drv-nouveau' ]] && sudo dnf remove xorg-x11-drv-nouveau
+
+    [[ -f "/boot/initramfs-$(uname -r)-nouveau.img" ]] || sudo mv /boot/initramfs-$(uname -r).img /boot/initramfs-$(uname -r)-nouveau.img
+
+    sudo dracut --force /boot/initramfs-$(uname -r).img $(uname -r)
+
+    echo
+    echo -n 'Reboot in multi-user mode ? (Y/n)'
+    read key
+    if [[ "${key}" != 'n' ]]; then
+      sudo systemctl set-default multi-user.target
+      reboot
+    fi
+
+  fi
+
+  if [[ "$(systemctl get-default)" == 'multi-user.target' ]]; then
+
+    cd "${main_project_path}/application/installation/src/NVIDIA"
+    sudo ./NVIDIA-Linux-x86_64-*-patched-kernel-*.run -a
+    echo
+    echo -n 'Reboot in graphical mode ? (Y/n)'
+    read key
+    if [[ "${key}" != 'n' ]]; then
+      sudo systemctl set-default graphical.target
+      reboot
+    fi
+  fi
+
+}
+
+function reinstall_xorg_server_mesa_libglvnd() {
+  sudo rm -f /usr/lib{,64}/libGL.so.* /usr/lib{,64}/libEGL.so.*
+  sudo rm -f /usr/lib{,64}/xorg/modules/extensions/libglx.so
+  sudo dnf reinstall xorg-x11-server-Xorg mesa-libGL mesa-libEGL libglvnd\*
+}
+
+function uninstall_nvidia_videocard_drv_340xx() {
+
+  if [[ $(check_installed_packages xorg-x11-drv-nvidia*) == xorg-x11-drv-nvidia* ]]; then
+    sudo mv /etc/X11/xorg.conf /etc/X11/xorg.conf.xorg-x11-drv-nvidia-340xx.saved
+    sudo dnf remove xorg-x11-drv-nvidia\* nvidia\* -x faceroot -x akmods
+    # rd.driver.blacklist=nouveau modprobe.blacklist=nouveau nvidia-drm.modeset=1
+    reinstall_xorg_server_mesa_libglvnd
+  fi
+
+  if [[ -z "$(check_installed_packages xorg-x11-drv-nouveau xorg-x11-drv-nvidia-340xx)" ]]; then
+
+    if [[ "$(systemctl get-default)" == 'graphical.target' ]]; then
+      echo
+      echo -n 'Reboot in multi-user mode ? (Y/n)'
+      read key
+      if [[ "${key}" != 'n' ]]; then
+        sudo systemctl set-default multi-user.target
+        reboot
+      fi
+    fi
+
+    if [[ "$(systemctl get-default)" == 'multi-user.target' ]]; then
+
+      if grep -Eq "rd.driver.blacklist=nouveau" /etc/default/grub; then
+        sudo sed -i -e '/rd.driver.blacklist=nouveau/s/rd.driver.blacklist=nouveau modprobe.blacklist=nouveau nvidia-modeset.drm=1\s+//' /etc/default/grub
+        ## Реконфигурем загрузчик
+        sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+      fi
+      if [[ -f "/etc/modprobe.d/nvidia-340xx-blacklist.conf" ]]; then
+        sudo rm '/etc/modprobe.d/nvidia-340xx-blacklist.conf'
+      else
+        echo "Not found 'blacklist nouveau' in /etc/modprobe.d/nvidia-340xx-blacklist.conf"
+      fi
+      sudo mv /etc/X11/xorg.conf /etc/X11/xorg.conf.NVIDIA-Linux-x86_64-340.108-patched-kernel-5.9.saved
+      cd "${main_project_path}/application/installation/src/NVIDIA"
+      sudo ./NVIDIA-Linux-x86_64-340.108-patched-kernel-5.9.run --uninstall
+      sudo dnf install xorg-x11-drv-nouveau
+
+      if [[ -f "/boot/initramfs-$(uname -r)-nouveau.img" ]]; then
+        sudo mv /boot/initramfs-$(uname -r)-nouveau.img /boot/initramfs-$(uname -r).img
+      else
+        sudo dracut /boot/initramfs-$(uname -r).img $(uname -r)
+      fi
+
+      reinstall_xorg_server_mesa_libglvnd
+
+      echo
+      echo -n 'Reboot in graphical mode ? (Y/n)'
+      read key
+      if [[ "${key}" != 'n' ]]; then
+        sudo systemctl set-default graphical.target
+        reboot
+      fi
+    fi
+  fi
+
+}
+
+function main_nvidia_videocard_drv_340xx_script_source() {
+
+  # printf "Initialise main function of nvidia-videocard-drv-340xx script source\n"
+
+  local flag=0
+
+  OPTIND=1
+
+  while getopts "sur" OPT; do
+    case $OPT in
+    s) flag=1 ;;
+    r) flag=2 ;;
+    u) flag=3 ;;
+    *) ;;
+    esac
+  done
+
+  shift $(($OPTIND - 1))
+  [ "${1:-}" = "--" ] && shif
+
+  echo
+  echo 'Flags: -s (source patched installation), -r (from rpmfudion repository installation), -u (uninstall driver)'
+  echo
+
+  if [[ ${flag} -eq 3 ]]; then
+    uninstall_nvidia_videocard_drv_340xx
+  else
+    preinstall_nvidia_videocard_drv_340xx
+    if [[ ${flag} -eq 1 ]]; then
+      install_nvidia_videocard_drv_340xx_source
+    elif [[ ${flag} -eq 2 ]]; then
+      install_nvidia_videocard_drv_340xx
+    fi
+  fi
+
+}
+
+main_nvidia_videocard_drv_340xx_script_source "$@"

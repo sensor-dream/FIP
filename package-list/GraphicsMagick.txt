@@ -1,0 +1,6 @@
+GraphicsMagick
+GraphicsMagick-c++
+GraphicsMagick-c++-devel
+GraphicsMagick-devel
+GraphicsMagick-doc
+GraphicsMagick-perl

@@ -1,0 +1,4 @@
+kdesu
+kget
+krename
+krusader

@@ -1,0 +1,5 @@
+golang
+golang-bin
+golang-src
+mercurial-lang
+mercurial-py2

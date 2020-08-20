@@ -1,0 +1,108 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: krusader
+## @Creation date file: 12.11.2020, 22:54:13
+
+[[ -z "${krusader_script_source}" ]] && declare -rx krusader_script_source="$BASH_SOURCE"
+
+if [[ -z "${krusader_script_source_path}" ]]; then
+  temp_one="$(dirname ${krusader_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx krusader_script_source_path="$(pwd)"
+  else
+    declare -rx krusader_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_krusader() {
+
+  local install_pkg=(
+    # Краткое опис : Runs a program with elevated privileges
+    # URL          : https://cgit.kde.org/kde-cli-tools
+    # Лицензия     : GPLv2+
+    # Описание     : Runs a program with elevated privileges
+    'kdesu'
+    # Краткое опис : Download manager
+    # URL          : https://cgit.kde.org/kget.git
+    # Лицензия     : GPLv2+ and GFDL
+    # Описание     : Download manager
+    'kget'
+    # Краткое опис : Powerful batch file renamer
+    #URL          : https://github.com/KDE/krename
+    #Лицензия     : GPLv2
+    # Описание     : KRename is a very powerfull batch file renamer by KDE. It allows you to easily
+    # : rename hundreds or even more files in one go. The filenames can be created by
+    # : parts of the original filename, numbering the files or accessing hundreds of
+    # : informations about the file, like creation date or Exif informations of an
+    # : image.
+    'krename'
+    # Краткое опис : An advanced twin-panel (commander-style) file-manager for KDE
+    # URL          : https://www.krusader.org/
+    # Лицензия     : GPLv2+
+    # Описание     : Krusader is an advanced twin panel (commander style) file manager for KDE and
+    # : other desktops in the *nix world, similar to Midnight or Total Commander.
+    # : It provides all the file management features you could possibly want.
+    # : Plus: extensive archive handling, mounted filesystem support, FTP, advanced
+    # : search module, an internal viewer/editor, directory synchronisation,
+    # : file content comparisons, powerful batch renaming and much much more.
+    # : It supports a wide variety of archive formats and can handle other KIO slaves
+    # : such as smb or fish. It is (almost) completely customizable, very user
+    # : friendly, fast and looks great on your desktop! You should give it a try.
+    'krusader'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/krusader.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_krusader_script_source() {
+
+  # printf "Initialise main function of krusader script source\n";
+
+  . "${main_project_path}/application/installation/rpm/archive-pack"
+  . "${main_project_path}/application/installation/rpm/archive-pack"
+  . "${main_project_path}/application/installation/rpm/hashes-pack"
+  . "${main_project_path}/application/installation/rpm/universally-unique-identifier"
+  install_krusader "$@"
+
+}
+
+main_krusader_script_source "$@"

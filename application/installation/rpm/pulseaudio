@@ -1,0 +1,95 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: pulseaudio
+## @Creation date file: 13.11.2020, 03:16:46
+
+[[ -z "${pulseaudio_script_source}" ]] && declare -rx pulseaudio_script_source="$BASH_SOURCE"
+
+if [[ -z "${pulseaudio_script_source_path}" ]]; then
+  temp_one="$(dirname ${pulseaudio_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx pulseaudio_script_source_path="$(pwd)"
+  else
+    declare -rx pulseaudio_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_pulseaudio() {
+
+  local install_pkg=(
+    # Краткое опис : Improved Linux Sound Server
+    # URL          : http://www.freedesktop.org/wiki/Software/PulseAudio
+    # Лицензия     : LGPLv2+
+    # Описание     : PulseAudio is a sound server for Linux and other Unix like operating
+    # : systems. It is intended to be an improved drop-in replacement for the
+    # : Enlightened Sound Daemon (ESOUND).
+    'pulseaudio'
+    'pulseaudio-libs'
+    'pulseaudio-libs-devel'
+    'pulseaudio-libs-glib2'
+    'pulseaudio-module-bluetooth'
+    'pulseaudio-module-x11'
+    'pulseaudio-utils'
+    'pulseaudio-esound-compat'
+    'pulseaudio-module-gconf'
+    'pulseaudio-module-gsettings'
+    'pulseaudio-module-jack'
+    'pulseaudio-module-lirc'
+    'pulseaudio-module-zeroconf'
+    'pulseaudio-qpaeq'
+    'pulseaudio-qt'
+    'pulseaudio-qt-devel'
+    'pavucontrol'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/pulseaudio.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_pulseaudio_script_source() {
+
+  # printf "Initialise main function of pulseaudio script source\n";
+
+  install_pulseaudio "$@"
+
+}
+
+main_pulseaudio_script_source "$@"

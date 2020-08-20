@@ -1,0 +1,109 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: sysctl-conf
+## @Creation date file: 23.10.2020, 18:18:28
+
+[[ -z "${sysctl_conf_script_source}" ]] && declare -rx sysctl_conf_script_source="$BASH_SOURCE"
+
+if [[ -z "${sysctl_conf_script_source_path}" ]]; then
+  temp_one="$(dirname ${sysctl_conf_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx sysctl_conf_script_source_path="$(pwd)"
+  else
+    declare -rx sysctl_conf_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function preparate_sysctl_conf() {
+
+  local sysctl_conf_file='/etc/sysctl.conf'
+
+  [[ -f "${sysctl_conf_file}" ]] || sudo touch "${sysctl_conf_file}"
+  [[ -f "${sysctl_conf_file}.back" ]] || sudo cp "${sysctl_conf_file}" "${sysctl_conf_file}.back"
+
+  temp_one="$(cat ${sysctl_conf_file})"
+
+  # gc_thresh1 — the minimum number of entries that should be in the ARP cache.
+  # If the number of entries is less than this value, the garbage collector will not clear the ARP cache.
+  # (def. 128)
+  # sudo sysctl -w net.ipv4.neigh.default.gc_thresh1=1024
+  insert_or_replace_var_value_in_string_data 'net.ipv4.neigh.default.gc_thresh1' 1024
+  # gc_thresh2 - soft limit on the number of entries in the ARP cache.
+  # If the number of entries reaches this value, the garbage collector starts within 5 seconds.
+  # (def. 512)
+  # sudo sysctl -w net.ipv4.neigh.default.gc_thresh2=2048
+  insert_or_replace_var_value_in_string_data 'net.ipv4.neigh.default.gc_thresh2' 2048
+  # gc_thresh3 - hard limit on the number of entries in the ARP cache.
+  # If the number of records reaches this value, the garbage collector starts immediately.
+  # (def. 1024)
+  # sudo sysctl -w net.ipv4.neigh.default.gc_thresh3=4096
+  insert_or_replace_var_value_in_string_data 'net.ipv4.neigh.default.gc_thresh3' 4096
+  # включить все комбинации Alt+SysRq, в т.ч. Alt+SysRq+F для принудительного вызова OOM Killer
+  # sudo sysctl -w kernel.sysrq = 1
+  insert_or_replace_var_value_in_string_data 'kernel.sysrq' 1
+  # с 8 МБ увеличим размер памяти, который будет гарантированно не занят в системе, чтобы у нас могли работать SSH и пр.
+  # sudo sysctl -w vm.admin_reserve_kbytes = 60192
+  insert_or_replace_var_value_in_string_data 'vm.admin_reserve_kbytes' 60192
+  # vm.swappiness=100 увеличивает параметр, насколько агрессивно ядро будет свопить страницы памяти, так как мы сначала используем ZRAM.
+  insert_or_replace_var_value_in_string_data "vm.swappiness" 10
+  # vm.vfs_cache_pressure=500 увеличивает давление на кэш, что увеличивает склонность ядра к рекультивации памяти, используемой для кэширования объектов каталогов и индексов. Вы будете использовать меньше памяти в течение более длительного периода времени. Резкое падение производительности сводится на нет за счёт более раннего свопинга.
+  insert_or_replace_var_value_in_string_data "vm.vfs_cache_pressure" 50
+  # The vm.max_map_count kernel setting needs to be set to at least 262144 for production use
+  insert_or_replace_var_value_in_string_data "vm.max_map_count" 262144
+
+  echo "${temp_one}" | sudo tee "${sysctl_conf_file}" >/dev/null
+
+  # Return the values of variables to the state saved in files and delete your changes.
+  # sudo sysctl --system
+
+  # read values from file
+  sudo sysctl -p >/dev/null
+
+}
+
+function main_sysctl_conf_script_source() {
+
+  # printf "Initialise main function of sysctl-conf script source\n";
+
+  preparate_sysctl_conf "$@"
+
+}
+
+main_sysctl_conf_script_source "$@"

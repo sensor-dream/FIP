@@ -1,0 +1,8 @@
+autoconf
+automake
+git
+gnome-themes-extra
+gtk3-devel
+gtk-murrine-engine
+make
+pkgconf-pkg-config

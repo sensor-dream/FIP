@@ -1,0 +1,96 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: hard-drive
+## @Creation date file: 06.10.2020, 20:55:50
+
+[[ -z "${hard_drive_script_source}" ]] && declare -rx hard_drive_script_source="$BASH_SOURCE"
+
+if [[ -z "${hard_drive_script_source_path}" ]]; then
+  temp_one="$(dirname ${hard_drive_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx hard_drive_script_source_path="$(pwd)"
+  else
+    declare -rx hard_drive_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_hard_drive() {
+
+  local install_pkg=(
+    'gparted'
+    'blivet-data'
+    'blivet-gui'
+    'blivet-gui-runtime'
+    'fstransform'
+    # 'hddtemp'
+    'baobab'
+    'gnome-disk-utility'
+    # NVMe management command line interface
+    # : https://github.com/linux-nvme/nvme-cli
+    # : GPLv2+
+    # : nvme-cli provides NVM-Express user space tooling for Linux.
+    'nvme-cli'
+    # An adminstration shell for NVMe storage targets
+    # : ftp://ftp.infradead.org/pub/nvmetcli/
+    # : ASL 2.0
+    # : This package contains the command line interface to the NVMe over Fabrics
+    # : nvmet in the Linux kernel. It allows configuring the nvmet interactively
+    # : as well as saving / restoring the configuration to / from a json file.
+    'nvmetcli'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/hard-drive.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_hard_drive_script_source() {
+
+  # prinf "Initialise main function of hard-drive script source\n";
+
+  . "${main_project_path}/application/installation/rpm/btrfs"
+
+  install_hard_drive "$@"
+  
+  echo -e "\nto view file systems, use findmnt (find a filesystem)\n"
+
+}
+
+main_hard_drive_script_source "$@"

@@ -1,0 +1,133 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: tuning-system
+## @Creation date file: 18.12.2020, 05:21:20
+
+[[ -z "${tuning_system_script_source}" ]] && declare -rx tuning_system_script_source="$BASH_SOURCE"
+
+if [[ -z "${tuning_system_script_source_path}" ]]; then
+  temp_one="$(dirname ${tuning_system_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx tuning_system_script_source_path="$(pwd)"
+  else
+    declare -rx tuning_system_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_tuning_system() {
+
+  local install_pkg=(
+    # Имя          : tuned
+    # позиторий  : updates
+    # Краткое опис : A dynamic adaptive system tuning daemon
+    # URL          : http://www.tuned-project.org/
+    # Лицензия     : GPLv2+
+    # Описание     : The tuned package contains a daemon that tunes system settings dynamically.
+    #              : It does so by monitoring the usage of several system components periodically.
+    #              : Based on that information components will then be put into lower or higher
+    #              : power saving modes to adapt to the current usage. Currently only ethernet
+    #              : network and ATA harddisk devices are implemented.
+    'tuned'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/tuning-system.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+  echo -e "\ntuned-adm list:\n\n"
+  echo "$(tuned-adm list)"
+
+  # Available profiles:
+  # - accelerator-performance     # - Throughput performance based tuning with disabled higher latency STOP states
+  # - balanced                    # - General non-specialized tuned profile
+  # - desktop                     # - Optimize for the desktop use-case
+  # - hpc-compute                 # - Optimize for HPC compute workloads
+  # - intel-sst                   # - Configure for Intel Speed Select Base Frequency
+  # - latency-performance         # - Optimize for deterministic performance at the cost of increased power consumption
+  # - network-latency             # - Optimize for deterministic performance at the cost of increased power consumption, focused on low latency network performance
+  # - network-throughput          # - Optimize for streaming network throughput, generally only necessary on older CPUs or 40G+ networks
+  # - optimize-serial-console     # - Optimize for serial console use.
+  # - powersave                   # - Optimize for low power consumption
+  # - throughput-performance      # - Broadly applicable tuning that provides excellent performance across a variety of common server workloads
+  # - virtual-guest               # - Optimize for running inside a virtual guest
+  # - virtual-host                # - Optimize for running KVM guests
+
+  [[ "$(systemctl is-enabled tuned)" == 'enabled' ]] || sudo systemctl enable tuned
+
+  if [[ "$(systemctl is-active tuned)" == 'active' ]]; then
+    sudo systemctl restart tuned
+  else
+    sudo systemctl start tuned
+  fi
+  echo -e "\nSet default profile desktop (sudo tuned-adm profile desktop)"
+  sudo tuned-adm profile throughput-performance
+  echo -e "\nGet active profile (sudo tuned-adm active):\n"
+  sudo tuned-adm active
+
+  [[ -f "/etc/default/grub.back" ]] || sudo cp "/etc/default/grub" "/etc/default/grub.back"
+
+  temp_one="$(cat /etc/default/grub)"
+
+  if ! grep -q "libahci.ignore_sss" <<<"${temp_one}"; then
+
+    temp_one="$(sudo sed '/rhgb quiet/s/rhgb quiet/libahci.ignore_sss=1 rhgb quiet/' <<<${temp_one})"
+  fi
+
+  if ! grep -q "raid=noautodetect" <<<"${temp_one}"; then
+
+    temp_one="$(sudo sed '/rhgb quiet/s/rhgb quiet/raid=noautodetect rhgb quiet/' <<<${temp_one})"
+  fi
+
+  echo "${temp_one}" | sudo tee '/etc/default/grub' >/dev/null
+
+  ## Реконфигурем загрузчик
+  sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+  echo "Reconfigure grub.cfg"
+
+}
+
+function main_tuning_system_script_source() {
+
+  # printf "Initialise main function of tuning-system script source\n";
+
+  install_tuning_system "$@"
+
+}
+
+main_tuning_system_script_source "$@"

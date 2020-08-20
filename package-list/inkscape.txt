@@ -1,0 +1,4 @@
+inkscape
+inkscape-docs
+inkscape-psd
+inkscape-view

@@ -1,0 +1,102 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: nss
+## @Creation date file: 11.12.2020, 06:26:54
+
+[[ -z "${nss_script_source}" ]] && declare -rx nss_script_source="$BASH_SOURCE"
+
+if [[ -z "${nss_script_source_path}" ]]; then
+  temp_one="$(dirname ${nss_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx nss_script_source_path="$(pwd)"
+  else
+    declare -rx nss_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_nss() {
+
+  local install_pkg=(
+    # Имя          : nss
+    # Репозиторий  : updates
+    # Краткое опис : Network Security Services
+    # URL          : http://www.mozilla.org/projects/security/pki/nss/
+    # Лицензия     : MPLv2.0
+    # Описание     : Network Security Services (NSS) is a set of libraries designed to
+    #              : support cross-platform development of security-enabled client and
+    #              : server applications. Applications built with NSS can support SSL v2
+    #              : and v3, TLS, PKCS #5, PKCS #7, PKCS #11, PKCS #12, S/MIME, X.509
+    #              : v3 certificates, and other security standards.
+    'nss'
+    'nss-devel'
+    'nss-mdns'
+    'nss-softokn'
+    'nss-softokn-devel'
+    'nss-softokn-freebl'
+    'nss-softokn-freebl-devel'
+    'nss-sysinit'
+    'nss-tools'
+    'nss-util'
+    'nss-util-devel'
+    'nss_db'
+    'nss_hesiod'
+    'nss-altfiles'
+    'nss-pam-ldapd'
+    'nss-pem'
+    'nss-pkcs11-devel'
+    'nss_nis'
+    'nss_updatedb'
+    'nss_wrapper'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/nss.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_nss_script_source() {
+
+  # printf "Initialise main function of nss script source\n";
+
+  install_nss "$@"
+
+}
+
+main_nss_script_source "$@"

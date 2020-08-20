@@ -1,0 +1,109 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: gimp
+## @Creation date file: 20.10.2020, 20:13:28
+
+[[ -z "${gimp_script_source}" ]] && declare -rx gimp_script_source="$BASH_SOURCE"
+
+if [[ -z "${gimp_script_source_path}" ]]; then
+  temp_one="$(dirname ${gimp_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx gimp_script_source_path="$(pwd)"
+  else
+    declare -rx gimp_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_gimp() {
+
+  local install_pkg=(
+    gimp
+    gimp-data-extras
+    gimp-dbp
+    gimp-dds-plugin
+    gimp-devel
+    gimp-devel-tools
+    gimp-elsamuko
+    gimp-focusblur-plugin
+    gimp-fourier-plugin
+    gimpfx-foundry
+    gimp-heif-plugin
+    gimp-help
+    gimp-help-ru
+    gimp-high-pass-filter
+    gimp-layer-via-copy-cut
+    gimp-lensfun
+    gimp-libs
+    gimp-lqr-plugin
+    gimp-luminosity-masks
+    gimp-paint-studio
+    gimp-resynthesizer
+    gimp-save-for-web
+    gimp-separate+
+    gimp-wavelet-decompose
+    gimp-wavelet-denoise-plugin
+    gmic-gimp
+    gtk+
+    gtk+-devel
+    gutenprint
+    gutenprint-plugin
+    perl-Gtk2
+    perl-PCP-LogImport
+    ufraw-gimp
+    xcf-pixbuf-loader
+    xsane-gimp
+    xsane-common
+    xsane
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/gimp.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_gimp_script_source() {
+
+  # printf "Initialise main function of gimp script source\n";
+
+  install_gimp "$@"
+
+}
+
+main_gimp_script_source "$@"

@@ -1,0 +1,8 @@
+sysstat
+pmcd -> pcp
+pmlogger -> pcp
+pmie -> pcp
+smartd
+irqbalance
+net-snmp
+smokeping

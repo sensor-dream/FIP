@@ -1,0 +1,2 @@
+gstreamermm
+gstreamermm-doc

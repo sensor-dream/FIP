@@ -1,0 +1,100 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: WPS-office
+## @Creation date file: 18.12.2020, 04:40:45
+
+[[ -z "${WPS_office_script_source}" ]] && declare -rx WPS_office_script_source="$BASH_SOURCE"
+
+if [[ -z "${WPS_office_script_source_path}" ]]; then
+  temp_one="$(dirname ${WPS_office_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx WPS_office_script_source_path="$(pwd)"
+  else
+    declare -rx WPS_office_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_WPS_office() {
+
+  local install_pkg=(
+    'git'
+    'mesa-libGLU'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/WPS-office.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+  echo -e "\nInstalling wps office 64\n"
+
+  [[ -d "${main_project_path}/application/installation/src/WPS-office" ]] || mkdir -p "${main_project_path}/application/installation/src/WPS-office"
+
+  cd "${main_project_path}/application/installation/src/WPS-office"
+
+  [[ -f "wps-office.rpm" ]] || wget -O "wps-office.rpm" "https://wdl1.pcfg.cache.wpscdn.com/wpsdl/wpsoffice/download/linux/9719/wps-office-11.1.0.9719.XA-1.x86_64.rpm"
+
+  pm -l -a "$@" -- "wps-office*"
+
+  [[ -f "wps_f.zip" ]] || wget -O "wps_f.zip" "https://dl.comss.ru/download/wps_f.zip"
+
+  [[ -d "wps_f" ]] || unzip -d wps_f wps_f.zip
+  [[ -d "/opt/kingsoft/wps-office/office6/mui/ru_RU" ]] || sudo cp -r "wps_f/mui/ru_RU" "/opt/kingsoft/wps-office/office6/mui/"
+  [[ -d "/opt/kingsoft/wps-office/office6/dicts/ru_RU" ]] || sudo cp -r "wps_f/dicts/ru_RU" "/opt/kingsoft/wps-office/office6/dicts/"
+  [[ -d "/opt/kingsoft/wps-office/office6/dicts/spellcheck/ru_RU" ]] || sudo cp -r "wps_f/dicts/ru_RU" "/opt/kingsoft/wps-office/office6/dicts/spellcheck/"
+
+  [[ -d 'ttf-wps-fonts' ]] || git clone 'https://github.com/iamdh4/ttf-wps-fonts.git' 'ttf-wps-fonts'
+
+  cd 'ttf-wps-fonts'
+
+  chmod +x install.sh
+  sudo ./install.sh
+
+  cd "${main_run_script_path}"
+
+}
+
+function main_WPS_office_script_source() {
+
+  # printf "Initialise main function of WPS-office script source\n";
+
+  install_WPS_office "$@"
+
+}
+
+main_WPS_office_script_source "$@"

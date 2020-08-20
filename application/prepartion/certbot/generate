@@ -1,0 +1,167 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: generate
+## @Creation date file: 17.09.2020, 18:30:58
+
+declare -rx generate_script_source="$BASH_SOURCE"
+
+temp_one="$(dirname ${generate_script_source})"
+if [[ "${temp_one}" == '.' ]]; then
+  declare -rx generate_script_source_path="$(pwd)"
+else
+  declare -rx generate_script_source_path="${temp_one}"
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function generate_wildcard_certificate_for_main_domain() {
+
+  local test=
+  local domain=
+  local letsencrypt_rsa_key_size=4096
+  local wildcard=
+  local flag_wildcard=0
+  local flag_generate=0
+  local flag_hosts=0
+  local flag_must_staple=
+  local name=
+  local flag_help=1
+
+  OPTIND=1
+
+  while getopts "d:twghs:m" OPT; do
+    case $OPT in
+    d)
+      domain="$OPTARG"
+      flag_help=0
+      ;;
+    # --test-cert or --staging
+    t)
+      test='--staging'
+      flag_help=0
+      ;;
+    w)
+      flag_wildcard=1
+      flag_help=0
+      ;;
+    g)
+      flag_generate=1
+      flag_help=0
+      ;;
+    h)
+      flag_hosts=1
+      flag_help=0
+      ;;
+    s)
+      letsencrypt_rsa_key_size="$OPTARG"
+      flag_help=0
+      ;;
+    m)
+      flag_must_staple='--must-staple'
+      flag_help=0
+      ;;
+    *) flag_help=0 ;;
+    esac
+
+  done
+  shift $(($OPTIND - 1))
+  # shift `expr $OPTIND - 1`
+  [ "${1:-}" = "--" ] && shift
+
+  if [[ ${flag_help} -eq 1 ]]; then
+    echo -e "Ключи:\n\t-d: имя домена по умолчанию ${cfg_docfg}\n\t-t: запуск с флагом --staging (тест)\n\t-w: создать wildcard сертификат\n\t-g: генерировать сертификат\n\t-s: letsencrypt rsa key size, по умолчанию 4096\n\t-h: записать в файл hosts\n\t-m: Установить опцию --must-staple"
+    exit 0
+  fi
+
+  # echo "${cfg_docfg}"
+  # exit
+
+  [[ -z ${domain} ]] && domain="${cfg_docfg}"
+
+  [[ ${flag_wildcard} -eq 1 ]] && wildcard="-d *.${domain}"
+
+  if [[ ${flag_hosts} -eq 1 ]]; then
+    if ! grep -qE "127.0.0.1(\s|\t)+${domain}" '/etc/hosts'; then
+      echo "Add in hosts file: ${domain}"
+      if [[ $(echo "${domain}s" | tr -cd "." | wc -m) -ne 1 ]]; then
+        echo -e "127.0.0.1   ${domain}\n::1         ${domain}" | sudo tee -a '/etc/hosts'
+      else
+        echo -e "127.0.0.1   ${domain} www.${domain}\n::1         ${domain} www.${domain}" | sudo tee -a '/etc/hosts'
+      fi
+    else
+      echo "Already added in hosts file: ${domain}"
+    fi
+  fi
+
+  if [[ ${flag_generate} -eq 1 ]]; then
+    echo "GENERATE $([[ -z ${wildcard} ]] || echo 'wildcard ')ok: ${domain} ${wildcard//-d /}"
+
+    sudo certbot certonly ${test} --manual ${flag_must_staple} --preferred-challenges dns-01 --renew-by-default --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory -d ${domain} ${wildcard}
+    ### Use of --manual-public-ip-logging-ok is deprecated.
+
+    name=$(sudo ls -1 /etc/letsencrypt/archive | grep -E "${domain}.*[0-9]" | sort -rn | head -1)
+    if [[ -n ${name} ]]; then
+      echo "Last generated certificate found: ${name}"
+      echo "Delete /etc/letsencrypt/archive/${domain} path"
+      sudo rm -f -v -r "/etc/letsencrypt/archive/${domain}"
+      echo "Rename /etc/letsencrypt/archive/${name} -> /etc/letsencrypt/archive/${domain}"
+      sudo mv -f -v "/etc/letsencrypt/archive/${name}" "/etc/letsencrypt/archive/${domain}"
+      echo "Delete /etc/letsencrypt/renewal/${name}.conf"
+      sudo rm -f -v "/etc/letsencrypt/renewal/${name}.conf"
+      echo "Delete /etc/letsencrypt/live/${name} path"
+      sudo rm -f -v -r "/etc/letsencrypt/live/${name}"
+    fi
+    if [[ "$(systemctl is-active nginx)" == "active" ]]; then
+      echo "Restart nginx service"
+      sudo systemctl restart nginx
+    fi
+  else
+    echo "GENERATE simulate $([[ -z ${wildcard} ]] || echo 'wildcard ')ok: ${domain} ${wildcard//-d /}"
+  fi
+
+}
+
+function main_generate_script_source() {
+
+  # prinf "Initialise main function of generate script source\n";
+
+  generate_wildcard_certificate_for_main_domain "$@"
+
+}
+
+main_generate_script_source "$@"

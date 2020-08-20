@@ -1,0 +1,170 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: ghc
+## @Creation date file: 12.11.2020, 22:13:31
+
+[[ -z "${ghc_script_source}" ]] && declare -rx ghc_script_source="$BASH_SOURCE"
+
+if [[ -z "${ghc_script_source_path}" ]]; then
+  temp_one="$(dirname ${ghc_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx ghc_script_source_path="$(pwd)"
+  else
+    declare -rx ghc_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_ghc() {
+
+  local install_pkg=(
+    # Краткое опис : Glasgow Haskell Compiler
+    # URL          : https://haskell.org/ghc/
+    # Лицензия     : BSD and HaskellReport
+    # Описание     : GHC is a state-of-the-art, open source, compiler and interactive environment
+    # : for the functional language Haskell. Highlights:
+    # :
+    # : - GHC supports the entire Haskell 2010 language plus a wide variety of
+    # :   extensions.
+    # : - GHC has particularly good support for concurrency and parallelism,
+    # :   including support for Software Transactional Memory (STM).
+    # : - GHC generates fast code, particularly for concurrent programs.
+    # :   Take a look at GHC's performance on The Computer Language Benchmarks Game.
+    # : - GHC works on several platforms including Windows, Mac, Linux,
+    # :   most varieties of Unix, and several different processor architectures.
+    # : - GHC has extensive optimisation capabilities, including inter-module
+    # :   optimisation.
+    # : - GHC compiles Haskell code either directly to native code or using LLVM
+    # :   as a back-end. GHC can also generate C code as an intermediate target for
+    # :   porting to new platforms. The interactive environment compiles Haskell to
+    # :   bytecode, and supports execution of mixed bytecode/compiled programs.
+    # : - Profiling is supported, both by time/allocation and various kinds of heap
+    # :   profiling.
+    # : - GHC comes with several libraries, and thousands more are available on Hackage.
+    'ghc'
+    'ghc-Cabal'
+    'ghc-Cabal-devel'
+    'ghc-array'
+    'ghc-array-devel'
+    'ghc-base'
+    'ghc-base-devel'
+    'ghc-binary'
+    'ghc-binary-devel'
+    'ghc-bytestring'
+    'ghc-bytestring-devel'
+    'ghc-compiler'
+    'ghc-containers'
+    'ghc-containers-devel'
+    'ghc-deepseq'
+    'ghc-deepseq-devel'
+    'ghc-devel'
+    'ghc-directory'
+    'ghc-directory-devel'
+    'ghc-filepath'
+    'ghc-filepath-devel'
+    'ghc-ghc'
+    'ghc-ghc-boot'
+    'ghc-ghc-boot-devel'
+    'ghc-ghc-boot-th'
+    'ghc-ghc-boot-th-devel'
+    'ghc-ghc-compact'
+    'ghc-ghc-compact-devel'
+    'ghc-ghc-devel'
+    'ghc-ghc-heap'
+    'ghc-ghc-heap-devel'
+    'ghc-ghci'
+    'ghc-ghci-devel'
+    'ghc-haskeline'
+    'ghc-haskeline-devel'
+    'ghc-hpc'
+    'ghc-hpc-devel'
+    'ghc-libiserv'
+    'ghc-libiserv-devel'
+    'ghc-lzma'
+    'ghc-lzma-conduit'
+    'ghc-lzma-conduit-devel'
+    'ghc-lzma-conduit-doc'
+    'ghc-lzma-conduit-prof'
+    'ghc-lzma-devel'
+    'ghc-lzma-doc'
+    'ghc-lzma-prof'
+    'ghc-mtl'
+    'ghc-mtl-devel'
+    'ghc-parsec'
+    'ghc-parsec-devel'
+    'ghc-pretty'
+    'ghc-pretty-devel'
+    'ghc-process'
+    'ghc-process-devel'
+    'ghc-stm'
+    'ghc-stm-devel'
+    'ghc-template-haskell'
+    'ghc-template-haskell-devel'
+    'ghc-terminfo'
+    'ghc-terminfo-devel'
+    'ghc-text'
+    'ghc-text-devel'
+    'ghc-time'
+    'ghc-time-devel'
+    'ghc-transformers'
+    'ghc-transformers-devel'
+    'ghc-unix'
+    'ghc-unix-devel'
+    'ghc-xhtml'
+    'ghc-xhtml-devel'
+    'gmp-c++'
+    'gmp-devel'
+    'ncurses-c++-libs'
+    'ncurses-devel'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/ghc.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_ghc_script_source() {
+
+  # printf "Initialise main function of ghc script source\n";
+
+  install_ghc "$@"
+
+}
+
+main_ghc_script_source "$@"

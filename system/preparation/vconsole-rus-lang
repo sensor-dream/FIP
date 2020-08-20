@@ -1,0 +1,107 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: vconsole-rus-lang
+## @Creation date file: 07.12.2020, 03:31:11
+
+[[ -z "${vconsole_rus_lang_script_source}" ]] && declare -rx vconsole_rus_lang_script_source="$BASH_SOURCE"
+
+if [[ -z "${vconsole_rus_lang_script_source_path}" ]]; then
+  temp_one="$(dirname ${vconsole_rus_lang_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx vconsole_rus_lang_script_source_path="$(pwd)"
+  else
+    declare -rx vconsole_rus_lang_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_vconsole_rus_lang() {
+
+  local file="/etc/vconsole.conf"
+  local file_1="/etc/locale.conf"
+
+  [[ -f "${file}" ]] || sudo touch "${file}"
+  [[ -f "${file}.back" ]] || sudo cp "${file}" "${file}.back"
+  [[ -f "${file_1}.back" ]] || sudo cp "${file_1}" "${file_1}.back"
+
+  local data="$(cat ${file})"
+
+  if grep -q "KEYMAP" <<<"${data}"; then
+    data="$(sed '/^KEYMAP/s/KEYMAP.*$/KEYMAP="ruwin_alt_sh-UTF-8"/' <<<${data})"
+  else
+    data+=$'\n'"KEYMAP=\"ruwin_alt_sh-UTF-8\""
+  fi
+
+  # if ! grep -q "FONT=\"UniCyrExt_8x16\"" <<<"${data}"; then
+  data="$(sed '/^FONT/s/FONT/# FONT/' <<<${data})"
+  data+=$'\n'"# Locate console fonts /lib/kbd/consolefonts"
+  data+=$'\n'"# FONT=\"cyr-sun16\""
+  data+=$'\n'"# FONT=\"UniCyr_8x16\""
+  data+=$'\n'"FONT=\"UniCyrExt_8x16\""
+  data+=$'\n'"# FONT_UNIMAP=\"UniCyrExt_8x16\""
+  # fi
+
+  printf "${data}\n" | sed '/^$/d' | sudo sort -uid -o "${file}"
+
+  # echo "${data}" | sudo tee "${file}" >/dev/null
+
+  data="$(cat ${file_1})"
+
+  if grep -q "setfont" <<<"${data}"; then
+    data="$(sed '/^setfont/s/setfont.*$/setfont UniCyrExt_8x16/' <<<${data})"
+  else
+    data+=$'\n'"setfont UniCyrExt_8x16"
+  fi
+  printf "${data}\n" | sed '/^$/d' | sudo sort -uid -o "${file_1}"
+
+  echo -n "Russian language vconsole prepared\nLocate console fonts /lib/kbd/consolefonts"
+
+  sudo systemctl restart systemd-vconsole-setup
+
+}
+
+function main_vconsole_rus_lang_script_source() {
+
+  # printf "Initialise main function of vconsole-rus-lang script source\n";
+
+  install_vconsole_rus_lang "$@"
+
+}
+
+main_vconsole_rus_lang_script_source "$@"

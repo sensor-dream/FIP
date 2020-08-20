@@ -1,0 +1,158 @@
+#!/bin/env bash
+# -*- coding: utf'
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE'
+## @Site: https://sensor-dream.ru
+## @File: btrfs
+## @Creation date file: 31.01.2021, 19:08:25
+
+[[ -z "${btrfs_script_source}" ]] && declare -rx btrfs_script_source="$BASH_SOURCE"
+
+if [[ -z "${btrfs_script_source_path}" ]]; then
+  temp_one="$(dirname ${btrfs_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx btrfs_script_source_path="$(pwd)"
+  else
+    declare -rx btrfs_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_btrfs() {
+
+  local install_pkg=(
+    'btrfs-progs'
+    'btrfs-progs-devel'
+    'btrfs-heatmap'
+    'btrfs-heatmap-doc'
+    'btrfs-sxbackup'
+    'btrfsmaintenance'
+    'libbtrfs'
+    'libbytesize'
+    'libbytesize-tools'
+    'libbytesize-devel'
+    'libbtrfsutil'
+    \
+    'libblockdev'
+    'libblockdev-btrfs'
+    'libblockdev-btrfs-devel'
+    'libblockdev-crypto'
+    'libblockdev-dm'
+    'libblockdev-fs'
+    'libblockdev-kbd'
+    'libblockdev-loop'
+    'libblockdev-lvm'
+    'libblockdev-mdraid'
+    'libblockdev-mpath'
+    'libblockdev-nvdimm'
+    'libblockdev-part'
+    'libblockdev-plugins-all'
+    'libblockdev-swap'
+    'libblockdev-utils'
+    'libblockdev-utils-devel'
+    'libblockdev-crypto-devel'
+    'libblockdev-devel'
+    'libblockdev-dm-devel'
+    'libblockdev-fs-devel'
+    'libblockdev-kbd-devel'
+    'libblockdev-loop-devel'
+    'libblockdev-lvm-dbus'
+    'libblockdev-lvm-dbus-devel'
+    'libblockdev-lvm-devel'
+    'libblockdev-mdraid-devel'
+    'libblockdev-mpath-devel'
+    'libblockdev-nvdimm-devel'
+    'libblockdev-part-devel'
+    'libblockdev-swap-devel'
+    'libblockdev-tools'
+    \
+    'device-mapper'
+    'device-mapper-devel'
+    'device-mapper-event'
+    'device-mapper-event-devel'
+    'device-mapper-event-libs'
+    'device-mapper-libs'
+    'device-mapper-multipath'
+    'device-mapper-multipath-devel'
+    'device-mapper-multipath-libs'
+    'device-mapper-persistent-data'
+    \
+    \
+    'udisks2-btrfs'
+    'lvm2-dbusd'
+    # 'golang-github-containerd-btrfs-devel'
+    'python-btrfs-doc'
+    'python3-btrfs'
+    'python3-btrfsutil'
+    'python3-blockdev'
+    'python3-bytesize'
+    'python3-pyparted'
+    'parted'
+    'python3-libselinux'
+    'python3-blivet'
+    # 'timeshift'
+    'tmpwatch'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/btrfs.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+  echo -e "\n$(check_installed_packages blivet-gui)\n"
+
+  if [[ "$(check_installed_packages blivet-gui)" == "blivet-gui" ]]; then
+    printf "Check blivet-gui is OK \n"
+  else
+    install_pkg=(
+      'blivet-data'
+      'blivet-gui'
+      'blivet-gui-runtime'
+    )
+
+    printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/blivet-gui.txt"
+    pm "$@" -- "${install_pkg[@]}"
+  fi
+
+}
+
+function main_btrfs_script_source() {
+
+  # printf "Initialise main function of btrfs script source\n";
+
+  install_btrfs "$@"
+
+}
+
+main_btrfs_script_source "$@"

@@ -1,0 +1,112 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: gstreamer
+## @Creation date file: 11.11.2020, 22:13:07
+
+[[ -z "${gstreamer_script_source}" ]] && declare -rx gstreamer_script_source="$BASH_SOURCE"
+
+if [[ -z "${gstreamer_script_source_path}" ]]; then
+  temp_one="$(dirname ${gstreamer_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx gstreamer_script_source_path="$(pwd)"
+  else
+    declare -rx gstreamer_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_gstreamer() {
+
+  local install_pkg=(
+    # Краткое опис : GStreamer streaming media framework runtime
+    # URL          : http://gstreamer.freedesktop.org/
+    # Описание     : GStreamer is a streaming media framework, based on graphs of filters which
+    # : operate on media data. Applications using this library can do anything
+    # : from real-time sound processing to playing videos, and just about anything
+    # : else media-related.  Its plugin-based architecture means that new data
+    # : types or processing capabilities can be added simply by installing new
+    # : plugins.
+    'gstreamer1'
+    'gstreamer1-libav'
+    'gstreamer1-plugins-bad-free'
+    'gstreamer1-plugins-bad-freeworld'
+    'gstreamer1-plugins-base'
+    'gstreamer1-plugins-good'
+    'gstreamer1-plugins-good-gtk'
+    'gstreamer1-plugins-good-qt'
+    'gstreamer1-plugins-ugly'
+    'gstreamer1-plugins-ugly-free'
+    # 'gstreamer1-devel'
+    # 'gstreamer1-doc'
+    'gstreamer1-plugin-openh264'
+    # 'gstreamer1-plugins-bad-free-devel'
+    'gstreamer1-plugins-bad-free-extras'
+    # 'gstreamer1-plugins-bad-free-fluidsynth'
+    # 'gstreamer1-plugins-bad-free-wildmidi'
+    'gstreamer1-plugins-bad-free-zbar'
+    # 'gstreamer1-plugins-base-devel'
+    'gstreamer1-plugins-base-tools'
+    'gstreamer1-plugins-entrans'
+    # 'gstreamer1-plugins-entrans-docs'
+    'gstreamer1-plugins-fc'
+    'gstreamer1-plugins-good-extras'
+    # 'gstreamer1-rtsp-server'
+    # 'gstreamer1-rtsp-server-devel'
+    'gstreamer1-svt-av1'
+    # libgstsvthevcenc.so из устанавливаемого пакета gstreamer1-svt-hevc-1.5.0-2.fc33.x86_64 конфликтует с файлом из пакета gstreamer1-plugins-bad-freeworld-1.18.0-1.fc33.x86_64
+    # 'gstreamer1-svt-hevc'
+    # 'gstreamer1-svt-vp9'
+    'gstreamer1-vaapi'
+    # 'gstreamer1-vaapi-devel-docs'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/gstreamer.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_gstreamer_script_source() {
+
+  # printf "Initialise main function of gstreamer script source\n";
+
+  install_gstreamer "$@"
+
+}
+
+main_gstreamer_script_source "$@"

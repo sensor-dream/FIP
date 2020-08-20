@@ -1,0 +1,146 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: git
+## @Creation date file: 08.10.2020, 06:11:02
+
+[[ -z "${git_script_source}" ]] && declare -rx git_script_source="$BASH_SOURCE"
+
+if [[ -z "${git_script_source_path}" ]]; then
+  temp_one="$(dirname ${git_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx git_script_source_path="$(pwd)"
+  else
+    declare -rx git_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_git() {
+
+  local install_pkg=(
+    # Имя          : git
+    # Репозиторий  : @System
+    # Из репозитор : updates
+    # Краткое опис : Fast Version Control System
+    # URL          : https://git-scm.com/
+    # Лицензия     : GPLv2
+    # Описание     : Git is a fast, scalable, distributed revision control system with an
+    #              : unusually rich command set that provides both high-level operations
+    #              : and full access to internals.
+    #              :
+    #              : The git rpm installs common set of tools which are usually using with
+    #              : small amount of dependencies. To install all git packages, including
+    #              : tools for integrating with other SCMs, install the git-all meta-package.
+    'git'
+    # Meta-package to pull in all git tools
+    # 'git-all'
+    'git-core'
+    'git-core-doc'
+    # 'git-credential-libsecret'
+    # 'git-cvs'
+    'git-email'
+    # 'git-gui'
+    # 'git-instaweb'
+    'git-subtree'
+    # 'git-svn'
+    # 'gitk'
+    # 'gitweb'
+    # 'git-annex'
+    # 'git-annex-docs'
+    'git-archive-all'
+    # 'git-cal'
+    # 'git-cinnabar'
+    'git-clang-format'
+    # 'git-cola'
+    # 'git-cpan-patch'
+    # 'git-crypt'
+    # 'git-daemon'
+    'git-delta'
+    # 'git-evtag'
+    'git-extras'
+    # 'git-fame'
+    'git-filter-repo'
+    # 'git-ftp'
+    'git-lab-porcelain'
+    'git-lfs'
+    'git-merge-changelog'
+    # 'git-octopus'
+    # 'git-publish'
+    # git-pull-request conflict git-extras
+    'git-pull-request'
+    # 'git-remote-gcrypt'
+    # 'git-remote-hg'
+    'git-repair'
+    'git-review'
+    'git-revise'
+    # 'git-secret'
+    # 'git-secrets'
+    'git-subrepo'
+    'git-time-metric'
+    'git-tools'
+    # 'git-up'
+    # 'git-xcleaner'
+    # 'git2cl'
+    # 'gitea'
+    # 'gitg'
+    # 'gitg-devel'
+    # 'gitg-libs'
+    # 'gitit'
+    # 'gitit-common'
+    # 'gitolite3'
+    # 'gits-icewm-theme'
+    # 'gitstats'
+    # 'gitui'
+    # 'gitweb-caching'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/git.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_git_script_source() {
+
+  # prinf "Initialise main function of git script source\n";
+
+  install_git "$@"
+
+}
+
+main_git_script_source "$@"

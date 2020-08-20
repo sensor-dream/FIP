@@ -1,0 +1,17 @@
+pavucontrol
+pulseaudio
+pulseaudio-esound-compat
+pulseaudio-libs
+pulseaudio-libs-devel
+pulseaudio-libs-glib2
+pulseaudio-module-bluetooth
+pulseaudio-module-gconf
+pulseaudio-module-gsettings
+pulseaudio-module-jack
+pulseaudio-module-lirc
+pulseaudio-module-x11
+pulseaudio-module-zeroconf
+pulseaudio-qpaeq
+pulseaudio-qt
+pulseaudio-qt-devel
+pulseaudio-utils

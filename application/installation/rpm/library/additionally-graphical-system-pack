@@ -1,0 +1,212 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: additionally-graphical-system-pack
+## @Creation date file: 13.11.2020, 01:55:58
+
+[[ -z "${additionally_graphical_system_pack_script_source}" ]] && declare -rx additionally_graphical_system_pack_script_source="$BASH_SOURCE"
+
+if [[ -z "${additionally_graphical_system_pack_script_source_path}" ]]; then
+  temp_one="$(dirname ${additionally_graphical_system_pack_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx additionally_graphical_system_pack_script_source_path="$(pwd)"
+  else
+    declare -rx additionally_graphical_system_pack_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_additionally_graphical_system_pack() {
+
+  local install_pkg=(
+    # Краткое опис : Wayland egl library
+    # URL : http://wayland.freedesktop.org/
+    # Лицензия : MIT
+    # Описание : Wayland egl library
+    'libwayland-egl'
+    #
+    # Краткое опис : The GL Vendor-Neutral Dispatch library
+    # URL          : https://github.com/NVIDIA/libglvnd
+    # Лицензия     : MIT
+    # Описание     : libglvnd is an implementation of the vendor-neutral dispatch layer for
+    # : arbitrating OpenGL API calls between multiple vendors on a per-screen basis.
+    'libglvnd'
+    #
+    # Краткое опис : Development files for libglvnd
+    # URL          : https://github.com/NVIDIA/libglvnd
+    # Лицензия     : MIT
+    # Описание     : The libglvnd-devel package contains libraries and header files for
+    # : developing applications that use libglvnd.
+    # 'libglvnd-devel'
+    #
+    # Краткое опис : Core development files for libglvnd
+    # URL          : https://github.com/NVIDIA/libglvnd
+    # Лицензия     : MIT
+    # Описание     : The libglvnd-core-devel package is a bootstrap trick for Mesa, which wants
+    # : to build against the libglvnd headers but does not link against any of
+    # : its libraries (and, initially, has file conflicts with them). If you are
+    # : not Mesa you almost certainly want libglvnd-devel instead.
+    'libglvnd-core-devel'
+    #
+    # Краткое опис : GLX support for libglvnd
+    # URL          : https://github.com/NVIDIA/libglvnd
+    # Лицензия     : MIT
+    # Описание     : libGL and libGLX are the common dispatch interface for the GLX API.
+    'libglvnd-glx'
+    #
+    # Краткое опис : OpenGL support for libglvnd
+    # URL          : https://github.com/NVIDIA/libglvnd
+    # Лицензия     : MIT
+    # Описание     : libOpenGL is the common dispatch interface for the workstation OpenGL API.
+    'libglvnd-opengl'
+    #
+    # Краткое опис : EGL support for libglvnd
+    # URL          : https://github.com/NVIDIA/libglvnd
+    # Лицензия     : MIT
+    # Описание     : libEGL are the common dispatch interface for the EGL API
+    'libglvnd-egl'
+    #
+    # Краткое опис : GLES support for libglvnd
+    # URL          : https://github.com/NVIDIA/libglvnd
+    # Лицензия     : MIT
+    # Описание     : libGLESv[12] are the common dispatch interface for the GLES API.
+    'libglvnd-gles'
+    #
+    # Краткое опис : Tool to query the capabilities of a VDPAU implementation
+    # URL          : https://gitlab.freedesktop.org/vdpau/vdpauinfo
+    # Лицензия     : MIT
+    # Описание     : Tool to query the capabilities of a VDPAU implementation.
+    'vdpauinfo'
+    #
+    # Краткое опис : HW video decode support for VDPAU platforms
+    # URL          : http://cgit.freedesktop.org/vaapi/vdpau-driver
+    # Лицензия     : GPLv2+
+    # Описание     : VDPAU Backend for Video Acceleration (VA) API.
+    'libva-vdpau-driver'
+    #
+    # Краткое опис : Tools for VAAPI (including vainfo)
+    # URL          : https://github.com/intel/libva-utils
+    # Лицензия     : MIT and BSD
+    # Описание     : The libva-utils package contains tools that are provided as part
+    # : of libva, including the vainfo tool for determining what (if any)
+    # : libva support is available on a system.
+    'libva-utils'
+    #
+    # Краткое опис : EGL utilities
+    # URL          : http://www.mesa3d.org
+    # Лицензия     : MIT
+    # Описание     : The egl-utils package provides the eglinfo and es2_info utilities.
+    'egl-utils'
+    #
+    # Краткое опис : Wayland EGL External Platform library
+    # URL          : https://github.com/NVIDIA/egl-wayland
+    # Лицензия     : MIT
+    # Описание     : Wayland EGL External Platform library
+    'egl-wayland'
+    # 'egl-wayland-devel'
+    # 'eglexternalplatform-devel'
+    #
+    # Краткое опис : A Tubing and Extrusion Library for OpenGL
+    # URL          : http://www.linas.org/gle/
+    # Лицензия     : GPLv2 or (Artistic clarified and MIT)
+    # Описание     : The GLE Tubing and Extrusion Library consists of a number of "C"
+    # : language subroutines for drawing tubing and extrusions. It is a very
+    # : fast implementation of these shapes, outperforming all other
+    # : implementations, most by orders of magnitude. It uses the
+    # : OpenGL programming API to perform the actual drawing of the tubing
+    # : and extrusions.
+    'libgle'
+    # 'libgle-devel'
+    #
+    # Краткое опис : Toolkit for loading PNG images as OpenGL textures
+    #URL          : https://admin.fedoraproject.org/pkgdb/packages/name/libglpng
+    # Лицензия     : MIT
+    # Описание     : glpng is a small toolkit to make loading PNG image files as an OpenGL
+    # : texture as easy as possible.
+    'libglpng'
+    #
+    # Краткое опис : A freely licensed alternative to the GLUT library
+    # URL          : http://freeglut.sourceforge.net
+    # Лицензия     : MIT
+    # Описание     : freeglut is a completely open source alternative to the OpenGL Utility Toolkit
+    # : (GLUT) library with an OSI approved free software license. GLUT was originally
+    # : written by Mark Kilgard to support the sample programs in the second edition
+    # : OpenGL 'RedBook'. Since then, GLUT has been used in a wide variety of practical
+    # : applications because it is simple, universally available and highly portable.
+    # :
+    # : freeglut allows the user to create and manage windows containing OpenGL
+    # : contexts on a wide range of platforms and also read the mouse, keyboard and
+    # : joystick functions.
+    'freeglut'
+    # 'freeglut-devel'
+    #
+    # Краткое опис : libGLEW
+    # URL          : http://glew.sourceforge.net
+    # Лицензия     : BSD and MIT
+    # Описание     : libGLEW
+    'glew'
+    # 'glew-devel'
+    #
+    # Краткое опис : libGLEW
+    # URL          : http://glew.sourceforge.net
+    # Лицензия     : BSD and MIT
+    # Описание     : libGLEW
+    'libGLEW'
+    #
+    # Краткое опис : GLX utilities
+    # URL          : http://www.mesa3d.org
+    # Лицензия     : MIT
+    # Описание     : The glx-utils package provides the glxinfo and glxgears utilities.
+    'glx-utils'
+    #
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/additionally-graphical-system-pack.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_additionally_graphical_system_pack_script_source() {
+
+  # printf "Initialise main function of additionally-graphical-system-pack script source\n";
+
+  install_additionally_graphical_system_pack "$@"
+
+}
+
+main_additionally_graphical_system_pack_script_source "$@"

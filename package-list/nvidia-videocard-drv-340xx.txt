@@ -1,0 +1,4 @@
+libva-utils
+libva-vdpau-driver
+libvdpau
+vdpauinfo

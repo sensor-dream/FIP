@@ -1,0 +1,243 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: office-text-editors-and-more
+## @Creation date file: 07.11.2020, 18:02:55
+
+[[ -z "${office_text_editors_and_more_script_source}" ]] && declare -rx office_text_editors_and_more_script_source="$BASH_SOURCE"
+
+if [[ -z "${office_text_editors_and_more_script_source_path}" ]]; then
+  temp_one="$(dirname ${office_text_editors_and_more_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx office_text_editors_and_more_script_source_path="$(pwd)"
+  else
+    declare -rx office_text_editors_and_more_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_office_text_editors_and_more() {
+
+  local install_pkg=(
+    'office'
+  )
+
+  pm -g "$@" -- "${install_pkg[@]}"
+
+  install_pkg=(
+    # Имя          : focuswriter
+    # Репозиторий  : fedora
+    # Краткое опис : A full screen, distraction-free writing program
+    # URL          : http://gottcode.org/focuswriter/
+    # Лицензия     : GPLv3+
+    # Описание     : A full screen, distraction-free writing program. You can customize your
+    # : environment by changing the font, colors, and background image to add ambiance
+    # : as you type. FocusWriter features an on-the-fly updating word count, optional
+    # : auto-save, optional daily goals, and an interface that hides away to allow you
+    # : to focus more clearly; additionally, when you open the program your current
+    # : work-in-progress will automatically load and position you at the end of your
+    # : document, so that you can immediately jump back in.
+    focuswriter
+    #
+    # Имя          : texstudio
+    # Репозиторий  : fedora
+    # Краткое опис : A feature-rich editor for LaTeX documents
+    # URL          : https://www.texstudio.org
+    # Лицензия     : GPLv2+ and GPLv3
+    # Описание     : TeXstudio, formerly known as TexmakerX is a fork of the
+    # : LaTeX IDE TexMaker and gives you an environment where you can
+    # : easily create and manage LaTeX documents.
+    # : It provides modern writing support, like interactive spell checking,
+    # : code folding and syntax highlighting.
+    # : Also it serves as a starting point from where you can easily run
+    # : all necessary LaTeX tools.
+    # : Although TeXstudio has a lot of additional features,
+    # : it tries to be like an improved version of Texmaker,
+    # : so it keeps it look&feel.
+    # -> texstudio
+    #
+    # Имя          : calibre
+    # Репозиторий  : fedora
+    # Краткое опис : E-book converter and library manager
+    # URL          : https://calibre-ebook.com/
+    # Лицензия     : GPLv3
+    # Описание     : Calibre is meant to be a complete e-library solution. It includes library
+    # : management, format conversion, news feeds to ebook conversion as well as
+    # : e-book reader sync features.
+    # :
+    # : Calibre is primarily a ebook cataloging program. It manages your ebook
+    # : collection for you. It is designed around the concept of the logical book,
+    # : i.e. a single entry in the database that may correspond to ebooks in several
+    # : formats. It also supports conversion to and from a dozen different ebook
+    # : formats.
+    # :
+    # : Supported input formats are: MOBI, LIT, PRC, EPUB, CHM, ODT, HTML, CBR, CBZ,
+    # : RTF, TXT, PDF and LRS.
+    # -> calibre
+    #
+    # Имя          : glabels
+    # Репозиторий  : fedora
+    # Краткое опис : A program for creating labels and business cards for GNOME
+    # URL          : http://www.glabels.org
+    # Лицензия     : GPLv3+
+    # Описание     : gLabels is a lightweight program for creating labels and
+    # : business cards for the GNOME desktop environment.
+    # : It is designed to work with various laser/ink-jet peel-off
+    # : label and business card sheets that you'll find at most office
+    # : supply stores.
+    glabels
+    #
+    # Имя          : apostrophe
+    # Репозиторий  : fedora
+    # Краткое опис : Distraction free Markdown editor for GNU/Linux made with GTK+
+    # URL          : https://gitlab.gnome.org/somas/apostrophe
+    # Лицензия     : GPLv3+ and GPLv2 and LGPLv2.1 and MIT
+    # Описание     : Apostrophe is a GTK+ based distraction free Markdown editor, mainly developed by
+    # : Wolf Vollprecht and Manuel Genovés. It uses pandoc as backend for markdown
+    # : parsing and offers a very clean and sleek user interface.
+    # -> apostrophe
+    #
+    # Имя          : pdfarranger
+    # Репозиторий : @System
+    # Из репозитор : fedora
+    # Краткое опис : PDF file merging, rearranging, and splitting
+    # URL : https://github.com/jeromerobert/pdfarranger
+    # Лицензия : GPLv3
+    # Описание : pdfarranger is a small Python GTK application, which helps the user to merge
+    # : or split PDF documents and rotate, crop and rearrange their pages using an
+    # : interactive and intuitive graphical interface. It is a front end for
+    # : python-PyPDF2.
+    # : pdfarranger is a fork of Konstantinos Poulios's PDF-Shuffler.
+    pdfarranger
+    #
+    # Имя          : notes-up
+    # Репозиторий  : fedora
+    # Краткое опис : Markdown notes editor & manager
+    # URL          : https://github.com/Philip-Scott/Notes-up
+    # Лицензия     : GPLv2+ and BSD
+    # Описание     : The intuitive writing app for everyone, from students to developers.
+    # :
+    # : With powerful features like:
+    # :
+    # : - Easy-to-use markdown editor.
+    # : - Notebooks and tags, quickly find and organize your notes.
+    # : - Your work is saved automatically as you write, you will never loose
+    # :   your work.
+    # : - Plugins: such as embedding YouTube videos and setting text color.
+    # : - Export as PDF and Markdown files.
+    # : - Cross-Note Links to quickly reference other notes.
+    # : - 3 Beautiful app themes to help you create the best writing environment.
+    # : - And much more!
+    # -> notes-up
+    #
+    # Имя          : foliate
+    # Репозиторий  : updates
+    # Краткое опис : Simple and modern GTK eBook reader
+    # URL          : https://johnfactotum.github.io/foliate/
+    # Лицензия     : GPLv3+
+    # Описание     : A simple and modern GTK eBook viewer, built with GJS and Epub.js.
+    foliate
+    #
+    # Имя          : texworks
+    # Репозиторий  : fedora
+    # Краткое опис : A simple IDE for authoring TeX documents
+    # URL          : http://tug.org/texworks/
+    # Лицензия     : GPLv2+
+    # Описание     : TeXworks is an environment for authoring TeX (LaTeX, ConTeXt, etc) documents,
+    # : with a Unicode-based, TeX-aware editor, integrated PDF viewer, and a clean,
+    # : simple interface accessible to casual and non-technical users.
+    # :
+    # : You may install the texlive-* packages to make this program useful.
+    # -> texworks
+    #
+    # Имя          : ghostwriter
+    # Репозиторий  : fedora
+    # Краткое опис : Cross-platform, aesthetic, distraction-free Markdown editor
+    # URL          : https://github.com/wereturtle/ghostwriter
+    # Лицензия     : GPLv3+ and CC-BY and CC-BY-SA and MPLv1.1 and BSD and LGPLv3 and MIT and ISC
+    # Описание     : Ghostwriter is a text editor for Markdown, which is a plain text markup
+    #              : format created by John Gruber. For more information about Markdown, please
+    #              : visit John Gruber’s website at http://www.daringfireball.net.
+    #              :
+    #              : Ghostwriter provides a relaxing, distraction-free writing environment,
+    #              : whether your masterpiece be that next blog post, your school paper,
+    #              : or your novel.
+    'ghostwriter'
+    #
+    # Имя          : marker
+    # Репозиторий  : fedora
+    # Краткое опис : GTK 3 markdown editor
+    # URL          : https://github.com/fabiocolacio/Marker
+    # Лицензия     : GPLv3+ and GPLv2 and LGPLv3+ and CC-BY-SA and ISC and BSD and ASL 2.0 and MIT and CC0 and OFL and zlib
+    # Описание     : Marker is a markdown editor for Linux made with Gtk+-3.0.
+    'marker'
+    #
+    # Имя          : quilter
+    # Краткое опис : Focus on your writing
+    # URL          : https://github.com/lainsce/quilter
+    # Лицензия     : GPLv3+ and BSD and OFL
+    # Описание     : Focus on your writing and write beautiful solid stories with the Focus Mode in
+    #              : tow in this Markdown editor.
+    #              :
+    #              : - Work on a story, one file at a time.
+    #              : - Save your documents anywhere, even on existing files.
+    #              : - Preview your story in the Preview Mode.
+    #              : - Configure whether to have Focus Mode or not.
+    #              : - Configure whether to have Dark Mode or not.
+    #              : - Configure whether to have Sepia Mode or not.
+    #              : - Fullscreen your writing area with F11.
+    #              : - Search anytime with the shortcut Ctrl + F.
+    #              : - Quit anytime with the shortcut Ctrl + Q.
+    # -> 'quilter'
+    #
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/office-text-editors-and-more.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_office_text_editors_and_more_script_source() {
+
+  # printf "Initialise main function of office-text-editors-and-more script source\n";
+
+  install_office_text_editors_and_more "$@"
+
+}
+
+main_office_text_editors_and_more_script_source "$@"

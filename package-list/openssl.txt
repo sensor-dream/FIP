@@ -1,0 +1,13 @@
+apr-util-openssl
+compat-openssl10
+opencryptoki-libs
+openssl
+openssl-devel
+openssl-gost-engine
+openssl-ibmpkcs11
+openssl-libs
+openssl-perl
+openssl-pkcs11
+openssl-static
+rubygem-openssl
+xmlsec1-openssl

@@ -1,0 +1,150 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: disable-systemd-services
+## @Creation date file: 11.12.2020, 03:00:04
+
+[[ -z "${disable_systemd_services_script_source}" ]] && declare -rx disable_systemd_services_script_source="$BASH_SOURCE"
+
+if [[ -z "${disable_systemd_services_script_source_path}" ]]; then
+  temp_one="$(dirname ${disable_systemd_services_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx disable_systemd_services_script_source_path="$(pwd)"
+  else
+    declare -rx disable_systemd_services_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_disable_systemd_services() {
+  local flag=0
+  local disable_list=(
+    'firewalld'
+    'ModemManager'
+    # 'sysstat'
+    #
+    # from pcp
+    # 'pmcd'
+    # 'pmlogger'
+    # 'pmie'
+    #
+    # 'smartd' # package smartmontools
+    # 'smokeping'
+    'bluetooth'
+    # Служба обнаружения сетевых устройств
+    'avahi-daemon.service'
+    # Службы отправки информации о системных сбоях
+    'whoopsie.service'
+    'abrt-journal-core'
+    'abrt-oops'
+    'abrt-pstoreoops'
+    'abrt-vmcore'
+    'abrt-xorg'
+    'abrtd'
+    'abrt-dbus'
+    #
+    'dmraid-activation'
+    # SysV-скрипты
+    'livesys'
+    'livesys-late'
+    #
+    'selinux-autorelabel-mark.service'
+    # Службы поддержки виртуальных машин
+    'libvirtd.service'
+    'spice-vdagentd.service' # # SysV-скрипт
+    'vgauthd.service'
+    'vmtoolsd.service'
+    # система вывода заставки
+    'plymouth-halt.service'
+    'plymouth-kexec.service'
+    'plymouth-poweroff.service'
+    'plymouth-quit-wait.service'
+    'plymouth-quit.service'
+    'plymouth-read-write.service'
+    'plymouth-reboot.service'
+    'plymouth-start.service'
+    'plymouth-switch-root.service'
+    'systemd-ask-password-plymouth.service'
+    # LVM, RAID и шифрование
+    'lvm2-monitor.service'
+    'mdmonitor.service'
+    'raid-check.timer'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${disable_list[@]}") | sort -o "${main_project_path}/messages-list/disable-systemd-services.txt"
+
+  echo -e "Check services:\n"
+  for i in ${!disable_list[*]}; do
+    if [[ "$(systemctl is-active ${disable_list[$i]})" == 'active' ]]; then
+      sudo systemctl stop ${disable_list[$i]}
+      echo -e "\tService stopped - '${disable_list[$i]}'"
+      flag=1
+    fi
+    cat <<EOF >/dev/null
+    if [[ "$(systemctl is-enabled ${disable_list[$i]})" == 'enabled' ]]; then
+      sudo systemctl disable ${disable_list[$i]}
+      echo -e "\tService disable - '${disable_list[$i]}'"
+      flag=1
+    fi
+EOF
+    if [[ "$(systemctl is-enabled ${disable_list[$i]})" != 'masked' ]]; then
+      sudo systemctl mask ${disable_list[$i]}
+      echo -e "\tService masked - '${disable_list[$i]}'"
+      flag=1
+    fi
+
+    [[ ${flag} -eq 0 ]] && echo -e "\tService - '${disable_list[$i]}' is stoped, and masked"
+
+  done
+  echo
+
+  sudo systemctl daemon-reload
+
+}
+
+function main_disable_systemd_services_script_source() {
+
+  # printf "Initialise main function of disable-systemd-services script source\n";
+
+  echo -e "\nRun comand:\nsystemctl list-unit-files --type=service | grep enabled\nor systemctl list-units --type=service | grep running\nor chkconfig or systemctl list-unit-files | grep disabled\norsystemctl list-unit-files | grep -v disabled | grep service | grep enabled\nfor list unit service.\n"
+
+  install_disable_systemd_services "$@"
+
+}
+
+main_disable_systemd_services_script_source "$@"

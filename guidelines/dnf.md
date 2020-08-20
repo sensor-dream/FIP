@@ -1,0 +1,1 @@
+dnf-utils dnfdaemon dnfdaemon-selinux tracer-common python3-dnfdaemon python3-dnf python3-future python3-psutil python3-rpmconf python3-tracer python3-dnf-plugins-core python3-dnf-plugins-extras-common python3-libdnf python3-dnf-plugin-kickstart python3-dnf-plugin-rpmconf python3-dnf-plugin-tracer python3-dnf-plugin-versionlock

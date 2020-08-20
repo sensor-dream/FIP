@@ -1,0 +1,156 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: gnome-dash-fix
+## @Creation date file: 20.12.2020, 18:56:41
+
+[[ -z "${gnome_dash_fix_script_source}" ]] && declare -rx gnome_dash_fix_script_source="$BASH_SOURCE"
+
+if [[ -z "${gnome_dash_fix_script_source_path}" ]]; then
+  temp_one="$(dirname ${gnome_dash_fix_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx gnome_dash_fix_script_source_path="$(pwd)"
+  else
+    declare -rx gnome_dash_fix_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_gnome_dash_fix() {
+
+  echo 'Not run TODO'
+
+  exit 1
+
+  gsettings reset-recursively org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/
+  gsettings reset-recursively org.gnome.desktop.app-folders
+  gsettings set org.gnome.shell app-picker-layout []
+
+  gsettings set org.gnome.desktop.app-folders folder-children "['Core', 'System', 'Settings', 'Terminals', 'Utilities', 'FileTools', 'Calculator', 'Internet', 'Office', 'Documentation', 'Graphics', 'AudioVideo', 'Games', 'TextEditor', 'IDE', 'Development', 'RevisionControl']"
+
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Core/ name 'Core'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Core/ categories "['Core']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Core/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/System/ name 'System'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/System/ categories "['System']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/System/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Settings/ name 'Settings'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Settings/ categories "['Settings']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Settings/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Terminals/ name 'Terminals'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Terminals/ categories "['TerminalEmulator']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Terminals/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Utilities/ name 'Utilities'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Utilities/ categories "['Utilities', 'Utility']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Utilities/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/FileTools/ name 'FileTools'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/FileTools/ categories "['FileTools']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/FileTools/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Calculator/ name 'Calculator'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Calculator/ categories "['Calculator']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Calculator/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Internet/ name 'Internet'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Internet/ categories "['Network', 'WebBrowser']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Internet/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Office/ name 'Office'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Office/ categories "['Office']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Office/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Documentation/ name 'Documentation'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Documentation/ categories "['Documentation']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Documentation/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Graphics/ name 'Graphics'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Graphics/ categories "['Graphics']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Graphics/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/AudioVideo/ name 'Media'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/AudioVideo/ categories "['AudioVideo', 'Player']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/AudioVideo/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Games/ name 'Games'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Games/ categories "['Game']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Games/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/TextEditor/ name 'TextEditor'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/TextEditor/ categories "['TextEditor']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/TextEditor/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/IDE/ name 'IDE'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/IDE/ categories "['IDE']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/IDE/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Development/ name 'Development'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Development/ categories "['Development']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/Development/ translate true
+  #
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/RevisionControl/ name 'Revision Control'
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/RevisionControl/ categories "['RevisionControl']"
+  gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/RevisionControl/ translate true
+
+}
+
+function main_gnome_dash_fix_script_source() {
+
+  printf '%s\n' "Initialise main function of gnome-dash-fix script source"
+  printf '\n%s\n%s\n' "Material used - https://github.com/BenJetson/gnome-dash-fix/blob/master/appfixer.sh" "$(
+    cat <<EOF
+# Makes the GNOME Shell Apps Dashboard sort the apps into their
+# respective categories based on the FreeDesktop standard.
+
+# By using this shell script, you hereby take full responsiblity
+# for anything that happens to your system.
+
+# Lincensed under the MIT License.
+# Copyright (c) 2017 Ben Godfrey
+# Makes the GNOME Shell Apps Dashboard sort the apps into their
+EOF
+  )"
+  install_gnome_dash_fix "$@"
+
+}
+
+main_gnome_dash_fix_script_source "$@"

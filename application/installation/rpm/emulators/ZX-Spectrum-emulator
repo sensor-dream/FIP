@@ -1,0 +1,135 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: ZX-Spectrum-emulator
+## @Creation date file: 13.11.2020, 04:20:09
+
+[[ -z "${ZX_Spectrum_emulator_script_source}" ]] && declare -rx ZX_Spectrum_emulator_script_source="$BASH_SOURCE"
+
+if [[ -z "${ZX_Spectrum_emulator_script_source_path}" ]]; then
+  temp_one="$(dirname ${ZX_Spectrum_emulator_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx ZX_Spectrum_emulator_script_source_path="$(pwd)"
+  else
+    declare -rx ZX_Spectrum_emulator_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_ZX_Spectrum_emulator() {
+
+  local install_pkg=(
+    # Имя          : fuse-emulator
+    # Репозиторий  : @System
+    # Из репозитор : fedora
+    # Краткое опис : The Free UNIX Spectrum Emulator
+    # URL          : http://fuse-emulator.sourceforge.net
+    # Лицензия     : GPLv2+
+    # Описание     : Fuse is a spectrum emulator which emulates multiple models, including the 16K,
+    # : 48K, 128K, +2, +2A, +3 and various clones.
+    'fuse-emulator'
+    #
+    # Имя          : fuse-emulator-roms
+    # Репозиторий  : @System
+    # Из репозитор : rpmfusion-nonfree
+    # Краткое опис : Spectrum ROM files for use with the Fuse emulator
+    # URL          : http://fuse-emulator.sourceforge.net
+    # Лицензия     : Distributable
+    # Описание     : The Spectrum ROM files, for use with the Fuse Emulator.
+    'fuse-emulator-roms'
+    #
+    # Имя          : fuse-emulator-utils
+    # Репозиторий : @System
+    # Из репозитор : fedora
+    # Краткое опис : Additional utils for the Fuse spectrum emulator
+    # URL : http://fuse-emulator.sourceforge.net
+    # Лицензия : GPLv2+
+    # Описание : A collection of utilities for the Fuse ZX-Spectrum emulator
+    'fuse-emulator-utils'
+    #
+    # Имя          : fbzx
+    # Репозиторий  : fedora
+    # Краткое опис : A ZX Spectrum emulator for FrameBuffer
+    # URL          : http://www.rastersoft.com/programas/fbzx.html
+    # Лицензия     : GPLv3+
+    # Описание     : FBZX is a Sinclair Spectrum emulator, designed to work at full screen using
+    # : the FrameBuffer or under X-Windows.
+    'fbzx'
+    #
+    # Имя          : spectrum-roms
+    # Репозиторий  : rpmfusion-nonfree
+    # Краткое опис : A collection of Spectrum ROM images
+    # URL          : http://www.chiark.greenend.org.uk/~cjwatson/code/spectrum-roms/
+    # Лицензия     : Distributable
+    # Описание     : This package provides images of the read-only memories from various
+    # : versions of the Sinclair Spectrum. They can be used with various emulators.
+    'spectrum-roms'
+    #
+    # Имя          : libspectrum
+    # Репозиторий  : @System
+    # Из репозитор : fedora
+    # Краткое опис : A library for reading spectrum emulator file formats
+    # URL          : http://fuse-emulator.sourceforge.net/libspectrum.php
+    # Лицензия     : GPLv2+
+    # Описание     : A library for reading various spectrum emulator file formats.
+    'libspectrum'
+    #
+    # Имя          : libspectrum-devel
+    # Репозиторий  : fedora
+    # Краткое опис : Development files for libspectrum
+    # URL          : http://fuse-emulator.sourceforge.net/libspectrum.php
+    # Лицензия     : GPLv2+
+    # Описание     : Development files for libspectrum.
+    'libspectrum-devel'
+    #
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/ZX-Spectrum-emulator.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_ZX_Spectrum_emulator_script_source() {
+
+  # printf "Initialise main function of ZX-Spectrum-emulator script source\n";
+
+  install_ZX_Spectrum_emulator "$@"
+
+}
+
+main_ZX_Spectrum_emulator_script_source "$@"

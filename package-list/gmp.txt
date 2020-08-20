@@ -1,0 +1,8 @@
+gmp
+gmp-c++
+gmp-devel
+gmp-ecm
+gmp-ecm-devel
+gmp-ecm-libs
+gmp-static
+unique

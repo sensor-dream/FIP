@@ -1,0 +1,89 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: CPU
+## @Creation date file: 17.12.2020, 09:27:43
+
+[[ -z "${CPU_script_source}" ]] && declare -rx CPU_script_source="$BASH_SOURCE"
+
+if [[ -z "${CPU_script_source_path}" ]]; then
+  temp_one="$(dirname ${CPU_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx CPU_script_source_path="$(pwd)"
+  else
+    declare -rx CPU_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_CPU() {
+
+  local install_pkg=(
+    # Имя          : corectrl
+    # Репозиторий  : fedora
+    # Краткое опис : Friendly hardware control
+    # URL          : https://gitlab.com/corectrl/corectrl
+    # Лицензия     : GPLv3+ and Boost and BSD and MIT and Public Domain
+    # Описание     : CoreCtrl is a Free and Open Source GNU/Linux application that allows you to
+    #              : control with ease your computer hardware using application profiles. It aims to
+    #              : be flexible, comfortable and accessible to regular users.
+    #              :
+    #              : - For setup instructions run:
+    #              :
+    #              :   xdg-open /usr/share/doc/corectrl/README.fedora.md
+    #              :
+    #              : - or go to the project wiki:
+    #              :
+    #              :   https://gitlab.com/corectrl/corectrl/wikis
+    'corectrl'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/CPU.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_CPU_script_source() {
+
+  # printf "Initialise main function of CPU script source\n";
+
+  install_CPU "$@"
+
+}
+
+main_CPU_script_source "$@"

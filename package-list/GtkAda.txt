@@ -1,0 +1,8 @@
+GtkAda
+GtkAda3
+GtkAda3-doc
+GtkAda3-gl
+GtkAda-devel
+GtkAda-doc
+GtkAda-gl
+GtkAda-gnome

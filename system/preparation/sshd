@@ -1,0 +1,152 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: sshd
+## @Creation date file: 07.09.2020, 05:03:03
+
+declare -rx sshd_script_source="$BASH_SOURCE"
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${sshd_script_source})"
+
+function cfg_sshd_script_source() {
+
+  # prinf "Initialise main function of sshd script source\n";
+
+  if [[ -f "${main_project_path}/hidden/cfg-sshd-information" ]]; then
+    . "${main_project_path}/hidden/cfg-sshd-information"
+  else
+    . "${main_project_path}/tools/cfg-sshd-information"
+  fi
+
+  local temp_one=$(sudo grep -E "^[#]?Port\s.*$" '/etc/ssh/sshd_config')
+  if [[ -z "${temp_one}" ]]; then
+    echo "Port ${cfg_sshd_port}" | sudo tee -a '/etc/ssh/sshd_config'
+    echo "Set SSHD 'Port ${cfg_sshd_port}'"
+  else
+    if [[ "${temp_one}" != "Port ${cfg_sshd_port}" ]]; then
+      sudo sed -i -r "s/^[#]?Port\s.*$/Port ${cfg_sshd_port}/" '/etc/ssh/sshd_config'
+      echo "Set SSHD 'Port ${cfg_sshd_port}'"
+    else
+      echo "SSHD 'Port ${cfg_sshd_port}' already use"
+    fi
+  fi
+
+  temp_one=$(sudo grep -E "^[#]?PermitRootLogin\s.*$" '/etc/ssh/sshd_config')
+  if [[ -z "${temp_one}" ]]; then
+    echo "Port ${cfg_sshd_permit_root_login}" | sudo tee -a '/etc/ssh/sshd_config'
+    echo "Set SSHD 'PermitRootLogin ${cfg_sshd_permit_root_login}'"
+  else
+    if [[ "${temp_one}" != "PermitRootLogin ${cfg_sshd_permit_root_login}" ]]; then
+      sudo sed -i -r "s/^[#]?PermitRootLogin\s.*$/PermitRootLogin ${cfg_sshd_permit_root_login}/" '/etc/ssh/sshd_config'
+      echo "Set 'SSHD PermitRootLogin ${cfg_sshd_permit_root_login}'"
+    else
+      echo "SSHD 'PermitRootLogin ${cfg_sshd_permit_root_login}' already use"
+    fi
+  fi
+
+  temp_one=$(sudo grep -E "^[#]?MaxAuthTries\s.*$" '/etc/ssh/sshd_config')
+  if [[ -z "${temp_one}" ]]; then
+    echo "MaxAuthTries ${cfg_sshd_max_auth_tries}" | sudo tee -a '/etc/ssh/sshd_config'
+    echo "Set SSHD 'MaxAuthTries ${cfg_sshd_max_auth_tries}'"
+  else
+    if [[ "${temp_one}" != "MaxAuthTries ${cfg_sshd_max_auth_tries}" ]]; then
+      sudo sed -i -r "s/^[#]?MaxAuthTries\s.*$/MaxAuthTries ${cfg_sshd_max_auth_tries}/" '/etc/ssh/sshd_config'
+      echo "Set 'SSHD MaxAuthTries ${cfg_sshd_max_auth_tries}'"
+    else
+      echo "SSHD 'MaxAuthTries ${cfg_sshd_max_auth_tries}' already use"
+    fi
+  fi
+
+  cat <<EOF >/dev/null
+  temp_one=$(sudo grep -E "^[#]?PubkeyAcceptedKeyTypes\s.*$" '/etc/ssh/sshd_config')
+  if [[ -z "${temp_one}" ]]; then
+    echo "PubkeyAcceptedKeyTypes +ssh-dss" | sudo tee -a '/etc/ssh/sshd_config'
+    echo "Set SSHD 'PubkeyAcceptedKeyTypes +ssh-dss'"
+  else
+    if [[ "${temp_one}" != "PubkeyAcceptedKeyTypes +ssh-dss" ]]; then
+      sudo sed -i -r "s/^[#]?PubkeyAcceptedKeyTypes\s.*$/PubkeyAcceptedKeyTypes +ssh-dss/" '/etc/ssh/sshd_config'
+      echo "Set 'SSHD PubkeyAcceptedKeyTypes +ssh-dss'"
+    else
+      echo "SSHD 'PubkeyAcceptedKeyTypes +ssh-dss' already use"
+    fi
+  fi
+EOF
+
+  temp_one=$(ssh -Q PubkeyAcceptedKeyTypes | grep 'ssh-rsa$')
+  if [[ -n "${temp_one}" ]]; then
+    temp_one=$(sudo grep -E "^[#]?PubkeyAcceptedKeyTypes\s.*$" ~/.ssh/config)
+    if [[ -z "${temp_one}" ]]; then
+      echo "PubkeyAcceptedKeyTypes +ssh-rsa" | tee -a ~/.ssh/config
+      echo "Set SSHD 'PubkeyAcceptedKeyTypes +ssh-rsa' in file "~"/.ssh/config"
+    else
+      if [[ "${temp_one}" != "PubkeyAcceptedKeyTypes +ssh-rsa" ]]; then
+        sudo sed -i -r "s/^[#]?PubkeyAcceptedKeyTypes\s.*$/PubkeyAcceptedKeyTypes +ssh-rsa/" ~/.ssh/config
+        echo "Set 'SSHD PubkeyAcceptedKeyTypes +ssh-rsa' in file "~"/.ssh/config"
+      else
+        echo "SSHD 'PubkeyAcceptedKeyTypes +ssh-rsa' already use in "~"/.ssh/config"
+      fi
+    fi
+  fi
+
+  # TODO Make a dynamic MOTD (Banner) for SSHD
+  temp_one=$(sudo grep -E "^[#]?Banner\s.*$" '/etc/ssh/sshd_config')
+  if [[ -z "${temp_one}" ]]; then
+    echo "Banner ${cfg_sshd_show_banner}" | sudo tee -a '/etc/ssh/sshd_config'
+    echo "Set SSHD 'Banner ${cfg_sshd_show_banner}'"
+  else
+    if [[ "${temp_one}" != "Banner ${cfg_sshd_show_banner}" ]]; then
+      sudo sed -i -r "s%^[#]?Banner\s.*$%Banner ${cfg_sshd_show_banner}%" '/etc/ssh/sshd_config'
+      echo "Set SSHD 'Banner ${cfg_sshd_show_banner}'"
+    else
+      echo "SSHD 'Banner ${cfg_sshd_show_banner}' already use"
+    fi
+  fi
+
+  temp_one="$(sudo systemctl is-enabled sshd)"
+  [[ "${temp_one}" == "masked" ]] && sudo systemctl unmask sshd
+  [[ "${temp_one}" == 'enabled' ]] || sudo systemctl enable sshd
+  if [[ $(sudo systemctl is-active sshd) == 'active' ]]; then
+    sudo systemctl restart sshd
+  else
+    sudo systemctl start sshd
+  fi
+
+  systemctl status sshd
+
+}
+
+cfg_sshd_script_source "$@"

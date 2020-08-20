@@ -1,0 +1,108 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: FULL-installed-packs-in-system
+## @Creation date file: 10.12.2020, 20:38:41
+
+[[ -z "${FULL_installed_packs_in_system_script_source}" ]] && declare -rx FULL_installed_packs_in_system_script_source="$BASH_SOURCE"
+
+if [[ -z "${FULL_installed_packs_in_system_script_source_path}" ]]; then
+  temp_one="$(dirname ${FULL_installed_packs_in_system_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx FULL_installed_packs_in_system_script_source_path="$(pwd)"
+  else
+    declare -rx FULL_installed_packs_in_system_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function get_FULL_installed_packs_in_system() {
+
+  temp_one=$(unset_dupes_in_array "$(sudo dnf repoquery --installed \* | sed -e 's/-[0-9]*[.:].*$//mig')")
+
+  printf '%s\n' ${temp_one} | sort -o "${main_project_path}/package-list/FULL-installed-packs-in-system.txt"
+  # printf '%s\n' $(unset_dupes_in_array "$(sudo dnf repoquery --installed \* | sed -e 's/-[0-9]*[.:].*$//mig')") | grep -E 'liblqr|ntfs|texlive-pst|xorg-x11-fonts-ISO8859|arpwat|tcpd'
+
+  printf '\nКоличество установленных пакетов: %s\n\n' "$(echo ${temp_one} | wc -w)" | tee "${main_project_path}/count-packages-in-system.txt"
+
+  echo -n "Create info package list into ${main_project_path}/package-list/FULL-installed-packs-in-system.txt ? (N/y)"
+  read temp_two
+  if [[ "${temp_two}" == 'y' ]]; then
+    dnf info --installed ${temp_one} | tee "${main_project_path}/package-list/FULL-installed-packs-in-system.txt.info" >/dev/null
+  fi
+
+}
+
+function install_FULL_installed_packs_in_system() {
+
+  temp_one="$(cat ${main_project_path}/package-list/FULL-installed-packs-in-system.txt)"
+  printf '\nКоличество устанавливаемых пакетов: %s\n\n' "$(echo ${temp_one} | wc -w)"
+  pm "$@" -- "${temp_one}"
+
+}
+
+function main_FULL_installed_packs_in_system_script_source() {
+
+  # printf "Initialise main function of FULL-installed-packs-in-system   script source\n";
+
+  # Ошибка: Совпадений не найдено: liblqr ntfs texlive-pst xorg-x11-fonts-ISO8859
+
+  local flag=
+
+  OPTIND=1
+
+  while getopts "gi" OPT; do
+    case $OPT in
+    g) flag=0 ;;
+    i) flag=1 ;;
+    *) ;;
+    esac
+  done
+  shift $(($OPTIND - 1))
+  # shift `expr $OPTIND - 1`
+  [ "${1:-}" = "--" ] && shift
+
+  case $flag in
+  0) get_FULL_installed_packs_in_system ;;
+  1) install_FULL_installed_packs_in_system "$@" ;;
+  *) echo -e "Options:\n\t-g: get installed full system packs in ${main_project_path}/package-list/FULL-installed-packs-in-system.txt file\n\t-i: install full system packs from file - ${main_project_path}/package-list/FULL-installed-packs-in-system.txt" ;;
+  esac
+
+}
+
+main_FULL_installed_packs_in_system_script_source "$@"

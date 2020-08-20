@@ -1,0 +1,3 @@
+compiz-bcop compiz-devel compiz-plugins-experimental-devel libcompizconfig-devel emerald-devel
+ cairo-clock cairo-dock cairo-dock-devel cairo-dock-freeworld cairo-dock-freeworld-libs cairo-dock-plug-ins cairo-dock-plug-ins-base cairo-dock-plug-ins-common cairo-dock-plug-ins-dbus cairo-dock-plug-ins-kde cairo-dock-plug-ins-unstable cairo-dock-plug-ins-webkit cairo-dock-plug-ins-xfce cairo-dock-python3 cairo-dock-ruby cairo-dock-vala cairo-dock-vala-devel cairo-tools cairomm-devel cairomm-doc
+ 

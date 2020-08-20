@@ -1,0 +1,5 @@
+code
+fira-code-fonts
+nodejs
+npm
+php

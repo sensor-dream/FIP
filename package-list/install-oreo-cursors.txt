@@ -1,0 +1,5 @@
+git
+inkscape
+make
+ruby
+xorg-x11-apps

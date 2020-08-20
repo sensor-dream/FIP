@@ -1,0 +1,192 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: zram-swap
+## @Creation date file: 06.12.2020, 16:58:56
+
+[[ -z "${zram_swap_script_source}" ]] && declare -rx zram_swap_script_source="$BASH_SOURCE"
+
+if [[ -z "${zram_swap_script_source_path}" ]]; then
+  temp_one="$(dirname ${zram_swap_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx zram_swap_script_source_path="$(pwd)"
+  else
+    declare -rx zram_swap_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_zram_swap() {
+
+  echo
+  echo "Remove /etc/systemd/zram-generator.conf for run default parameters zram"
+  echo "Remove all string in /etc/systemd/zram-generator.conf file for not running zram drive"
+  echo
+  echo 'Please readme https://fedoraproject.org/wiki/Changes/SwapOnZRAM'
+  echo
+
+  local install_pkg=(
+    # Имя          : zram
+    # Репозиторий  : fedora
+    # Краткое опис : ZRAM for swap config and services for Fedora
+    # Лицензия     : GPLv2+
+    # Описание     : ZRAM is a Linux block device that can be used for compressed swap in memory.
+    # : It's useful in memory constrained devices. This provides a service to setup
+    # : ZRAM as a swap device based on criteria such as available memory.
+    # Included in cernel module Fedora 33
+    # 'zram'
+    #
+    # Имя          : zram-generator
+    # Репозиторий  : @System
+    # Из репозитор : anaconda
+    # Краткое опис : Systemd unit generator for zram swap devices
+    # URL          : https://crates.io/crates/zram-generator
+    # Лицензия     : MIT
+    # Описание     : This is a systemd unit generator that enables swap on zram.
+    # : (With zram, there is no physical swap device. Part of the avaialable RAM
+    # : is used to store compressed pages, essentially trading CPU cycles for memory.)
+    # :
+    # : To activate, install zram-generator-defaults subpackage
+    'zram-generator'
+    #
+    # Имя          : zram-generator-defaults
+    # Репозиторий  : @System
+    # Из репозитор : anaconda
+    # Краткое опис : Default configuration for zram-generator
+    # URL          : https://crates.io/crates/zram-generator
+    # Лицензия     : MIT
+    # Описание     : Default configuration for zram-generator.
+    'zram-generator-defaults'
+    #
+    # Имя          : udisks2-zram
+    # Репозиторий  : @System
+    # Из репозитор : fedora
+    # Краткое опис : Module for ZRAM
+    # URL          : https://github.com/storaged-project/udisks
+    # Лицензия     : LGPLv2+
+    # Описание     : This package contains module for ZRAM configuration.
+    'udisks2-zram'
+    #
+    # Имя          : systemd-swap
+    # Репозиторий  : fedora
+    # Краткое опис : Creating hybrid swap space from zram swaps, swap files and swap partitions
+    # URL          : https://github.com/Nefelim4ag/systemd-swap
+    # Лицензия     : GPLv3+
+    # Описание     : Manage swap on:
+    # :     zswap - Enable/Configure
+    # :     zram - Autoconfigurating
+    # :     files - (sparse files for saving space, support btrfs)
+    # :     block devices - auto find and do swapon
+    # : It is configurable in /etc/systemd/swap.conf
+    # 'systemd-swap'
+    #
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/zram-swap.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+  #
+  # /etc/systemd/zram-generator.conf
+  #
+  local zram_generator_conf='/etc/systemd/zram-generator.conf'
+  #
+  # /etc/sysctl.conf
+  #
+  local sysctl_conf_file='/etc/sysctl.conf'
+
+  if [[ ! -f "${zram_generator_conf}" ]]; then
+    if [[ -f '/lib/systemd/zram-generator.conf' ]]; then
+      sudo cp '/lib/systemd/zram-generator.conf' "${zram_generator_conf}"
+    else
+      echo '# This config file enables a /dev/zram0 device with the default settings:
+# — size — half of available RAM or 4GB, whichever is less
+# — compression — most likely lzo-rle
+# \
+# To disable, uninstall zram-generator-defaults or create empty
+# /etc/systemd/zram-generator.conf file.
+[zram0]' |
+        sudo tee -a "${zram_generator_conf}" >/dev/null
+    fi
+  fi
+
+  [[ -f "${zram_generator_conf}.back" ]] || sudo cp "${zram_generator_conf}" "${zram_generator_conf}.back"
+
+  temp_one="$(cat ${zram_generator_conf})"
+
+  # Допустимые значения zram-fraction:
+  #         0.5 – выделение под пул 50% (выбор по умолчанию) от оперативной памяти;
+  #         0.25 – 25%;
+  #         0.1 – 10%;
+  #         1.0 – 100% соответственно (не рекомендуется).
+  insert_or_replace_var_value_in_string_data "zram-fraction" 0.25
+  # В max-zram-size указывается максимально допустимый объём для пула в мегабайтах.
+  insert_or_replace_var_value_in_string_data "max-zram-size" 2048
+
+  echo "${temp_one}" | sudo tee "${zram_generator_conf}" >/dev/null
+
+  [[ -f "${sysctl_conf_file}.back" ]] || sudo cp "${sysctl_conf_file}" "${sysctl_conf_file}.back"
+
+  temp_one="$(cat ${sysctl_conf_file})"
+  # vm.vfs_cache_pressure=500 увеличивает давление на кэш, что увеличивает склонность ядра к рекультивации памяти, используемой для кэширования объектов каталогов и индексов. Вы будете использовать меньше памяти в течение более длительного периода времени. Резкое падение производительности сводится на нет за счёт более раннего свопинга.
+  insert_or_replace_var_value_in_string_data "vm.vfs_cache_pressure" 50
+  # vm.swappiness=100 увеличивает параметр, насколько агрессивно ядро будет свопить страницы памяти, так как мы сначала используем ZRAM.
+  insert_or_replace_var_value_in_string_data "vm.swappiness" 10
+  # vm.dirty_background_ratio=1 &
+  # vm.dirty_ratio=50 — фоновые процессы начнут запись сразу по достижении лимита 1%, но система не будет принудительно выполнять синхронный ввод-вывод, пока не достигнет dirty_ratio в 50%.
+  insert_or_replace_var_value_in_string_data "vm.dirty_background_ratio" 1
+  insert_or_replace_var_value_in_string_data "vm.dirty_ratio" 50
+
+  echo "${temp_one}" | sudo tee "${sysctl_conf_file}" >/dev/null
+
+  # Return the values of variables to the state saved in files and delete your changes.
+  # sudo sysctl --system
+
+  # read values from file
+  sudo sysctl -p >/dev/null
+
+}
+
+function main_zram_swap_script_source() {
+
+  # printf "Initialise main function of zram-swap script source\n";
+
+  install_zram_swap "$@"
+
+}
+
+main_zram_swap_script_source "$@"

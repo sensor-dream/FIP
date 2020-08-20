@@ -1,0 +1,6 @@
+apostrophe
+focuswriter
+foliate
+glabels
+notes-up
+pdfarranger

@@ -1,0 +1,197 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: cups
+## @Creation date file: 13.11.2020, 00:54:52
+
+[[ -z "${cups_script_source}" ]] && declare -rx cups_script_source="$BASH_SOURCE"
+
+if [[ -z "${cups_script_source_path}" ]]; then
+  temp_one="$(dirname ${cups_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx cups_script_source_path="$(pwd)"
+  else
+    declare -rx cups_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_cups() {
+
+  local install_pkg=(
+    # Краткое опис : CUPS printing system
+    # URL          : http://www.cups.org/
+    # Лицензия     : ASL 2.0
+    # Описание     : CUPS printing system provides a portable printing layer for
+    # : UNIX® operating systems. It has been developed by Apple Inc.
+    # : to promote a standard printing solution for all UNIX vendors and users.
+    # : CUPS provides the System V and Berkeley command-line interfaces.
+    'cups'
+    'cups-devel'
+    # Краткое опис : CUPS printing system - client programs
+    # URL          : http://www.cups.org/
+    # Лицензия     : GPLv2
+    # Описание     : CUPS printing system provides a portable printing layer for
+    # : UNIX® operating systems. This package contains command-line client
+    # : programs.
+    'cups-client'
+    # Краткое опис : CUPS printing system - directory layout
+    # URL          : http://www.cups.org/
+    # Лицензия     : ASL 2.0
+    # Описание     : CUPS printing system provides a portable printing layer for
+    # : UNIX® operating systems. This package provides some directories which are
+    # : required by other packages that add CUPS drivers (i.e. filters, backends etc.)
+    'cups-filesystem'
+    # Краткое опис : OpenPrinting CUPS filters and backends
+    # URL          : http://www.linuxfoundation.org/collaborate/workgroups/openprinting/cups-filters
+    # Лицензия     : GPLv2 and GPLv2+ and GPLv3 and GPLv3+ and LGPLv2+ and MIT and BSD with advertising
+    # Описание     : Contains backends, filters, and other software that was
+    # : once part of the core CUPS distribution but is no longer maintained by
+    # : Apple Inc. In addition it contains additional filters developed
+    # : independently of Apple, especially filters for the PDF-centric printing
+    # : workflow introduced by OpenPrinting.
+    'cups-filters'
+    'cups-filters-libs'
+    'cups-filters-devel'
+    # Краткое опис : CUPS printing system - tool for performing IPP requests
+    # URL          : http://www.cups.org/
+    # Лицензия     : ASL 2.0
+    # Описание     : Sends IPP requests to the specified URI and tests and/or displays the results.
+    'cups-ipptool'
+    # Краткое опис : CUPS printing system - libraries
+    # URL          : http://www.cups.org/
+    # Лицензия     : LGPLv2 and zlib
+    # Описание     : CUPS printing system provides a portable printing layer for
+    # : UNIX® operating systems. It has been developed by Apple Inc.
+    # : to promote a standard printing solution for all UNIX vendors and users.
+    # : CUPS provides the System V and Berkeley command-line interfaces.
+    # : The cups-libs package provides libraries used by applications to use CUPS
+    # : natively, without needing the lp/lpr commands.
+    'cups-libs'
+    # Краткое опис : A helper that makes system-config-printer use PolicyKit
+    # URL          : http://www.freedesktop.org/wiki/Software/cups-pk-helper/
+    # Лицензия     : GPLv2+
+    # Описание     : cups-pk-helper is an application which makes cups configuration
+    # : interfaces available under control of PolicyKit.
+    'cups-pk-helper'
+    # Краткое опис : CUPS backend for the Canon BJNP network printers
+    # URL          : https://sourceforge.net/projects/cups-bjnp/
+    # Лицензия     : GPLv2+
+    # Описание     : This package contains a backend for CUPS for Canon printers using the
+    # : proprietary BJNP network protocol.
+    'cups-bjnp'
+    # Краткое опис : CUPS printing system - lpd emulation
+    # URL          : http://www.cups.org/
+    # Лицензия     : ASL 2.0
+    # Описание     : CUPS printing system provides a portable printing layer for
+    # : UNIX® operating systems. This is the package that provides standard
+    # : lpd emulation.
+    'cups-lpd'
+    # Краткое опис : Extension for creating pdf-Files with CUPS
+    # URL          : http://www.cups-pdf.de/
+    # Лицензия     : GPLv2+
+    # исание     : "cups-pdf" is a backend script for use with CUPS - the "Common UNIX Printing
+    # : System" (see more for CUPS under http://www.cups.org/).
+    # : "cups-pdf" uses the ghostscript pdfwrite device to produce PDF Files.
+    # :
+    # : This version has been modified to store the PDF files on the Desktop of the
+    # : user. This behavior can be changed by editing the configuration file.
+    'cups-pdf'
+    # Краткое опис : CUPS printing system - tools for printer application
+    # URL          : http://www.cups.org/
+    # Лицензия     : ASL 2.0
+    # Описание     : Provides IPP everywhere printer application ippeveprinter and tools for printing
+    # : PostScript and HP PCL document formats - ippevepcl and ippeveps. The printer
+    # : application enables older printers for IPP everywhere standard - so if older printer
+    # : is installed with a printer application, its print queue acts as IPP everywhere printer
+    # : to CUPS daemon. This solution will substitute printer drivers and raw queues in the future.
+    'cups-printerapp'
+    # Краткое опис : CUPS backend for printing from X2Go
+    # URL          : http://www.x2go.org/
+    # Лицензия     : GPLv2+
+    # Описание     : X2Go is a server based computing environment with
+    # :     - session resuming
+    # :     - low bandwidth support
+    # :     - session brokerage support
+    # :     - client side mass storage mounting support
+    # :     - audio support
+    # :     - authentication by smartcard and USB stick
+    # :
+    # : CUPS backend for printing from X2Go.
+    'cups-x2go'
+    # Краткое опис : DYMO LabelWriter Drivers for CUPS
+    # URL          : http://www.dymo.com
+    # Лицензия     : GPLv2+
+    # Описание     : DYMO LabelWriter and DYMO LabelMANAGER series drivers for CUPS
+    'dymo-cups-drivers'
+    # Краткое опис : CUPS drivers for Canon, Epson, HP and compatible printers
+    # URL          : http://gimp-print.sourceforge.net/
+    # Лицензия     : GPLv2+
+    # Описание     : This package contains native CUPS support for a wide range of Canon,
+    # : Epson, HP and compatible printers.
+    'gutenprint-cups'
+    'python-cups-doc'
+    'python3-cups'
+    #
+    # Имя          : splix
+    # Репозиторий  : @System
+    # Из репозитор : fedora
+    # Краткое опис : Driver for QPDL/SPL2 printers (Samsung and several Xerox printers)
+    # URL          : http://splix.sourceforge.net/
+    # Лицензия     : GPLv2
+    # Описание     : This driver is usable by all printer devices which understand the QPDL
+    #              : (Quick Page Description Language) also known as SPL2 (Samsung Printer Language)
+    #              : language. It covers several Samsung, Xerox and Dell printers.
+    #              : Splix doesn't support old SPL(1) printers.
+    'splix'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/cups.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_cups_script_source() {
+
+  # printf "Initialise main function of cups script source\n";
+
+  install_cups "$@"
+
+}
+
+main_cups_script_source "$@"
