@@ -126,7 +126,7 @@ function uninstall_nvidia_videocard_drv_340xx() {
 
 function main_nvidia_videocard_drv_340xx_script_source() {
 
-  # printf "Initialise main function of nvidia-videocard-drv-340xx script source";
+  # printf "Initialise main function of nvidia-videocard-drv-340xx script source\n"
 
   install_nvidia_videocard_drv_340xx "$@"
 
