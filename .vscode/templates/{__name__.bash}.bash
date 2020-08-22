@@ -11,20 +11,12 @@
 ## @File: {__name__}.bash
 ## @Creation date file: {__date__}
 
-#
-#   Декларируем имя файла
-#
-
 declare -rx {__name__}_script_source="$BASH_SOURCE";
 
 if [[ -z "${main_run_script_path}" ]]; then
   declare -rx main_run_script_path="$(pwd)";
-  printf "Script runs from path:\n\t%s\n" "${main_run_script_path}\n";
+  printf "Script runs from path: %s\n" "${main_run_script_path}\n";
 fi
-
-#
-#   Подключаем общую библиотеку и общую конфигурацию
-#
 
 if [[ -z "${main_cfg_script_source}" ]]; then
   check=1;
@@ -48,7 +40,7 @@ if [[ -z "${main_cfg_script_source}" ]]; then
   done
 fi
 
-printf "Loading:\n\t%s\n" $(readlink -m ${{__name__}_script_source})";
+printf "Loading: %s\n" $(readlink -m ${{__name__}_script_source})";
 
 function install_{__name__}(){
 

@@ -1,0 +1,54 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: functions
+## @Creation date file: 21.08.2020, 04:47:20
+
+declare -rx functions_script_source="$BASH_SOURCE"
+
+printf "Loading: %s\n" "$(readlink -m ${functions_script_source})"
+
+function X_GNOME_Autostart_disabled() {
+
+  local name="$(echo $@ | sed 's%/etc/xdg/autostart/%%')"
+  if grep -q 'X-GNOME-Autostart-enabled' "$@"; then
+    if grep -q 'X-GNOME-Autostart-enabled=true' "$@"; then
+      sudo bash -c "sed -i 's/^X-GNOME-Autostart-enabled=true/X-GNOME-Autostart-enabled=false/g' $@"
+      echo "Disable autostart $@"
+    else
+      echo "Autostart is disabled in $@"
+    fi
+  else
+    sudo bash -c "echo X-GNOME-Autostart-enabled=false >>$@"
+    echo "Disable autostart $@"
+  fi
+  if [[ ! -d "/home/${session_user}/.config/autostart" ]]; then
+    mkdir -p "/home/${session_user}/.config/autostart"
+    echo "Not found /home/${session_user}/.config/autostart created it"
+  fi
+  if [[ ! -f "/home/${session_user}/.config/autostart/${name}" ]]; then
+    cp "$@" "/home/${session_user}/.config/autostart"
+    echo "Copy $@ to /home /${session_user}/.config/autostart/${name}"
+  else
+    echo "/home/${session_user}/.config/autostart/${name} already exists"
+    if grep -q 'X-GNOME-Autostart-enabled' "/home/${session_user}/.config/autostart/${name}"; then
+      if grep -q 'X-GNOME-Autostart-enabled=true' "/home/${session_user}/.config/autostart/${name}"; then
+        sudo sed -i 's/^X-GNOME-Autostart-enabled=true/X-GNOME-Autostart-enabled=false/g' "/home/${session_user}/.config/autostart/${name}"
+        echo "Disable autostart /home/${session_user}/.config/autostart/${name}"
+      else
+        echo "Autostart is disabled in /home/${session_user}/.config/autostart/${name}"
+      fi
+    else
+      echo 'X-GNOME-Autostart-enabled=false' >>"/home/${session_user}/.config/autostart/${name}"
+      echo "Disable /home/${session_user}/.config/autostart/${name}"
+    fi
+  fi
+}
+export -f X_GNOME_Autostart_disabled
