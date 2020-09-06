@@ -58,17 +58,18 @@ function main_diasble_tracker_script_source() {
     'tracker-miner-apps'
     'tracker-storereboot'
     'tracker-store'
-    'mask'
   )
 
   local temp="$(echo $(systemctl --user is-enabled ${disable_list[@]}) | sed 's/\s//g')"
 
-  if [[ "$(echo $(systemctl --user is-enabled ${list[@]}) | sed 's/\s//g')" != "maskedmaskedmaskedmaskedmaskedmasked" ]]; then
+  if [[ "$(echo $(systemctl --user is-enabled ${list[@]}) | sed 's/\s//g')" != "maskedmaskedmaskedmaskedmasked" ]]; then
     printf "Stop tracker daemon: %s\n" $(tracker daemon -t all 2>/dev/null)
     printf "List services stop and masked:\n\t%s\n"
+    tracker daemon -t all 2 > /dev/null
+    sudo tracker daemon -t all 2 > /dev/null
     systemctl --user mask "${list[@]}"
     sudo systemctl mask "${list[@]}"
-    systemctl daemon-reload
+    sudo systemctl daemon-reload
   else
     echo "Services tracker* is stop and masked"
   fi
