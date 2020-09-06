@@ -1,0 +1,83 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: cfg-mysql-information
+## @Creation date file: 10.08.2020, 23:53:43
+
+declare -rx cfg_mysql_information_script_source="$BASH_SOURCE"
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${cfg_mysql_information_script_source})"
+
+echo
+echo -n "Введите имя суперпользователя mysql сервера ( def. root ): "
+read cfg_db_mysql_login
+if [[ -z "${cfg_db_mysql_login}" ]]; then
+  cfg_db_mysql_login="root"
+fi
+echo
+stty -echo # скрыть отображение символов ввода
+echo -n "Введите пароль для ${cfg_db_mysql_login} mysql сервера: "
+read cfg_db_mysql_password
+stty echo # включить отображение символов ввода
+echo -e "\n"
+echo -n "Введите адрес mysql сервера ( def. localhost ): "
+read cfg_db_mysql_server
+if [[ -z "${cfg_db_mysql_server}" ]]; then
+  cfg_db_mysql_server="localhost"
+fi
+echo
+echo -n "Введите порт mysql сервера ( def. 3306 ): "
+read cfg_db_mysql_port
+if [[ -z "${cfg_db_mysql_port}" ]]; then
+  cfg_db_mysql_port="3306"
+fi
+echo
+echo -n "Введите путь к базе данных ( def. /var/lib/mysql ): "
+read cfg_db_mysql_port
+if [[ -z "${cfg_db_mysql_port}" ]]; then
+  cfg_db_mysql_port="3306"
+fi
+echo
+cat <<EOF >"${main_project_path}/hidden-information/cfg-mysql-information"
+declare -rx cfg_db_mysql_login="${db_mysql_login}";
+declare -rx cfg_db_mysql_password="${db_mysql_password}";
+declare -rx cfg_db_mysql_server="${db_mysql_server}";
+declare -rx cfg_db_mysql_port="${db_mysql_port}";
+declare -rx cfg_db_mysql_base_path="${db_mysql_base_path}";
+EOF
+
+chmod 0600 "${main_project_path}/hidden-information/cfg-mysql-information"

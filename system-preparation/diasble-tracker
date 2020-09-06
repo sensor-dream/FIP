@@ -60,21 +60,18 @@ function main_diasble_tracker_script_source() {
     'tracker-store'
   )
 
-  local temp="$(echo $(systemctl --user is-enabled ${disable_list[@]}) | sed 's/\s//g')"
-
   if [[ "$(echo $(systemctl --user is-enabled ${list[@]}) | sed 's/\s//g')" != "maskedmaskedmaskedmaskedmasked" ]]; then
     printf "Stop tracker daemon: %s\n" $(tracker daemon -t all 2>/dev/null)
     printf "List services stop and masked:\n\t%s\n"
-    tracker daemon -t all 2 > /dev/null
-    sudo tracker daemon -t all 2 > /dev/null
+    tracker daemon -t all 2 >/dev/null
+    sudo tracker daemon -t all 2 >/dev/null
     systemctl --user mask "${list[@]}"
     sudo systemctl mask "${list[@]}"
     sudo systemctl daemon-reload
+    find /etc/xdg/autostart -type f -name tracker* -exec bash -c 'X_GNOME_Autostart_disabled "$0"' '{}' \;
   else
-    echo "Services tracker* is stop and masked"
+    echo -e "Tracker daemons is stop, disabled and masked.\nX_GNOME_Autostart disabled from: ${list[@]}"
   fi
-
-  find /etc/xdg/autostart -type f -name tracker* -exec bash -c 'X_GNOME_Autostart_disabled "$0"' '{}' \;
 
 }
 

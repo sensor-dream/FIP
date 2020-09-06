@@ -1,0 +1,100 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: sshd
+## @Creation date file: 07.09.2020, 05:03:03
+
+declare -rx sshd_script_source="$BASH_SOURCE"
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${sshd_script_source})"
+
+function cfg_sshd_script_source() {
+
+  # prinf "Initialise main function of sshd script source\n";
+
+  local temp=$(sudo grep -E "^[#]?Port\s.*$" '/etc/ssh/sshd_config')
+  if [[ -z "${temp}" ]]; then
+    sudo echo "Port ${cfg_sshd_port}" >>'/etc/ssh/sshd_config'
+    echo "Set SSHD 'Port ${cfg_sshd_port}'"
+  else
+    if [[ "${temp}" != "Port ${cfg_sshd_port}" ]]; then
+      sudo sed -i -r "s/^[#]?Port\s.*$/Port ${cfg_sshd_port}/" '/etc/ssh/sshd_config'
+      echo "Set SSHD 'Port ${cfg_sshd_port}'"
+    else
+      echo "SSHD 'Port ${cfg_sshd_port}' already use"
+    fi
+  fi
+
+  temp=$(sudo grep -E "^[#]?PermitRootLogin\s.*$" '/etc/ssh/sshd_config')
+  if [[ -z "${temp}" ]]; then
+    sudo echo "Port ${cfg_sshd_permit_root_login}" >>'/etc/ssh/sshd_config'
+    echo "Set SSHD 'PermitRootLogin ${cfg_sshd_permit_root_login}'"
+  else
+    if [[ "${temp}" != "PermitRootLogin ${cfg_sshd_permit_root_login}" ]]; then
+      sudo sed -i -r "s/^[#]?PermitRootLogin\s.*$/PermitRootLogin ${cfg_sshd_permit_root_login}/" '/etc/ssh/sshd_config'
+      echo "Set 'SSHD PermitRootLogin ${cfg_sshd_permit_root_login}'"
+    else
+      echo "SSHD 'PermitRootLogin ${cfg_sshd_permit_root_login}' already use"
+    fi
+  fi
+
+  # TODO Make a dynamic MOTD (Banner) for SSHD
+  temp=$(sudo grep -E "^[#]?Banner\s.*$" '/etc/ssh/sshd_config')
+  if [[ -z "${temp}" ]]; then
+    sudo echo "Banner ${cfg_sshd_show_banner}" >>'/etc/ssh/sshd_config'
+    echo "Set SSHD 'Banner ${cfg_sshd_show_banner}'"
+  else
+    if [[ "${temp}" != "Banner ${cfg_sshd_show_banner}" ]]; then
+      sudo sed -i -r "s%^[#]?Banner\s.*$%Banner ${cfg_sshd_show_banner}%" '/etc/ssh/sshd_config'
+      echo "Set SSHD 'Banner ${cfg_sshd_show_banner}'"
+    else
+      echo "SSHD 'Banner ${cfg_sshd_show_banner}' already use"
+    fi
+  fi
+
+  temp="$(sudo systemctl is-enabled sshd)"
+  [[ "${temp}" == "masked" ]] && sudo systemctl unmask sshd
+  [[ "${temp}" == 'enabled' ]] || sudo systemctl enable sshd
+  if [[ $(sudo systemctl is-active sshd) == 'active' ]]; then
+    sudo systemctl restart sshd
+  else
+    sudo systemctl start sshd
+  fi
+
+}
+
+cfg_sshd_script_source "$@"

@@ -1,0 +1,5 @@
+*
+!\.gitignore
+!cfg-personal-information.example
+!cfg-sshd-information.example
+!cfg-mysql-information.example
