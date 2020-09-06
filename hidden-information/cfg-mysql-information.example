@@ -1,0 +1,5 @@
+declare -rx cfg_db_mysql_login="root";
+declare -rx cfg_db_mysql_password="root password";
+declare -rx cfg_db_mysql_server="localhost";
+declare -rx cfg_db_mysql_port="3306";
+declare -rx cfg_db_mysql_base_path="/var/lib/mysql";

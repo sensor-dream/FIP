@@ -1,0 +1,3 @@
+declare -rx cfg_sshd_port="22";
+declare -rx cfg_sshd_permit_root_login="prohibit-password";
+declare -rx cfg_sshd_show_banner="none"

@@ -67,17 +67,17 @@ if [[ -z "${cfg_db_mysql_port}" ]]; then
 fi
 echo
 echo -n "Введите путь к базе данных ( def. /var/lib/mysql ): "
-read cfg_db_mysql_port
-if [[ -z "${cfg_db_mysql_port}" ]]; then
-  cfg_db_mysql_port="3306"
+read cfg_db_mysql_base_path
+if [[ -z "${cfg_db_mysql_base_path}" ]]; then
+  cfg_db_mysql_base_path="/var/lib/mysql"
 fi
 echo
 cat <<EOF >"${main_project_path}/hidden-information/cfg-mysql-information"
-declare -rx cfg_db_mysql_login="${db_mysql_login}";
-declare -rx cfg_db_mysql_password="${db_mysql_password}";
-declare -rx cfg_db_mysql_server="${db_mysql_server}";
-declare -rx cfg_db_mysql_port="${db_mysql_port}";
-declare -rx cfg_db_mysql_base_path="${db_mysql_base_path}";
+declare -rx cfg_db_mysql_login="${cfg_db_mysql_login}";
+declare -rx cfg_db_mysql_password="${cfg_db_mysql_password}";
+declare -rx cfg_db_mysql_server="${cfg_db_mysql_server}";
+declare -rx cfg_db_mysql_port="${cfg_db_mysql_port}";
+declare -rx cfg_db_mysql_base_path="${cfg_db_mysql_base_path}";
 EOF
 
 chmod 0600 "${main_project_path}/hidden-information/cfg-mysql-information"

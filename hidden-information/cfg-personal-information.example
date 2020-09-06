@@ -1,0 +1,10 @@
+declare -rx cfg_full_name="Fedora user";
+declare -rx cfg_user="session-user";
+declare -rx cfg_email="session-user@session-user.domain";
+declare -rx cfg_password="session-user password";
+declare -rx cfg_org="SUO";
+declare -rx cfg_full_org="Session-User Org";
+declare -rx cfg_docfg="session-user.domain";
+declare -rx cfg_local_group_docfg="home.session-user.domain";
+declare -rx cfg_hostname="4.home.session-user.domain";
+declare -rx cfg_local_zone="Asia/Novosibirsk";
