@@ -46,6 +46,9 @@ function cfg_sshd_script_source() {
 
   # prinf "Initialise main function of sshd script source\n";
 
+  [[ -f "${main_project_path}/hidden-information/cfg-sshd-information" ]] || . "${main_project_path}/tools/cfg-sshd-information"
+  . "${main_project_path}/hidden-information/cfg-sshd-information"
+
   local temp=$(sudo grep -E "^[#]?Port\s.*$" '/etc/ssh/sshd_config')
   if [[ -z "${temp}" ]]; then
     sudo echo "Port ${cfg_sshd_port}" >>'/etc/ssh/sshd_config'
@@ -69,6 +72,19 @@ function cfg_sshd_script_source() {
       echo "Set 'SSHD PermitRootLogin ${cfg_sshd_permit_root_login}'"
     else
       echo "SSHD 'PermitRootLogin ${cfg_sshd_permit_root_login}' already use"
+    fi
+  fi
+
+  temp=$(sudo grep -E "^[#]?MaxAuthTries\s.*$" '/etc/ssh/sshd_config')
+  if [[ -z "${temp}" ]]; then
+    sudo echo "MaxAuthTries ${cfg_sshd_max_auth_tries}" >>'/etc/ssh/sshd_config'
+    echo "Set SSHD 'MaxAuthTries ${cfg_sshd_max_auth_tries}'"
+  else
+    if [[ "${temp}" != "MaxAuthTries ${cfg_sshd_max_auth_tries}" ]]; then
+      sudo sed -i -r "s/^[#]?MaxAuthTries\s.*$/MaxAuthTries ${cfg_sshd_max_auth_tries}/" '/etc/ssh/sshd_config'
+      echo "Set 'SSHD MaxAuthTries ${cfg_sshd_max_auth_tries}'"
+    else
+      echo "SSHD 'MaxAuthTries ${cfg_sshd_max_auth_tries}' already use"
     fi
   fi
 

@@ -49,14 +49,19 @@ if [[ -z "${cfg_sshd_port}" ]]; then
   cfg_sshd_port=22
 fi
 echo
-echo -n "Запретить вход пользователя root ( def. yes ): "
+echo -n "Разрешить вход пользователя root ( def. no ): "
 read cfg_sshd_permit_root_login
 if [[ -z "${cfg_sshd_permit_root_login}" ]]; then
-  cfg_sshd_permit_root_login='prohibit-password'
-else
   cfg_sshd_permit_root_login='no'
+else
+  cfg_sshd_permit_root_login='prohibit-password'
 fi
 echo
+echo -n "Введите количество сбоев аутентификации на одно соединение ( def. 6 ): "
+read cfg_sshd_max_auth_tries
+if [[ -z "${cfg_sshd_max_auth_tries}" ]]; then
+  cfg_sshd_max_auth_tries=6
+fi
 cat <<EOF >"${main_project_path}/hidden-information/cfg-sshd-information"
 declare -rx cfg_sshd_port="${cfg_sshd_port}";
 declare -rx cfg_sshd_permit_root_login="${cfg_sshd_permit_root_login}";
