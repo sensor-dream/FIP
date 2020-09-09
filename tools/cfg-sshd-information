@@ -62,17 +62,17 @@ read cfg_sshd_max_auth_tries
 if [[ -z "${cfg_sshd_max_auth_tries}" ]]; then
   cfg_sshd_max_auth_tries=6
 fi
-cat <<EOF >"${main_project_path}/hidden-information/cfg-sshd-information"
+cat <<EOF >"${main_project_path}/hidden/cfg-sshd-information"
 declare -rx cfg_sshd_port="${cfg_sshd_port}";
 declare -rx cfg_sshd_permit_root_login="${cfg_sshd_permit_root_login}";
 # TODO Make a dynamic MOTD (Bammer) for SSHD
-# declare -rx cfg_sshd_show_banner="${main_project_path}/hidden-information/sshd-banner";
+# declare -rx cfg_sshd_show_banner="${main_project_path}/hidden/sshd-banner";
 declare -rx cfg_sshd_show_banner="none"
 EOF
-cat <<EOF >"${main_project_path}/hidden-information/sshd-banner"
+cat <<EOF >"${main_project_path}/hidden/sshd-banner"
 IN ----> ${cfg_full_org}
      contact email: ${cfg_email} --> AND
 OUT <--- ${cfg_org}
 EOF
 
-chmod 0600 "${main_project_path}/hidden-information/cfg-sshd-information"
+chmod 0600 "${main_project_path}/hidden/cfg-sshd-information"

@@ -72,7 +72,7 @@ if [[ -z "${cfg_db_mysql_base_path}" ]]; then
   cfg_db_mysql_base_path="/var/lib/mysql"
 fi
 echo
-cat <<EOF >"${main_project_path}/hidden-information/cfg-mysql-information"
+cat <<EOF >"${main_project_path}/hidden/cfg-mysql-information"
 declare -rx cfg_db_mysql_login="${cfg_db_mysql_login}";
 declare -rx cfg_db_mysql_password="${cfg_db_mysql_password}";
 declare -rx cfg_db_mysql_server="${cfg_db_mysql_server}";
@@ -80,4 +80,4 @@ declare -rx cfg_db_mysql_port="${cfg_db_mysql_port}";
 declare -rx cfg_db_mysql_base_path="${cfg_db_mysql_base_path}";
 EOF
 
-chmod 0600 "${main_project_path}/hidden-information/cfg-mysql-information"
+chmod 0600 "${main_project_path}/hidden/cfg-mysql-information"

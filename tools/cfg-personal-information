@@ -92,7 +92,7 @@ echo -n "Введите времменную зону ( def. sety local time zon
 read cfg_local_zone
 [[ -z "${cfg_local_zone}" ]] && cfg_local_zone="Asia/Novosibirsk"
 echo
-cat <<EOF >"${main_project_path}/hidden-information/cfg-personal-information"
+cat <<EOF >"${main_project_path}/hidden/cfg-personal-information"
 declare -rx cfg_full_name="${cfg_full_name}";
 declare -rx cfg_user="${cfg_user}";
 declare -rx cfg_email="${cfg_email}";
@@ -104,5 +104,5 @@ declare -rx cfg_local_group_docfg="${cfg_local_group_docfg}";
 declare -rx cfg_hostname="${cfg_hostname}";
 declare -rx cfg_local_zone="${cfg_local_zone}";
 EOF
-chown ${session_user}.${session_user} "${main_project_path}/hidden-information/cfg-personal-information"
-chmod 0600 "${main_project_path}/hidden-information/cfg-personal-information"
+chown ${session_user}.${session_user} "${main_project_path}/hidden/cfg-personal-information"
+chmod 0600 "${main_project_path}/hidden/cfg-personal-information"
