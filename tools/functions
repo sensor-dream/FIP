@@ -40,7 +40,7 @@ function X_GNOME_Autostart_disabled() {
     echo "/home/${session_user}/.config/autostart/${name} already exists"
     if grep -q 'X-GNOME-Autostart-enabled' "/home/${session_user}/.config/autostart/${name}"; then
       if grep -q 'X-GNOME-Autostart-enabled=true' "/home/${session_user}/.config/autostart/${name}"; then
-        sudo sed -i 's/^X-GNOME-Autostart-enabled=true/X-GNOME-Autostart-enabled=false/g' "/home/${session_user}/.config/autostart/${name}"
+        sed -i 's/^X-GNOME-Autostart-enabled=true/X-GNOME-Autostart-enabled=false/g' "/home/${session_user}/.config/autostart/${name}"
         echo "Disable autostart /home/${session_user}/.config/autostart/${name}"
       else
         echo "Autostart is disabled in /home/${session_user}/.config/autostart/${name}"
@@ -52,3 +52,11 @@ function X_GNOME_Autostart_disabled() {
   fi
 }
 export -f X_GNOME_Autostart_disabled
+
+function pkgs() {
+
+  # TODO replace sudo dnf ... directive
+
+  return
+
+}

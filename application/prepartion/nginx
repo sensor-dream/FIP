@@ -1,0 +1,312 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: nginx
+## @Creation date file: 10.09.2020, 09:51:58
+
+declare -rx nginx_script_source="$BASH_SOURCE"
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+function install_nginx_dependence() {
+
+  if [[ ! -f '/etc/yum.repos.d/openresty.repo' ]]; then
+    wget https://openresty.org/package/fedora/openresty.repo
+    sudo mv openresty.repo /etc/yum.repos.d/
+    sudo dnf check-update
+  fi
+
+  local install_pkg=(
+    'libxml2'
+    'libxslt'
+    'libxml2-devel'
+    'libxslt-devel'
+    'gperftools'
+    'gperftools-devel'
+    'libmaxminddb'
+    'libmaxminddb-devel'
+    'pcre-devel'
+    'openssl-devel'
+    'gcc'
+    'curl'
+    'openresty'
+    'openresty-resty'
+  )
+
+  sudo dnf install "${install_pkg[@]}"
+
+}
+
+printf "Loading: %s\n" "$(readlink -m ${nginx_script_source})"
+
+function main_nginx_script_source() {
+
+  # prinf "Initialise main function of nginx script source\n";
+
+  local nginx_version="$(rpm -qi nginx | awk '/Version/ { print $3 }')"
+  # local nginx_version='1.19.0'
+  local configure_arguments=''
+
+  [[ -z "${nginx_version}" ]] && . "${main_project_path}/application/installation/rpm/nginx"
+
+  [[ -z "${cfg_full_name}" ]] && . "${main_project_path}/hidden/cfg-personal-information"
+
+  install_nginx_dependence
+
+  [[ $(systemctl is-enabled nginx) == 'enable' ]] || sudo systemctl enable nginx
+  [[ $(systemctl is-active nginx) == 'active' ]] && sudo systemctl stop nginx
+
+  [[ -f '/usr/sbin/nginx.back' ]] || sudo mv '/usr/sbin/nginx' '/usr/sbin/nginx.back'
+
+  [[ -d "${main_project_path}/application/installation/src/nginx" ]] || mkdir -p "${main_project_path}/application/installation/src/nginx"
+
+  cd "${main_project_path}/application/installation/src/nginx"
+
+  if [[ -f "configure-arguments.txt" ]]; then
+    configure_arguments="$(cat configure-arguments.txt)"
+  else
+    configure_arguments=$(nginx -V 2>&1 | grep 'configure arguments' | awk -F': ' '{ print $2}')
+    echo "${configure_arguments}" >"configure-arguments.txt"
+  fi
+
+  [[ -f "nginx-${nginx_version}.tar.gz" ]] || wget "http://nginx.org/download/nginx-${nginx_version}.tar.gz"
+  [[ -d "ngx_devel_kit" ]] || git clone "https://github.com/vision5/ngx_devel_kit.git"
+  [[ -d "headers-more-nginx-module" ]] || git clone "https://github.com/openresty/headers-more-nginx-module.git"
+  [[ -d "ngx_http_geoip2_module" ]] || git clone "https://github.com/leev/ngx_http_geoip2_module.git"
+  [[ -d "set-misc-nginx-module" ]] || git clone "https://github.com/openresty/set-misc-nginx-module.git"
+  [[ -d "ngx_http_substitutions_filter_module" ]] || git clone "git://github.com/yaoweibin/ngx_http_substitutions_filter_module.git"
+  [[ -d "memc-nginx-module" ]] || git clone "https://github.com/openresty/memc-nginx-module.git"
+  [[ -d "srcache-nginx-module" ]] || git clone "https://github.com/openresty/srcache-nginx-module.git"
+  [[ -d "nginx-module-vts" ]] || git clone "https://github.com/vozlt/nginx-module-vts.git"
+
+  # TODO CONFIGYRE LUA MODULE
+  # [[ -d "lua-nginx-module" ]] || git clone "https://github.com/openresty/lua-nginx-module.git"
+
+  cd "nginx-${nginx_version}"
+
+  make clean
+
+  # TODO CONFIGYRE LUA MODULE
+  # export LUAJIT_LIB=/usr/lib64
+  # export LUAJIT_INC=/usr/include/luajit-2.1
+  # local lua_version="5.3"
+  # configure_arguments=$(echo "${configure_arguments}" | sed "s%--with-ld-opt='-Wl%--with-ld-opt='-Wl,-rpath,/usr/local/openresty/luajit/lib%; s%--with-cc-opt='%--with-cc-opt='-DNGX_LUA_USE_ASSERT -DNGX_LUA_ABORT_AT_PANIC -Wp,%")
+  #bash -c "./configure ${configure_arguments} --with-stream --add-module=${main_project_path}/application/installation/src/nginx/ngx_devel_kit --add-dynamic-module=${main_project_path}/application/installation/src/nginx/headers-more-nginx-module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/ngx_http_geoip2_module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/ngx_devel_kit --add-dynamic-module=${main_project_path}/application/installation/src/nginx/set-misc-nginx-module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/ngx_http_substitutions_filter_module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/lua-nginx-module"
+
+  bash -c "./configure ${configure_arguments} --with-stream --add-module=${main_project_path}/application/installation/src/nginx/ngx_devel_kit --add-dynamic-module=${main_project_path}/application/installation/src/nginx/headers-more-nginx-module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/ngx_http_geoip2_module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/ngx_devel_kit --add-dynamic-module=${main_project_path}/application/installation/src/nginx/set-misc-nginx-module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/ngx_http_substitutions_filter_module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/memc-nginx-module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/srcache-nginx-module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/nginx-module-vts"
+
+  make -j ${number_cores}
+
+  sudo cp objs/*.so "/lib64/nginx/modules/"
+
+  [[ -f "/usr/share/nginx/modules/mod-http-ndk.conf" ]] || echo '# load_module "/usr/lib64/nginx/modules/ndk_http_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-ndk.conf"
+  [[ -f "/usr/share/nginx/modules/mod-http-set-misc.conf" ]] || echo -e 'load_module "/usr/lib64/nginx/modules/ngx_http_set_misc_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-set-misc.conf"
+  [[ -f "/usr/share/nginx/modules/mod-http-headers-more-filter.conf" ]] || echo 'load_module "/usr/lib64/nginx/modules/ngx_http_headers_more_filter_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-headers-more-filter.conf"
+  [[ -f "/usr/share/nginx/modules/mod-http-geoip2.conf" ]] || echo -e 'load_module "/usr/lib64/nginx/modules/ngx_http_geoip2_module.so";\nload_module "/usr/lib64/nginx/modules/ngx_stream_geoip2_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-geoip2.conf"
+  [[ -f "/usr/share/nginx/modules/mod-http-subs-filter.conf" ]] || echo 'load_module "/usr/lib64/nginx/modules/ngx_http_subs_filter_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-subs-filter.conf"
+  [[ -f "/usr/share/nginx/modules/mod-stream.conf" ]] && sudo sed -i 's%^load_module%# load_module%' "/usr/share/nginx/modules/mod-stream.conf"
+  [[ -f "/usr/share/nginx/modules/mod-memc.conf" ]] || echo 'load_module "/usr/lib64/nginx/modules/ngx_http_memc_module.so";' | sudo tee "/usr/share/nginx/modules/mod-memc.conf"
+  [[ -f "/usr/share/nginx/modules/mod-http-srcache-filter.conf" ]] || echo 'load_module "/usr/lib64/nginx/modules/ngx_http_srcache_filter_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-srcache-filter.conf"
+  [[ -f "/usr/share/nginx/modules/mod-http-vhost-traffic-status.conf" ]] || echo 'load_module "/usr/lib64/nginx/modules/ngx_http_vhost_traffic_status_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-vhost-traffic-status.conf"
+
+  # TODO CONFIGYRE LUA MODULE
+  # [[ -f "/usr/share/nginx/modules/mod-http-lua.conf" ]] || echo 'load_module "/usr/lib64/nginx/modules/ngx_http_lua_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-lua.conf"
+
+  sudo cp "objs/nginx" '/usr/sbin/nginx'
+
+  [[ -f "/usr/share/nginx/html/404.html.back" ]] || sudo mv '/usr/share/nginx/html/404.html' '/usr/share/nginx/html/404.html.back'
+  cat <<EOF | sudo tee /usr/share/nginx/html/404.html
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+  </head>
+  <body>
+    <h1><strong>${cfg_full_org} (${cfg_org} - 23.06.06 - teddy bear) error!</strong></h1>
+    <h4 style="color: red;">The page you are looking for is not found.</h4>
+    </body>
+</html>
+EOF
+
+  [[ -f "/usr/share/nginx/html/50x.html.back" ]] || sudo mv '/usr/share/nginx/html/50x.html' '/usr/share/nginx/html/50x.html.back'
+  cat <<EOF | sudo tee /usr/share/nginx/html/50x.html
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+  </head>
+  <body>
+    <h1><strong>${cfg_full_org} (${cfg_org} - 23.06.06 - teddy bear) error!</strong></h1>
+    <h3>The page you are looking for is temporarily unavailable.  Please try again later.</h3>
+    <p>
+      something has triggered an error on your
+      website.
+    </p>
+  </body>
+</html>
+EOF
+
+  [[ -f "/usr/share/fedora-testpage/index.html.back" ]] || sudo mv '/usr/share/fedora-testpage/index.html' '/usr/share/fedora-testpage/index.html.back'
+  cat <<EOF | sudo tee /usr/share/fedora-testpage/index.html
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Webserver ${cfg_full_org} Test Page (${cfg_org} - <strong>23.06.06</strong> - teddy bear)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <style type="text/css">
+    /*<![CDATA[*/
+    body {
+      background-color: #fff;
+      color: #000;
+      font-size: 0.9em;
+      font-family: sans-serif,helvetica;
+      margin: 0;
+      padding: 0;
+    }
+    :link {
+      color: #c00;
+    }
+    :visited {
+      color: #c00;
+    }
+    a:hover {
+      color: #f50;
+    }
+    h1,h2,h3{
+      text-align: center;
+      margin: 0;
+      padding: 0.6em 2em 0.4em;
+      background-color: #4285F4;
+      /*background-color: #FF0000*/
+      color: #fff;
+      font-weight: normal;
+      font-size: 1.75em;
+      /*border-bottom: 2px solid #000;*/
+    }
+    h1 strong {
+      font-weight: bold;
+    }
+    h2 {
+      font-size: 1.25em;
+    }
+    h2 strong {
+      font-weight: bold;
+    }
+    h3 {
+      font-size: 1.1em;
+    }
+    h3 strong {
+      font-weight: bold;
+    }
+    hr {
+      display: none;
+    }
+    .content {
+      padding: 1em 5em;
+    }
+    .content-columns {
+      /* Setting relative positioning allows for absolute positioning for sub-classes */
+      position: relative;
+      padding-top: 1em;
+    }
+    .content-column-left {
+      /* Value for IE/Win; will be overwritten for other browsers */
+      width: 47%;
+      padding-right: 3%;
+      float: left;
+      padding-bottom: 2em;
+    }
+    .content-column-left hr {
+      display: none;
+    }
+    .content-column-right {
+      /* Values for IE/Win; will be overwritten for other browsers */
+      width: 47%;
+      padding-left: 3%;
+      float: left;
+      padding-bottom: 2em;
+    }
+    .content-columns>.content-column-left, .content-columns>.content-column-right {
+      /* Non-IE/Win */
+    }
+    img {
+      border: 2px solid #fff;
+      padding: 2px;
+      margin: 2px;
+    }
+    a:hover img {
+      border: 2px solid #f50;
+    }
+    /*]]>*/
+  </style>
+</head>
+
+<body>
+  <h1>Webserver <strong>${cfg_full_org}</strong> Test Page</h1><h3>(${cfg_org} - <strong>23.06.06</strong> - teddy bear)</h3>
+
+  <div class="content">
+    <div class="content-middle">
+    </div>
+    <hr />
+    <div class="content-columns">
+      <div class="content-column-left">
+      </div>
+      <div class="content-column-right">
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+EOF
+
+  if ! grep -qE "${cfg_full_org}(.*)?\n" '/etc/nginx/nginx.conf'; then
+    sudo sed -i -e "s/^http.*\$/http {\n\n    more_set_headers \'Server: ${cfg_full_org} (${cfg_org} - 23.06.06 - teddy bear)\';\n\nsubs_filter '<center>nginx\/${nginx_version}<\/center>' '<center>${cfg_full_org} (${cfg_org} - 23.06.06 - teddy bear)<\/center>' gi;" '/etc/nginx/nginx.conf'
+  fi
+
+  cat <<EOF >/dev/null
+  # TODO 51Degrees Device Detection exploration
+  cd "${main_project_path}/application/installation/src/nginx"
+  [[ -d "Device-Detection" ]] || git clone "https://github.com/51Degrees/Device-Detection.git"
+  cd "Device-Detection"
+  make module pattern VERSION=${nginx_version}
+EOF
+
+  sudo systemctl start nginx
+
+  cd "${main_run_script_path}"
+
+}
+
+main_nginx_script_source "$@"

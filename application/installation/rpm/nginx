@@ -49,6 +49,12 @@ function install_nginx() {
     'nginx-filesystem'
     'nginx-mimetypes'
     'nginx-all-modules'
+    'libxml2'
+    'libxslt'
+    'libxml2-devel'
+    'libxslt-devel'
+    'gperftools'
+    'gperftools-devel'
   )
 
   sudo dnf install "${install_pkg[@]}"

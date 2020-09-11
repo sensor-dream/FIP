@@ -10,4 +10,6 @@ multiple_cmd() {
 
 export -f multiple_cmd
 
+cd ../
+
 find . -type f -exec bash -c 'multiple_cmd "$0"' {} \;
