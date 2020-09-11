@@ -52,11 +52,3 @@ function X_GNOME_Autostart_disabled() {
   fi
 }
 export -f X_GNOME_Autostart_disabled
-
-function pkgs() {
-
-  # TODO replace sudo dnf ... directive
-
-  return
-
-}
