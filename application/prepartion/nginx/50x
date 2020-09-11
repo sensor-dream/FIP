@@ -1,0 +1,15 @@
+#!/bin/env bash
+cat <<EOF | sudo tee 50x.html
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+</head>
+<body>
+  <h1><strong>${cfg_full_org} (${cfg_org} - 23.06.06 - teddy bear) error!</strong></h1>
+  <h3>The page you are looking for is temporarily unavailable. Please try again later.</h3>
+  <p>
+    something has triggered an error on your website.
+  </p>
+</body>
+</html>
+EOF

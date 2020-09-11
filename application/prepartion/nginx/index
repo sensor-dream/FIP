@@ -1,0 +1,18 @@
+#!/bin/env bash
+cat <<EOF | sudo tee index.html
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="ru">
+<head>
+  <title>Webserver ${cfg_full_org} Test Page (${cfg_org} - <strong>23.06.06</strong> - teddy bear)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <style type="text/css">
+    /*<![CDATA[*/
+    /*]]>*/
+  </style>
+</head>
+<body>
+  <h1>Webserver <strong>${cfg_full_org}</strong> Test Page</h1>
+  <h3>(${cfg_org} - <strong>23.06.06</strong> - teddy bear)</h3>
+</body>
+</html>
+EOF

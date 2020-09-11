@@ -1,0 +1,12 @@
+#!/bin/env bash
+cat <<EOF | sudo tee 404.html
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+</head>
+<body>
+  <h1><strong>${cfg_full_org} (${cfg_org} - 23.06.06 - teddy bear) error!</strong></h1>
+  <h4 style="color: red;">The page you are looking for is not found.</h4>
+</body>
+</html>
+EOF
