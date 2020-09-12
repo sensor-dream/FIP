@@ -13,6 +13,8 @@
 
 declare -rx nginx_script_source="$BASH_SOURCE"
 
+declare -rx nginx_script_source_path=$(dirname "${nginx_script_source}")
+
 if [[ -z "${main_run_script_path}" ]]; then
   declare -rx main_run_script_path="$(pwd)"
   printf "Script runs from path: %s\n" "${main_run_script_path}"
@@ -48,6 +50,8 @@ function install_nginx_dependence() {
     sudo dnf check-update
   fi
 
+  printf "Loading: %s\n" "$(readlink -m ${nginx_script_source})"
+
   local install_pkg=(
     'libxml2'
     'libxslt'
@@ -69,22 +73,25 @@ function install_nginx_dependence() {
 
 }
 
-printf "Loading: %s\n" "$(readlink -m ${nginx_script_source})"
-
 function main_nginx_script_source() {
 
   # prinf "Initialise main function of nginx script source\n";
 
   local nginx_version="$(rpm -qi nginx | awk '/Version/ { print $3 }')"
   # local nginx_version='1.19.0'
-  local configure_arguments=''
+  local path_lib_nginx_modules='/usr/lib64/nginx/modules'
+  local path_cfg_nginx_modules='/usr/share/nginx/modules'
+
+  local nginx_module_config=
+  local nginx_module_name=
+  local module_list=
+  local configure_arguments=
   local src_nginx_path="${main_project_path}/application/installation/src/nginx"
 
   [[ -z "${nginx_version}" ]] && . "${main_project_path}/application/installation/rpm/nginx"
-
   [[ -z "${cfg_full_name}" ]] && . "${main_project_path}/hidden/cfg-personal-information"
 
-  install_nginx_dependence
+  # install_nginx_dependence
 
   [[ $(systemctl is-enabled nginx) == 'enable' ]] || sudo systemctl enable nginx
   [[ $(systemctl is-active nginx) == 'active' ]] && sudo systemctl stop nginx
@@ -93,59 +100,52 @@ function main_nginx_script_source() {
 
   [[ -d "${src_nginx_path}" ]] || mkdir -p "${src_nginx_path}"
 
-  current_path="$(pwd)"
-
   cd "${src_nginx_path}"
 
   if [[ -f "configure-arguments.txt" ]]; then
     configure_arguments="$(cat configure-arguments.txt)"
   else
-    configure_arguments=$(nginx -V 2>&1 | grep 'configure arguments' | awk -F': ' '{ print $2}')
+    configure_arguments=$(nginx -V 2>&1 | grep 'configure arguments' | awk -F': ' '{ print $2 }')
     echo "${configure_arguments}" >"configure-arguments.txt"
   fi
 
   [[ -f "nginx-${nginx_version}.tar.gz" ]] || wget "http://nginx.org/download/nginx-${nginx_version}.tar.gz"
-  [[ -d "ngx_devel_kit" ]] || git clone "https://github.com/vision5/ngx_devel_kit.git"
-  [[ -d "headers-more-nginx-module" ]] || git clone "https://github.com/openresty/headers-more-nginx-module.git"
-  [[ -d "ngx_http_geoip2_module" ]] || git clone "https://github.com/leev/ngx_http_geoip2_module.git"
-  [[ -d "set-misc-nginx-module" ]] || git clone "https://github.com/openresty/set-misc-nginx-module.git"
-  [[ -d "ngx_http_substitutions_filter_module" ]] || git clone "git://github.com/yaoweibin/ngx_http_substitutions_filter_module.git"
-  [[ -d "memc-nginx-module" ]] || git clone "https://github.com/openresty/memc-nginx-module.git"
-  [[ -d "srcache-nginx-module" ]] || git clone "https://github.com/openresty/srcache-nginx-module.git"
-  [[ -d "nginx-module-vts" ]] || git clone "https://github.com/vozlt/nginx-module-vts.git"
+  [[ -d "nginx-${nginx_version}" ]] || tar -xzvf "nginx-${nginx_version}.tar.gz"
+  [[ -d "ngx_devel_kit" ]] || git clone "https://github.com/vision5/ngx_devel_kit.git" "ngx_devel_kit"
 
-  # TODO CONFIGYRE LUA MODULE
-  # [[ -d "lua-nginx-module" ]] || git clone "https://github.com/openresty/lua-nginx-module.git"
+  [[ -f "${path_cfg_nginx_modules}/mod-stream.conf" ]] && sudo sed -i 's%^load_module%# load_module%' "${path_cfg_nginx_modules}/mod-stream.conf"
+
+  . "${nginx_script_source_path}/list-module"
+
+  for key in ${!list_module[@]}; do
+    temp_one=(${list_module[${key}]})
+    nginx_module_config=$(cat "${key}/config")
+    nginx_module_name=($(grep -E '(ngx_module_name=).*' <<<${nginx_module_config} | sed -e 's/ngx_module_name=//g; s/"//g; s/[[:space:]]//mg;'))
+    if [[ ${nginx_module_name} == '$ngx_addon_name' ]]; then
+      nginx_module_name=($(grep -E '(ngx_addon_name=).*' <<<${nginx_module_config} | sed -e 's/ngx_addon_name=//g; s/"//g;'))
+    fi
+    nginx_module_config=$(echo ${nginx_module_name[0]} | sed -e 's/ngx_/mod-/g; s/_module/.conf/g; s/_/-/g')
+    [[ -f "${path_cfg_nginx_modules}/${nginx_module_config}" ]] && sudo rm "${path_cfg_nginx_modules}/${nginx_module_config}"
+    if [[ "${temp_one[2]}" == 'yes' ]]; then
+      [[ -d "${key}" ]] || git clone "${temp_one[0]}"
+      configure_arguments="${configure_arguments} ${temp_one[1]}=${main_project_path}/application/installation/src/nginx/${key}"
+      if [[ "${temp_one[1]}" == '--add-dynamic-module' ]]; then
+        for key in ${!nginx_module_name[@]}; do
+          echo "load_module \"${path_lib_nginx_modules}/${nginx_module_name[${key}]}.so\";" | sudo tee -a "${path_cfg_nginx_modules}/${nginx_module_config}"
+        done
+      fi
+    fi
+  done
 
   cd "nginx-${nginx_version}"
 
   make clean
 
-  # TODO CONFIGYRE LUA MODULE
-  # export LUAJIT_LIB=/usr/lib64
-  # export LUAJIT_INC=/usr/include/luajit-2.1
-  # local lua_version="5.3"
-  # configure_arguments=$(echo "${configure_arguments}" | sed "s%--with-ld-opt='-Wl%--with-ld-opt='-Wl,-rpath,/usr/local/openresty/luajit/lib%; s%--with-cc-opt='%--with-cc-opt='-DNGX_LUA_USE_ASSERT -DNGX_LUA_ABORT_AT_PANIC -Wp,%")
-  #bash -c "./configure ${configure_arguments} --with-stream --add-module=${main_project_path}/application/installation/src/nginx/ngx_devel_kit --add-dynamic-module=${main_project_path}/application/installation/src/nginx/headers-more-nginx-module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/ngx_http_geoip2_module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/ngx_devel_kit --add-dynamic-module=${main_project_path}/application/installation/src/nginx/set-misc-nginx-module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/ngx_http_substitutions_filter_module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/lua-nginx-module"
-
-  bash -c "./configure ${configure_arguments} --with-stream --add-module=${main_project_path}/application/installation/src/nginx/ngx_devel_kit --add-dynamic-module=${main_project_path}/application/installation/src/nginx/headers-more-nginx-module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/ngx_http_geoip2_module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/ngx_devel_kit --add-dynamic-module=${main_project_path}/application/installation/src/nginx/set-misc-nginx-module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/ngx_http_substitutions_filter_module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/memc-nginx-module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/srcache-nginx-module --add-dynamic-module=${main_project_path}/application/installation/src/nginx/nginx-module-vts"
+  bash -c "./configure ${configure_arguments} --with-stream"
 
   make -j${number_cores}
 
-  sudo cp objs/*.so "/lib64/nginx/modules/"
-
-  [[ -f "/usr/share/nginx/modules/mod-http-ndk.conf" ]] || echo '# load_module "/usr/lib64/nginx/modules/ndk_http_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-ndk.conf"
-  [[ -f "/usr/share/nginx/modules/mod-http-set-misc.conf" ]] || echo -e 'load_module "/usr/lib64/nginx/modules/ngx_http_set_misc_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-set-misc.conf"
-  [[ -f "/usr/share/nginx/modules/mod-http-headers-more-filter.conf" ]] || echo 'load_module "/usr/lib64/nginx/modules/ngx_http_headers_more_filter_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-headers-more-filter.conf"
-  [[ -f "/usr/share/nginx/modules/mod-http-geoip2.conf" ]] || echo -e 'load_module "/usr/lib64/nginx/modules/ngx_http_geoip2_module.so";\nload_module "/usr/lib64/nginx/modules/ngx_stream_geoip2_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-geoip2.conf"
-  [[ -f "/usr/share/nginx/modules/mod-http-subs-filter.conf" ]] || echo 'load_module "/usr/lib64/nginx/modules/ngx_http_subs_filter_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-subs-filter.conf"
-  [[ -f "/usr/share/nginx/modules/mod-stream.conf" ]] && sudo sed -i 's%^load_module%# load_module%' "/usr/share/nginx/modules/mod-stream.conf"
-  [[ -f "/usr/share/nginx/modules/mod-memc.conf" ]] || echo 'load_module "/usr/lib64/nginx/modules/ngx_http_memc_module.so";' | sudo tee "/usr/share/nginx/modules/mod-memc.conf"
-  [[ -f "/usr/share/nginx/modules/mod-http-srcache-filter.conf" ]] || echo 'load_module "/usr/lib64/nginx/modules/ngx_http_srcache_filter_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-srcache-filter.conf"
-  [[ -f "/usr/share/nginx/modules/mod-http-vhost-traffic-status.conf" ]] || echo 'load_module "/usr/lib64/nginx/modules/ngx_http_vhost_traffic_status_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-vhost-traffic-status.conf"
-
-  # TODO CONFIGYRE LUA MODULE
-  # [[ -f "/usr/share/nginx/modules/mod-http-lua.conf" ]] || echo 'load_module "/usr/lib64/nginx/modules/ngx_http_lua_module.so";' | sudo tee "/usr/share/nginx/modules/mod-http-lua.conf"
+  sudo cp objs/*.so "${path_lib_nginx_modules}/"
 
   cat <<EOF >/dev/null
   # TODO 51Degrees Device Detection exploration
@@ -162,22 +162,21 @@ EOF
   temp_one="$(readlink 404.html)"
   [[ -z "${temp_one}" ]] && temp_one='404.html'
   [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
-  . ${current_path}/404
+  . "${nginx_script_source_path}/404"
 
   temp_one="$(readlink 50x.html)"
   [[ -z "${temp_one}" ]] && temp_one='50x.html'
   [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
-  . ${current_path}/50x
+  . "${nginx_script_source_path}/50x"
 
   temp_one="$(readlink index.html)"
   [[ -z "${temp_one}" ]] && temp_one='50x.html'
   [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
-  # sudo cp "${current_path}/index.html" 'index.html'
-  . ${current_path}/index
+  . "${nginx_script_source_path}/index"
 
-  if ! grep -qE "${cfg_full_org}(.*)?\n" '/etc/nginx/nginx.conf'; then
-    sudo sed -i -e "s/^http.*\$/http {\n\n    more_set_headers \'Server: ${cfg_full_org} (${cfg_org} - 23.06.06 - teddy bear)\';\n\nsubs_filter '<center>nginx\/${nginx_version}<\/center>' '<center>${cfg_full_org} (${cfg_org} - 23.06.06 - teddy bear)<\/center>' gior;" '/etc/nginx/nginx.conf'
-  fi
+  cd "${nginx_script_source_path}"
+
+  . "conf"
 
   sudo systemctl start nginx
 
