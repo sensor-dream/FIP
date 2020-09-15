@@ -13,7 +13,12 @@
 
 declare -rx nginx_script_source="$BASH_SOURCE"
 
-declare -rx nginx_script_source_path=$(dirname "${nginx_script_source}")
+temp_one="$(dirname ${nginx_script_source})"
+if [[ "${temp_one}" == '.' ]]; then
+  declare -rx nginx_script_source_path="$(pwd)"
+else
+  declare -rx nginx_script_source_path="${temp_one}"
+fi
 
 if [[ -z "${main_run_script_path}" ]]; then
   declare -rx main_run_script_path="$(pwd)"
@@ -89,7 +94,6 @@ function main_nginx_script_source() {
   local src_nginx_path="${main_project_path}/application/installation/src/nginx"
 
   [[ -z "${nginx_version}" ]] && . "${main_project_path}/application/installation/rpm/nginx"
-  [[ -z "${cfg_full_name}" ]] && . "${main_project_path}/hidden/cfg-personal-information"
 
   # install_nginx_dependence
 
@@ -170,9 +174,19 @@ EOF
   . "${nginx_script_source_path}/50x"
 
   temp_one="$(readlink index.html)"
-  [[ -z "${temp_one}" ]] && temp_one='50x.html'
+  [[ -z "${temp_one}" ]] && temp_one='index.html'
   [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
   . "${nginx_script_source_path}/index"
+
+  temp_one="$(readlink favicon.ico)"
+  [[ -z "${temp_one}" ]] && temp_one='favicon.ico'
+  [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+  sudo cp "${nginx_script_source_path}/favicon.ico" "${temp_one}"
+
+  temp_one="$(readlink mail-link.png)"
+  [[ -z "${temp_one}" ]] && temp_one='mail-link.png'
+  [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+  sudo cp "${nginx_script_source_path}/mail-link.png" "${temp_one}"
 
   cd "${nginx_script_source_path}"
 

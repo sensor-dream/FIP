@@ -13,6 +13,13 @@
 
 declare -rx {__name__}_script_source="$BASH_SOURCE";
 
+temp_one="$(dirname ${{__name__}_script_source})"
+if [[ "${temp_one}" == '.' ]]; then
+  declare -rx {__name__}_script_source_path="$(pwd)"
+else
+  declare -rx {__name__}_script_source_path="${temp_one}"
+fi
+
 if [[ -z "${main_run_script_path}" ]]; then
   declare -rx main_run_script_path="$(pwd)";
   printf "Script runs from path: %s\n" "${main_run_script_path}";
