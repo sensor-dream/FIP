@@ -84,6 +84,7 @@ function main_nginx_script_source() {
 
   local nginx_version="$(rpm -qi nginx | awk '/Version/ { print $3 }')"
   # local nginx_version='1.19.0'
+  local certbot_version="$(certbot --version)"
   local path_lib_nginx_modules='/usr/lib64/nginx/modules'
   local path_cfg_nginx_modules='/usr/share/nginx/modules'
 
@@ -94,6 +95,7 @@ function main_nginx_script_source() {
   local src_nginx_path="${main_project_path}/application/installation/src/nginx"
 
   [[ -z "${nginx_version}" ]] && . "${main_project_path}/application/installation/rpm/nginx"
+  [[ -z "${certbot_version}" ]] && . "${main_project_path}/application/installation/rpm/certbot"
 
   # install_nginx_dependence
 
@@ -101,6 +103,10 @@ function main_nginx_script_source() {
   [[ $(systemctl is-active nginx) == 'active' ]] && sudo systemctl stop nginx
 
   [[ -f '/usr/sbin/nginx.back' ]] || sudo mv '/usr/sbin/nginx' '/usr/sbin/nginx.back'
+
+  [[ -d '/etc/ssl/private' ]] || sudo mkdir -p '/etc/ssl/private'
+  [[ -f '/etc/ssl/private/dhparam.pem' ]] || sudo openssl dhparam -out '/etc/ssl/private/dhparam.pem' 4096
+  [[ -f '/etc/ssl/isrg-root-ocsp-x1.pem' ]] || sudo curl 'https://letsencrypt.org/certs/isrg-root-ocsp-x1.pem' -o '/etc/ssl/isrg-root-ocsp-x1.pem'
 
   [[ -d "${src_nginx_path}" ]] || mkdir -p "${src_nginx_path}"
 

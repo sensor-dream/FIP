@@ -55,6 +55,8 @@ function main_conf_script_source() {
 
   local server_name="_"
 
+  local rev_timestamp="$(date +%s)"
+
   cat <<EOF | sudo tee /etc/nginx/nginx.conf
 # For more information on configuration, see:
 #   * Official English Documentation: http://nginx.org/en/docs/
@@ -75,9 +77,9 @@ events {
 http {
 
     map \$remote_addr \$hack_name_server {
-        '127.0.0.1' 'DEV - SDBS - 23.06.06 - best small bear badaboom';
-        '::1'       'DEV - SDBS - 23.06.06 - best small bear badaboom';
-        default     'SDBS - 23.06.06 - best small bear badaboom';
+        '127.0.0.1' 'DEV - SDBS - 23.06.06 - rev: $rev_timestamp';
+        '::1'       'DEV - SDBS - 23.06.06 - rev: $rev_timestamp';
+        default     'SDBS - 23.06.06 - rev: $rev_timestamp';
     }
 
     server_tokens off; # removed pound sign
@@ -113,22 +115,24 @@ http {
     include /etc/nginx/conf.d/*.conf;
 
     server {
-
-        server_name  ${server_name};
-
         listen       80;
         listen       [::]:80;
-
-        listen       443 ssl http2;
-        listen       [::]:443 ssl http2;
+        server_name  ${server_name};
         root         /usr/share/nginx/html;
-
-        charset utf-8;
-
         # Redirect non-https traffic to https
         if (\$scheme != "https") {
             return 301 https://\$host\$request_uri;
         }
+    }
+
+    server {
+
+        listen       443 ssl http2;
+        listen       [::]:443 ssl http2;
+        server_name  ${server_name};
+        root         /usr/share/nginx/html;
+
+        charset utf-8;
 
         # set merge_slashes off;
         # location ~ // {
@@ -146,12 +150,47 @@ http {
         location = /favicon.ico { access_log off; log_not_found off; }
         location = /robots.txt  { access_log off; log_not_found off; }
 
+        ssl_protocols TLSv1.2 TLSv1.3;
+
+        # OCSP stapling
+        ssl_stapling on;
+        ssl_stapling_verify on;
+
+        # signed cert plus intermediates
         ssl_certificate "/etc/letsencrypt/live/sensor-dream.ru/fullchain.pem";
+        # private key
         ssl_certificate_key "/etc/letsencrypt/live/sensor-dream.ru/privkey.pem";
-        ssl_session_cache shared:SSL:1m;
-        ssl_session_timeout  10m;
-        ssl_ciphers PROFILE=SYSTEM;
-        ssl_prefer_server_ciphers on;
+        # verify chain of trust of OCSP response using Root CA and Intermediate certs
+        ssl_trusted_certificate "/etc/ssl/isrg-root-ocsp-x1.pem";
+
+        # ssl_session_cache shared:SSL:1m; # default
+        ssl_session_cache shared:SDBS:50m;
+        # ssl_session_timeout  10m; # default
+        ssl_session_timeout  5m;
+
+        # ssl_ciphers PROFILE=SYSTEM; # default
+        ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+        # ssl_prefer_server_ciphers on; # default
+        ssl_prefer_server_ciphers off;
+
+        ssl_session_tickets off; # default on
+        ssl_dhparam /etc/ssl/private/dhparam.pem;
+
+        # HSTS (ngx_http_headers_module is required) (63072000 seconds)
+        add_header Strict-Transport-Security "max-age=63072000" always;
+
+        # ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+	      add_header X-Frame-Options DENY always;
+
+        # ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+	      add_header X-Content-Type-Options nosniff always;
+
+        # ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+	      add_header X-Xss-Protection "1; mode=block" always;
+
+        # replace with the IP address of your resolver
+        resolver 1.0.0.1 1.1.1.1 valid=300s;
+        resolver_timeout 5s;
 
         # Load configuration files for the default server block.
         include /etc/nginx/default.d/*.conf;
@@ -167,6 +206,8 @@ http {
 
 }
 EOF
+
+  openssl s_client -connect sensor-dream.ru:443 -servername sensor-dream.ru -status </dev/null
 
 }
 
