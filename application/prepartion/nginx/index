@@ -53,11 +53,11 @@ function main_index_script_source() {
 
   # prinf "Initialise main function of index script source\n";
 
-  cat <<EOF | sudo tee /usr/share/nginx/html/index.html
+  cat <<EOF | sudo tee /usr/share/nginx/html/index.html >/dev/null
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="ru">
 <head>
-  <title>${cfg_org}</title>
+  <title>${cfg_full_org}</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <style type="text/css">
     /*<![CDATA[*/

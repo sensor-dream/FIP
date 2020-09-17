@@ -104,9 +104,30 @@ function main_nginx_script_source() {
 
   [[ -f '/usr/sbin/nginx.back' ]] || sudo mv '/usr/sbin/nginx' '/usr/sbin/nginx.back'
 
+  # DDoS prevention
+  if ! grep -q "fs.file-max" '/etc/sysctl.conf'; then
+    echo -e 'fs.file-max = 50000' | sudo tee -a '/etc/sysctl.conf'
+  else
+    sudo sed -i 's/^fs.file-max.*$/fs.file-max = 50000/im' '/etc/sysctl.conf'
+  fi
+  if ! grep -q "net.ipv4.conf.all.rp_filter" '/etc/sysctl.conf'; then
+    echo -e 'net.ipv4.conf.all.rp_filter = 1' | sudo tee -a '/etc/sysctl.conf'
+  else
+    sudo sed -i 's/^net.ipv4.conf.all.rp_filter.*$/net.ipv4.conf.all.rp_filter = 1/im' '/etc/sysctl.conf'
+  fi
+  if ! grep -q "net.ipv4.tcp_syncookies" '/etc/sysctl.conf'; then
+    echo -e 'net.ipv4.tcp_syncookies = 1' | sudo tee -a '/etc/sysctl.conf'
+  else
+    sudo sed -i 's/^net.ipv4.tcp_syncookies.*$/net.ipv4.tcp_syncookies = 1/im' '/etc/sysctl.conf'
+  fi
+
   [[ -d '/etc/ssl/private' ]] || sudo mkdir -p '/etc/ssl/private'
   [[ -f '/etc/ssl/private/dhparam.pem' ]] || sudo openssl dhparam -out '/etc/ssl/private/dhparam.pem' 4096
-  [[ -f '/etc/ssl/isrg-root-ocsp-x1.pem' ]] || sudo curl 'https://letsencrypt.org/certs/isrg-root-ocsp-x1.pem' -o '/etc/ssl/isrg-root-ocsp-x1.pem'
+  [[ -f '/etc/ssl/private/tickets.key' ]] || openssl rand 80 | sudo tee '/etc/ssl/private/tickets.key'
+  # if [[ ! -f '/etc/ssl/private/ca-certs.pem' ]]; then
+  # sudo curl 'https://letsencrypt.org/certs/isrg-root-ocsp-x1.pem' -o '/etc/ssl/isrg-root-ocsp-x1.pem'
+  # wget -O - https://letsencrypt.org/certs/isrgrootx1.pem https://letsencrypt.org/certs/lets-encrypt-x1-cross-signed.pem https://letsencrypt.org/certs/letsencryptauthorityx1.pem https://www.identrust.com/certificates/trustid/root-download-x3.html | sudo tee -a /etc/ssl/private/ca-certs.pem >/dev/null
+  # fi
 
   [[ -d "${src_nginx_path}" ]] || mkdir -p "${src_nginx_path}"
 
@@ -194,11 +215,21 @@ EOF
   [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
   sudo cp "${nginx_script_source_path}/mail-link.png" "${temp_one}"
 
+  temp_one="$(readlink robots.txt)"
+  [[ -z "${temp_one}" ]] && temp_one='robots.txt'
+  [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+  sudo cp "${nginx_script_source_path}/robots.txt" "${temp_one}"
+
+  temp_one="$(readlink sitemap.xml)"
+  [[ -z "${temp_one}" ]] && temp_one='sitemap.xml'
+  [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+  sudo cp "${nginx_script_source_path}/sitemap.xml" "${temp_one}"
+
   cd "${nginx_script_source_path}"
 
   . "conf"
 
-  sudo systemctl start nginx
+  [[ $(systemctl is-active nginx) == 'active' ]] || sudo systemctl start nginx
 
   cd "${main_run_script_path}"
 

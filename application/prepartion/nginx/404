@@ -53,12 +53,12 @@ function main_s404_script_source() {
 
   # prinf "Initialise main function of 404 script source\n";
 
-  cat <<EOF | sudo tee /usr/share/nginx/html/404.html
+  cat <<EOF | sudo tee /usr/share/nginx/html/404.html >/dev/null
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-  <title>${cfg_org} - birth - 23.06.06 - teddy bear</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>${cfg_full_org}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <style type="text/css">
     /*<![CDATA[*/
      /*]]>*/

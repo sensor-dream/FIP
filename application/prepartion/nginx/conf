@@ -53,11 +53,17 @@ function main_conf_script_source() {
 
   # prinf "Initialise main function of conf script source\n";
 
+  [[ $(systemctl is-active nginx) == 'active' ]] && sudo systemctl stop nginx
+
+  # local server_name="${cfg_hostname}"
   local server_name="_"
 
   local rev_timestamp="$(date +%s)"
 
-  cat <<EOF | sudo tee /etc/nginx/nginx.conf
+  # cat > nginx.conf nginx.base.conf - <<EOF
+  #EOF
+
+  cat <<EOF | sudo tee /etc/nginx/nginx.conf >/dev/null
 # For more information on configuration, see:
 #   * Official English Documentation: http://nginx.org/en/docs/
 #   * Official Russian Documentation: http://nginx.org/ru/docs/
@@ -70,11 +76,23 @@ pid /run/nginx.pid;
 # Load dynamic modules. See /usr/share/doc/nginx/README.dynamic.
 include /usr/share/nginx/modules/*.conf;
 
+#
+# DDoS prevention in firewall
+# /sbin/iptables -A INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 20 -j REJECT --reject-with tcp-reset
+# /sbin/iptables -A INPUT -p tcp --syn --dport 443 -m connlimit --connlimit-above 20 -j REJECT --reject-with tcp-reset
+#
+
 events {
-    worker_connections 2048;
+    # worker_connections 2048; # default
+    # DDoS prevention
+    worker_connections 50000;
 }
 
 http {
+
+    server_names_hash_bucket_size 64;
+
+    server_tokens off; # removed pound sign
 
     map \$remote_addr \$hack_name_server {
         '127.0.0.1' 'DEV - SDBS - 23.06.06 - rev: $rev_timestamp';
@@ -82,15 +100,13 @@ http {
         default     'SDBS - 23.06.06 - rev: $rev_timestamp';
     }
 
-    server_tokens off; # removed pound sign
-
     more_set_headers 'Server: \$hack_name_server';
 
     sub_filter_last_modified on;
     sub_filter_once off;
     subs_filter_types text/css text/xml application/javascript application/x-javascript application/json;
     subs_filter '<center>nginx/1.18.0</center>' '<center>\$hack_name_server</center>' gior;
-    subs_filter 'Sensor-Dream Boxed System' '<span style="color: #f5bb09;">S</span>ensor-<span style="color: #3ea852;">D</span>ream <span style="color: #ea4334;">B</span>oxed <span style="color: #4285f4;">S</span>ystem' gior;
+    subs_filter '<h1>Sensor-Dream Boxed System</h1>' '<h1><span style="color: #f5bb09;">S</span>ensor-<span style="color: #3ea852;">D</span>ream <span style="color: #ea4334;">B</span>oxed <span style="color: #4285f4;">S</span>ystem</h1>' gior;
     subs_filter 'Server: SDBS' 'Server: <strong><span style="color: #f5bb09;">S</span><span style="color: #3ea852;">D</span><span style="color: #ea4334;">B</span><span style="color: #4285f4;">S</span></strong>' gior;
 
     log_format  main  '\$remote_addr - \$remote_user [\$time_local] "\$request" '
@@ -128,69 +144,17 @@ http {
     server {
 
         listen       443 ssl http2;
-        listen       [::]:443 ssl http2;
+        listen       [::]:443 ssl http2 default_server;
         server_name  ${server_name};
         root         /usr/share/nginx/html;
 
-        charset utf-8;
-
-        # set merge_slashes off;
-        # location ~ // {
-        #     rewrite ^(.*?)//+(.*)\$ \$1/\$2 permanent;
-        # }
-        # default is set merge_slashes on;
-        if (\$request_uri ~ ^[^?]*//) {
-            rewrite ^ \$uri permanent;
-        }
-        # universal rewrite of set merge_slashes on|off;
-        # if (\$request_uri ~ ^(?P<left>[^?]*?)//+(?P<right>[^?]*)) {
-        #     rewrite ^ \$left/\$right permanent;
-        # }
-
-        location = /favicon.ico { access_log off; log_not_found off; }
-        location = /robots.txt  { access_log off; log_not_found off; }
-
-        ssl_protocols TLSv1.2 TLSv1.3;
-
-        # OCSP stapling
-        ssl_stapling on;
-        ssl_stapling_verify on;
 
         # signed cert plus intermediates
         ssl_certificate "/etc/letsencrypt/live/sensor-dream.ru/fullchain.pem";
         # private key
         ssl_certificate_key "/etc/letsencrypt/live/sensor-dream.ru/privkey.pem";
         # verify chain of trust of OCSP response using Root CA and Intermediate certs
-        ssl_trusted_certificate "/etc/ssl/isrg-root-ocsp-x1.pem";
-
-        # ssl_session_cache shared:SSL:1m; # default
-        ssl_session_cache shared:SDBS:50m;
-        # ssl_session_timeout  10m; # default
-        ssl_session_timeout  5m;
-
-        # ssl_ciphers PROFILE=SYSTEM; # default
-        ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
-        # ssl_prefer_server_ciphers on; # default
-        ssl_prefer_server_ciphers off;
-
-        ssl_session_tickets off; # default on
-        ssl_dhparam /etc/ssl/private/dhparam.pem;
-
-        # HSTS (ngx_http_headers_module is required) (63072000 seconds)
-        add_header Strict-Transport-Security "max-age=63072000" always;
-
-        # ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-	      add_header X-Frame-Options DENY always;
-
-        # ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
-	      add_header X-Content-Type-Options nosniff always;
-
-        # ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
-	      add_header X-Xss-Protection "1; mode=block" always;
-
-        # replace with the IP address of your resolver
-        resolver 1.0.0.1 1.1.1.1 valid=300s;
-        resolver_timeout 5s;
+        ssl_trusted_certificate "/etc/letsencrypt/live/sensor-dream.ru/chain.pem";
 
         # Load configuration files for the default server block.
         include /etc/nginx/default.d/*.conf;
@@ -207,7 +171,20 @@ http {
 }
 EOF
 
-  openssl s_client -connect sensor-dream.ru:443 -servername sensor-dream.ru -status </dev/null
+  . "default.d/default"
+
+  echo -e "\nPlease visit in:\n\thttps://www.ssllabs.com/ssltest\n\thttps://www.immuniweb.com/ssl\n\thttps://www.sslshopper.com/ssl-checker.html\n\thttps://www.digicert.com/help\n\thttps://www.wormly.com/test_ssl\n\thttps://certlogik.com/ssl-checker/"
+
+  temp_one="$(systemctl is-active nginx)"
+
+  [[ "${temp_one}" == 'inactive' ]] && sudo systemctl start nginx
+
+  # openssl s_client -connect ${cfg_docfg}:443 -servername ${cfg_docfg} -status </dev/null
+  # openssl s_client -connect ${cfg_docfg}:443 -status
+  # sleep 1
+
+  echo -e "\nSTATUS service NGINX - "${temp_one}"\nSTATUS OCSP responce connect ${cfg_docfg}:443\n"
+  echo QUIT | openssl s_client -connect "${cfg_docfg}":443 -status 2>/dev/null | grep -A 17 'OCSP response:' | grep -B 17 'Next Update'
 
 }
 

@@ -1,0 +1,130 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: default
+## @Creation date file: 18.09.2020, 02:44:44
+
+declare -rx default_script_source="$BASH_SOURCE"
+
+temp_one="$(dirname ${default_script_source})"
+if [[ "${temp_one}" == '.' ]]; then
+  declare -rx default_script_source_path="$(pwd)"
+else
+  declare -rx default_script_source_path="${temp_one}"
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${default_script_source})"
+
+function main_default_script_source() {
+
+  # prinf "Initialise main function of default script source\n";
+
+  [[ $(systemctl is-active nginx) == 'active' ]] && sudo systemctl stop nginx
+
+  cat <<EOF | sudo tee /etc/nginx/default.d/default.conf >/dev/null
+# generated at $(date)
+
+charset utf-8;
+
+# set merge_slashes off;
+# location ~ // {
+#     rewrite ^(.*?)//+(.*)\$ \$1/\$2 permanent;
+# }
+# default is set merge_slashes on;
+if (\$request_uri ~ ^[^?]*//) {
+    rewrite ^ \$uri permanent;
+}
+# universal rewrite of set merge_slashes on|off;
+# if (\$request_uri ~ ^(?P<left>[^?]*?)//+(?P<right>[^?]*)) {
+#     rewrite ^ \$left/\$right permanent;
+# }
+
+location = /favicon.ico { access_log off; log_not_found off; }
+location = /robots.txt { access_log off; log_not_found off; }
+location = /sitemap.xml { access_log off; log_not_found off; }
+
+ssl_protocols TLSv1.2 TLSv1.3;
+
+# OCSP stapling
+# default off
+ssl_stapling on;
+ssl_stapling_verify on;
+# replace with the IP address of your resolver
+resolver 1.0.0.1 1.1.1.1 valid=300s;
+resolver_timeout 5s;
+ssl_session_cache shared:SSL:10m;
+ssl_session_timeout  5m;
+ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+ssl_prefer_server_ciphers on;
+ssl_session_tickets on;
+ssl_session_ticket_key /etc/ssl/private/tickets.key;
+
+ssl_dhparam /etc/ssl/private/dhparam.pem;
+
+ssl_early_data on;
+# Requests sent within early data are subject to replay attacks. To protect against such attacks at the application layer, the $ssl_early_data variable should be used.  proxy_set_header Early-Data $ssl_early_data;
+
+# HSTS (ngx_http_headers_module is required) (63072000 seconds)
+add_header Strict-Transport-Security "max-age=63072000 includeSubdomains;" always;
+
+# ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+	      add_header X-Frame-Options DENY always;
+
+# ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+	      add_header X-Content-Type-Options nosniff always;
+
+# ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+	      add_header X-Xss-Protection "1; mode=block" always;
+
+#
+# DDoS prevention
+#
+# Nginx Timeout parameters
+client_body_timeout 5s;
+client_header_timeout 5s;
+# Limit HTTP Request size
+client_body_buffer_size 200K;
+client_header_buffer_size 2k;
+client_max_body_size 200k;
+large_client_header_buffers 3 1k;
+EOF
+
+  [[ $(systemctl is-active nginx) == 'active' ]] || sudo systemctl start nginx
+
+}
+
+main_default_script_source "$@"
