@@ -53,6 +53,8 @@ function main_conf_script_source() {
 
   # prinf "Initialise main function of conf script source\n";
 
+  local server_name="_"
+
   cat <<EOF | sudo tee /etc/nginx/nginx.conf
 # For more information on configuration, see:
 #   * Official English Documentation: http://nginx.org/en/docs/
@@ -72,12 +74,21 @@ events {
 
 http {
 
-    more_set_headers 'Server: SDBS - 23.06.06 - best small bear badaboom';
+    map \$remote_addr \$hack_name_server {
+        '127.0.0.1' 'DEV - SDBS - 23.06.06 - best small bear badaboom';
+        '::1'       'DEV - SDBS - 23.06.06 - best small bear badaboom';
+        default     'SDBS - 23.06.06 - best small bear badaboom';
+    }
 
-    subs_filter '<center>nginx/1.18.0</center>' '<center>SDBS - 23.06.06 -best small bear badaboom</center>' gior;
+    server_tokens off; # removed pound sign
 
+    more_set_headers 'Server: \$hack_name_server';
+
+    sub_filter_last_modified on;
+    sub_filter_once off;
+    subs_filter_types text/css text/xml application/javascript application/x-javascript application/json;
+    subs_filter '<center>nginx/1.18.0</center>' '<center>\$hack_name_server</center>' gior;
     subs_filter 'Sensor-Dream Boxed System' '<span style="color: #f5bb09;">S</span>ensor-<span style="color: #3ea852;">D</span>ream <span style="color: #ea4334;">B</span>oxed <span style="color: #4285f4;">S</span>ystem' gior;
-
     subs_filter 'Server: SDBS' 'Server: <strong><span style="color: #f5bb09;">S</span><span style="color: #3ea852;">D</span><span style="color: #ea4334;">B</span><span style="color: #4285f4;">S</span></strong>' gior;
 
     log_format  main  '\$remote_addr - \$remote_user [\$time_local] "\$request" '
@@ -87,10 +98,11 @@ http {
     access_log  /var/log/nginx/access.log  main;
 
     sendfile            on;
-    tcp_nopush          on;
+    # tcp_nopush          on;
     tcp_nodelay         on;
     keepalive_timeout   65;
-    types_hash_max_size 4096;
+    types_hash_max_size 4096; # default 4096
+    types_hash_bucket_size 64; # default 64
 
     include             /etc/nginx/mime.types;
     default_type        application/octet-stream;
@@ -101,10 +113,45 @@ http {
     include /etc/nginx/conf.d/*.conf;
 
     server {
+
+        server_name  ${server_name};
+
         listen       80;
         listen       [::]:80;
-        server_name  _;
+
+        listen       443 ssl http2;
+        listen       [::]:443 ssl http2;
         root         /usr/share/nginx/html;
+
+        charset utf-8;
+
+        # Redirect non-https traffic to https
+        if (\$scheme != "https") {
+            return 301 https://\$host\$request_uri;
+        }
+
+        # set merge_slashes off;
+        # location ~ // {
+        #     rewrite ^(.*?)//+(.*)\$ \$1/\$2 permanent;
+        # }
+        # default is set merge_slashes on;
+        if (\$request_uri ~ ^[^?]*//) {
+            rewrite ^ \$uri permanent;
+        }
+        # universal rewrite of set merge_slashes on|off;
+        # if (\$request_uri ~ ^(?P<left>[^?]*?)//+(?P<right>[^?]*)) {
+        #     rewrite ^ \$left/\$right permanent;
+        # }
+
+        location = /favicon.ico { access_log off; log_not_found off; }
+        location = /robots.txt  { access_log off; log_not_found off; }
+
+        ssl_certificate "/etc/letsencrypt/live/sensor-dream.ru/fullchain.pem";
+        ssl_certificate_key "/etc/letsencrypt/live/sensor-dream.ru/privkey.pem";
+        ssl_session_cache shared:SSL:1m;
+        ssl_session_timeout  10m;
+        ssl_ciphers PROFILE=SYSTEM;
+        ssl_prefer_server_ciphers on;
 
         # Load configuration files for the default server block.
         include /etc/nginx/default.d/*.conf;
@@ -116,35 +163,7 @@ http {
         error_page 500 502 503 504 /50x.html;
             location = /50x.html {
         }
-
     }
-
-# Settings for a TLS enabled server.
-#
-#    server {
-#        listen       443 ssl http2;
-#        listen       [::]:443 ssl http2;
-#        server_name  _;
-#        root         /usr/share/nginx/html;
-#
-#        ssl_certificate "/etc/pki/nginx/server.crt";
-#        ssl_certificate_key "/etc/pki/nginx/private/server.key";
-#        ssl_session_cache shared:SSL:1m;
-#        ssl_session_timeout  10m;
-#        ssl_ciphers PROFILE=SYSTEM;
-#        ssl_prefer_server_ciphers on;
-#
-#        # Load configuration files for the default server block.
-#        include /etc/nginx/default.d/*.conf;
-#
-#        error_page 404 /404.html;
-#            location = /40x.html {
-#        }
-#
-#        error_page 500 502 503 504 /50x.html;
-#            location = /50x.html {
-#        }
-#    }
 
 }
 EOF

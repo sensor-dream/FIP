@@ -133,11 +133,11 @@ function main_index_script_source() {
         font-weight: bold;
       }
       #license {
+        display: none;
         width: 50vw;
         margin-top: 40px;
         color: rgba(150,150,150,1);
         font-size: 0.5em;
-        visibility: hidden;
       }
     /*]]>*/
   </style>
