@@ -95,9 +95,9 @@ http {
     server_tokens off; # removed pound sign
 
     map \$remote_addr \$hack_name_server {
-        '127.0.0.1' 'DEV - SDBS - 23.06.06 - rev: $rev_timestamp';
-        '::1'       'DEV - SDBS - 23.06.06 - rev: $rev_timestamp';
-        default     'SDBS - 23.06.06 - rev: $rev_timestamp';
+        '127.0.0.1' 'DEV - ${cfg_org} - 23.06.06 - rev: $rev_timestamp';
+        '::1'       'DEV - ${cfg_org} - 23.06.06 - rev: $rev_timestamp';
+        default     '${cfg_org} - 23.06.06 - rev: $rev_timestamp';
     }
 
     more_set_headers 'Server: \$hack_name_server';
@@ -106,8 +106,8 @@ http {
     sub_filter_once off;
     subs_filter_types text/css text/xml application/javascript application/x-javascript application/json;
     subs_filter '<center>nginx/1.18.0</center>' '<center>\$hack_name_server</center>' gior;
-    subs_filter '<h1>Sensor-Dream Boxed System</h1>' '<h1><span style="color: #f5bb09;">S</span>ensor-<span style="color: #3ea852;">D</span>ream <span style="color: #ea4334;">B</span>oxed <span style="color: #4285f4;">S</span>ystem</h1>' gior;
-    subs_filter 'Server: SDBS' 'Server: <strong><span style="color: #f5bb09;">S</span><span style="color: #3ea852;">D</span><span style="color: #ea4334;">B</span><span style="color: #4285f4;">S</span></strong>' gior;
+    # subs_filter '<h1>Sensor-Dream Boxed System</h1>' '<h1><span style="color: #f5bb09;">S</span>ensor-<span style="color: #3ea852;">D</span>ream <span style="color: #ea4334;">B</span>oxed <span style="color: #4285f4;">S</span>ystem</h1>' gior;
+    # subs_filter 'Server: SDBS' 'Server: <strong><span style="color: #f5bb09;">S</span><span style="color: #3ea852;">D</span><span style="color: #ea4334;">B</span><span style="color: #4285f4;">S</span></strong>' gior;
 
     log_format  main  '\$remote_addr - \$remote_user [\$time_local] "\$request" '
                       '\$status \$body_bytes_sent "\$http_referer" '
@@ -150,11 +150,11 @@ http {
 
 
         # signed cert plus intermediates
-        ssl_certificate "/etc/letsencrypt/live/sensor-dream.ru/fullchain.pem";
+        ssl_certificate "/etc/letsencrypt/live/${cfg_docfg}/fullchain.pem";
         # private key
-        ssl_certificate_key "/etc/letsencrypt/live/sensor-dream.ru/privkey.pem";
+        ssl_certificate_key "/etc/letsencrypt/live/${cfg_docfg}/privkey.pem";
         # verify chain of trust of OCSP response using Root CA and Intermediate certs
-        ssl_trusted_certificate "/etc/letsencrypt/live/sensor-dream.ru/chain.pem";
+        ssl_trusted_certificate "/etc/letsencrypt/live/${cfg_docfg}/chain.pem";
 
         # Load configuration files for the default server block.
         include /etc/nginx/default.d/*.conf;
@@ -181,10 +181,10 @@ EOF
 
   # openssl s_client -connect ${cfg_docfg}:443 -servername ${cfg_docfg} -status </dev/null
   # openssl s_client -connect ${cfg_docfg}:443 -status
-  # sleep 1
-
-  echo -e "\nSTATUS service NGINX - "${temp_one}"\nSTATUS OCSP responce connect ${cfg_docfg}:443\n"
-  echo QUIT | openssl s_client -connect "${cfg_docfg}":443 -status 2>/dev/null | grep -A 17 'OCSP response:' | grep -B 17 'Next Update'
+  # echo -e "\nSTATUS service NGINX - "${temp_one}"\nSTATUS OCSP responce connect ${cfg_docfg}:443\n"
+  # echo QUIT | openssl s_client -connect ${cfg_docfg}:443 -tlsextdebug -status 2>/dev/null
+  # echo QUIT | openssl s_client -servername ${cfg_docfg} -connect ${cfg_docfg}:443 -tlsextdebug -status 2>/dev/null | grep -A 17 'OCSP response:' | grep -B 17 'Next Update'
+  # echo QUIT | openssl s_client -connect ${cfg_docfg}:443 -status 2>/dev/null | grep -A 17 'OCSP response:' | grep -B 17 'Next Update'
 
 }
 

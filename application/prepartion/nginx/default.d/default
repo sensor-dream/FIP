@@ -99,16 +99,17 @@ ssl_early_data on;
 # Requests sent within early data are subject to replay attacks. To protect against such attacks at the application layer, the $ssl_early_data variable should be used.  proxy_set_header Early-Data $ssl_early_data;
 
 # HSTS (ngx_http_headers_module is required) (63072000 seconds)
-add_header Strict-Transport-Security "max-age=63072000 includeSubdomains;" always;
+# add_header Strict-Transport-Security "max-age=63072000 includeSubdomains;" always;
+add_header Strict-Transport-Security "max-age=63072000" always;
 
 # ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-	      add_header X-Frame-Options DENY always;
+add_header X-Frame-Options DENY always;
 
 # ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
-	      add_header X-Content-Type-Options nosniff always;
+add_header X-Content-Type-Options nosniff always;
 
 # ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
-	      add_header X-Xss-Protection "1; mode=block" always;
+add_header X-Xss-Protection "1; mode=block" always;
 
 #
 # DDoS prevention
