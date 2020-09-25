@@ -11,13 +11,13 @@
 ## @File: default
 ## @Creation date file: 18.09.2020, 02:44:44
 
-declare -rx default_script_source="$BASH_SOURCE"
+declare -rx default_d_default_script_source="$BASH_SOURCE"
 
-temp_one="$(dirname ${default_script_source})"
+temp_one="$(dirname ${default_d_default_script_source})"
 if [[ "${temp_one}" == '.' ]]; then
-  declare -rx default_script_source_path="$(pwd)"
+  declare -rx default_d_default_script_source_path="$(pwd)"
 else
-  declare -rx default_script_source_path="${temp_one}"
+  declare -rx default_d_default_script_source_path="${temp_one}"
 fi
 
 if [[ -z "${main_run_script_path}" ]]; then
@@ -47,9 +47,9 @@ if [[ -z "${main_cfg_script_source}" ]]; then
   done
 fi
 
-printf "Loading: %s\n" "$(readlink -m ${default_script_source})"
+printf "Loading: %s\n" "$(readlink -m ${default_d_default_script_source})"
 
-function main_default_script_source() {
+function main_default_d_default_script_source() {
 
   # prinf "Initialise main function of default script source\n";
 
@@ -122,10 +122,16 @@ client_body_buffer_size 200K;
 client_header_buffer_size 2k;
 client_max_body_size 200k;
 large_client_header_buffers 3 1k;
+
+location ~* \.(ico|png|jpg)$ {
+  expires 5d;
+  add_header Cache-Control public;
+}
+
 EOF
 
   [[ $(systemctl is-active nginx) == 'active' ]] || sudo systemctl start nginx
 
 }
 
-main_default_script_source "$@"
+main_default_d_default_script_source "$@"

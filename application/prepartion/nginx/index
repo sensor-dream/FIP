@@ -53,12 +53,18 @@ function main_index_script_source() {
 
   # prinf "Initialise main function of index script source\n";
 
+  [[ -z "$rev_timestamp" ]] && local rev_timestamp=$(date +%s)
+
   cat <<EOF | sudo tee /usr/share/nginx/html/index.html >/dev/null
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="ru">
 <head>
-  <title>${cfg_full_org}</title>
+  <title>Zero page</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="description" content="Sensor-Dream Boxed System. Zero page of Server: SDBS - 23.06.06 - rev: $rev_timestamp" />
+  <meta name="keywords" content="Sensor, Dream, Boxed, System, Server, Contacts, License" />
+  <meta name="author" content="$cfg_email" />
+  <link rel="manifest" href="manifest.json">
   <style type="text/css">
     /*<![CDATA[*/
       body {
@@ -116,7 +122,7 @@ function main_index_script_source() {
         text-align: center;
       }
       .logo {
-        margin: 5px;
+        margin: 5px 5px 25px 5px;
         width: 64px;
         height: 64px;
       }
@@ -144,13 +150,13 @@ function main_index_script_source() {
 </head>
 <body>
   <div class="app">
-    <img class="logo" src="favicon.ico"></img>
+    <img class="logo" src="logo.png"></img>
     <div class="org">
       <span class="zero-page">Zero page</span>
-      <h1>${cfg_full_org}</h1>
+      <h1><span style="color: #f5bb09;">S</span>ensor-<span style="color: #3ea852;">D</span>ream <span style="color: #ea4334;">B</span>oxed <span style="color: #4285f4;">S</span>ystem</h1>
     </div>
     <div class="footer">
-      Server: ${cfg_org} - <strong>23.06.06</strong> - best small bear badaboom<br />
+      Server: <strong><span style="color: #f5bb09;">S</span><span style="color: #3ea852;">D</span><span style="color: #ea4334;">B</span><span style="color: #4285f4;">S</span></strong> - <strong>23.06.06</strong> - rev: $rev_timestamp<br />
       <a href="mailto: ${cfg_email}"><img class="mail-link" src="mail-link.png"></img></a>
       <br />
       <div id="license">

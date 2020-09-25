@@ -90,25 +90,6 @@ events {
 
 http {
 
-    server_names_hash_bucket_size 64;
-
-    server_tokens off; # removed pound sign
-
-    map \$remote_addr \$hack_name_server {
-        '127.0.0.1' 'DEV - ${cfg_org} - 23.06.06 - rev: $rev_timestamp';
-        '::1'       'DEV - ${cfg_org} - 23.06.06 - rev: $rev_timestamp';
-        default     '${cfg_org} - 23.06.06 - rev: $rev_timestamp';
-    }
-
-    more_set_headers 'Server: \$hack_name_server';
-
-    sub_filter_last_modified on;
-    sub_filter_once off;
-    subs_filter_types text/css text/xml application/javascript application/x-javascript application/json;
-    subs_filter '<center>nginx/1.18.0</center>' '<center>\$hack_name_server</center>' gior;
-    # subs_filter '<h1>Sensor-Dream Boxed System</h1>' '<h1><span style="color: #f5bb09;">S</span>ensor-<span style="color: #3ea852;">D</span>ream <span style="color: #ea4334;">B</span>oxed <span style="color: #4285f4;">S</span>ystem</h1>' gior;
-    # subs_filter 'Server: SDBS' 'Server: <strong><span style="color: #f5bb09;">S</span><span style="color: #3ea852;">D</span><span style="color: #ea4334;">B</span><span style="color: #4285f4;">S</span></strong>' gior;
-
     log_format  main  '\$remote_addr - \$remote_user [\$time_local] "\$request" '
                       '\$status \$body_bytes_sent "\$http_referer" '
                       '"\$http_user_agent" "\$http_x_forwarded_for"';
@@ -171,6 +152,7 @@ http {
 }
 EOF
 
+  . "conf.d/default"
   . "default.d/default"
 
   echo -e "\nPlease visit in:\n\thttps://www.ssllabs.com/ssltest\n\thttps://www.immuniweb.com/ssl\n\thttps://www.sslshopper.com/ssl-checker.html\n\thttps://www.digicert.com/help\n\thttps://www.wormly.com/test_ssl\n\thttps://certlogik.com/ssl-checker/"

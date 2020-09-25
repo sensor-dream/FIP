@@ -210,6 +210,11 @@ EOF
   [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
   sudo cp "${nginx_script_source_path}/favicon.ico" "${temp_one}"
 
+  temp_one="$(readlink logo.png)"
+  [[ -z "${temp_one}" ]] && temp_one='logo.png'
+  [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+  sudo cp "${nginx_script_source_path}/logo.png" "${temp_one}"
+
   temp_one="$(readlink mail-link.png)"
   [[ -z "${temp_one}" ]] && temp_one='mail-link.png'
   [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
@@ -224,6 +229,11 @@ EOF
   [[ -z "${temp_one}" ]] && temp_one='sitemap.xml'
   [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
   sudo cp "${nginx_script_source_path}/sitemap.xml" "${temp_one}"
+
+  temp_one="$(readlink manifest.json)"
+  [[ -z "${temp_one}" ]] && temp_one='manifest.json'
+  [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+  . "${nginx_script_source_path}/zero-webmanifest"
 
   cd "${nginx_script_source_path}"
 
