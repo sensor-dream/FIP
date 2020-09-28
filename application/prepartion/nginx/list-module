@@ -23,5 +23,7 @@ declare -A local list_module=(
   ['ngx_http_substitutions_filter_module']='git://github.com/yaoweibin/ngx_http_substitutions_filter_module.git --add-dynamic-module yes'
   ['memc-nginx-module']='https://github.com/openresty/memc-nginx-module.git --add-dynamic-module yes'
   ['srcache-nginx-module']='https://github.com/openresty/srcache-nginx-module.git --add-dynamic-module yes'
-  ['nginx-module-vts']='https://github.com/vozlt/nginx-module-vts.git --add-dynamic-module yes'
+  ['nginx-module-vts']='https://github.com/vozlt/nginx-module-vts.git --add-dynamic-module no'
+  ['nginx-push-stream-module']='https://github.com/wandenberg/nginx-push-stream-module.git --add-dynamic-module yes'
+  ['lua-nginx-module']='https://github.com/openresty/lua-nginx-module.git --add-dynamic-module no'
 )

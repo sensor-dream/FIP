@@ -53,7 +53,8 @@ function main_zero_webmanifest_script_source() {
 
   # prinf "Initialise main function of zero-webmanifest script source\n";
 
-  [[ -z "$rev_timestamp" ]] && local rev_timestamp=$(date +%s)
+  [[ -z "${nginx_script_source_path}" ]] && local nginx_script_source_path='.'
+  [[ -z "$rev_timestamp" ]] && local rev_timestamp="$(cat ${nginx_script_source_path}/rev-timestamp.txt)"
 
   cat <<EOF | sudo tee /usr/share/nginx/html/manifest.json >/dev/null
 {

@@ -57,8 +57,8 @@ function main_conf_script_source() {
 
   # local server_name="${cfg_hostname}"
   local server_name="_"
-
-  local rev_timestamp="$(date +%s)"
+  [[ -z "${nginx_script_source_path}" ]] && local nginx_script_source_path='.'
+  [[ -z "$rev_timestamp" ]] && local rev_timestamp="$(cat ${nginx_script_source_path}/rev-timestamp.txt)"
 
   # cat > nginx.conf nginx.base.conf - <<EOF
   #EOF
@@ -89,6 +89,8 @@ events {
 }
 
 http {
+
+    # lua_package_path "/usr/lib64/lua/lua5.3/?.lua;;";
 
     log_format  main  '\$remote_addr - \$remote_user [\$time_local] "\$request" '
                       '\$status \$body_bytes_sent "\$http_referer" '
@@ -140,6 +142,10 @@ http {
         # Load configuration files for the default server block.
         include /etc/nginx/default.d/*.conf;
 
+        location ~* \.(eot|ttf|woff|woff2) {
+          add_header Access-Control-Allow-Origin *;
+        }
+
         error_page 404 /404.html;
             location = /40x.html {
         }
@@ -167,6 +173,8 @@ EOF
   # echo QUIT | openssl s_client -connect ${cfg_docfg}:443 -tlsextdebug -status 2>/dev/null
   # echo QUIT | openssl s_client -servername ${cfg_docfg} -connect ${cfg_docfg}:443 -tlsextdebug -status 2>/dev/null | grep -A 17 'OCSP response:' | grep -B 17 'Next Update'
   # echo QUIT | openssl s_client -connect ${cfg_docfg}:443 -status 2>/dev/null | grep -A 17 'OCSP response:' | grep -B 17 'Next Update'
+
+  nmap --script ssl-enum-ciphers -p 443 "${cfg_docfg}"
 
 }
 

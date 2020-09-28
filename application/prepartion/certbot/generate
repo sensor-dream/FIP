@@ -53,7 +53,7 @@ function generate_wildcard_certificate_for_main_domain() {
 
   local test=
   local domain=
-  local letsencrypt_rsa_key_size=4096
+  local letsencrypt_rsa_key_size=2048
 
   OPTIND=1
 
@@ -74,7 +74,7 @@ function generate_wildcard_certificate_for_main_domain() {
 
   [[ -z ${domain} ]] && domain="${cfg_docfg}"
 
-  sudo certbot certonly ${test} --manual --must-staple --manual-public-ip-logging-ok --preferred-challenges dns-01 --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory -d "${domain}" -d "*.${domain}"
+  sudo certbot certonly ${test} --manual --must-staple --manual-public-ip-logging-ok --preferred-challenges dns-01 --renew-by-default --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory -d "*.${domain}" -d "${domain}"
 
 }
 

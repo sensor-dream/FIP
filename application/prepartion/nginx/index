@@ -52,8 +52,8 @@ printf "Loading: %s\n" "$(readlink -m ${index_script_source})"
 function main_index_script_source() {
 
   # prinf "Initialise main function of index script source\n";
-
-  [[ -z "$rev_timestamp" ]] && local rev_timestamp=$(date +%s)
+  [[ -z "${nginx_script_source_path}" ]] && local nginx_script_source_path='.'
+  [[ -z "$rev_timestamp" ]] && local rev_timestamp="$(cat ${nginx_script_source_path}/rev-timestamp.txt)"
 
   cat <<EOF | sudo tee /usr/share/nginx/html/index.html >/dev/null
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -156,7 +156,7 @@ function main_index_script_source() {
       <h1><span style="color: #f5bb09;">S</span>ensor-<span style="color: #3ea852;">D</span>ream <span style="color: #ea4334;">B</span>oxed <span style="color: #4285f4;">S</span>ystem</h1>
     </div>
     <div class="footer">
-      Server: <strong><span style="color: #f5bb09;">S</span><span style="color: #3ea852;">D</span><span style="color: #ea4334;">B</span><span style="color: #4285f4;">S</span></strong> - <strong>23.06.06</strong> - rev: $rev_timestamp<br />
+      Server: <strong><span style="color: #f5bb09;">S</span><span style="color: #3ea852;">D</span><span style="color: #ea4334;">B</span><span style="color: #4285f4;">S</span></strong> - <strong>23.06.06</strong> - rev: ${rev_timestamp}<br />
       <a href="mailto: ${cfg_email}"><img class="mail-link" src="mail-link.png"></img></a>
       <br />
       <div id="license">

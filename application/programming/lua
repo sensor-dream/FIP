@@ -65,6 +65,7 @@ function install_lua() {
     'lua-cyrussasl'
     'lua-dbi'
     'lua-devel'
+    'compat-lua-devel'
     'lua-event'
     'lua-event-doc'
     'lua-expat'

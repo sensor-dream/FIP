@@ -53,11 +53,20 @@ function main_conf_d_default_d_default_script_source() {
 
   # prinf "Initialise main function of default script source\n";
 
+  [[ -z "${nginx_script_source_path}" ]] && local nginx_script_source_path='.'
+  [[ -z "$rev_timestamp" ]] && local rev_timestamp="$(cat ${nginx_script_source_path}/rev-timestamp.txt)"
   [[ $(systemctl is-active nginx) == 'active' ]] && sudo systemctl stop nginx
 
   cat <<EOF | sudo tee /etc/nginx/conf.d/default.conf >/dev/null
-
 gzip on;
+gzip_disable "msie6";
+gzip_comp_level 2;
+gzip_vary on;
+gzip_min_length 256;
+gzip_proxied expired no-cache no-store private auth;
+#gzip_buffers 16 8k;
+gzip_types application/atom+xml application/javascript application/json application/rss+xml application/vnd.ms-fontobject application/x-font-ttf application/x-web-app-manifest+json application/xhtml+xml application/xml font/opentype image/svg+xml image/x-icon text/css text/plain text/x-component;
+
 
 server_names_hash_bucket_size 64;
 
@@ -74,7 +83,7 @@ more_set_headers 'Server: \$hack_name_server';
 sub_filter_last_modified on;
 sub_filter_once off;
 subs_filter_types text/css text/xml application/javascript application/x-javascript application/json;
-subs_filter '<center>nginx/1.18.0</center>' '<center>\$hack_name_server</center>' gior;
+# subs_filter '<center>nginx/1.18.0</center>' '<center>\$hack_name_server</center>' gior;
 EOF
 
   [[ $(systemctl is-active nginx) == 'active' ]] || sudo systemctl start nginx

@@ -82,6 +82,9 @@ function main_nginx_script_source() {
 
   # prinf "Initialise main function of nginx script source\n";
 
+  local rev_timestamp="${timestamp}"
+  echo "${rev_timestamp}" >'rev-timestamp.txt'
+
   local nginx_version="$(rpm -qi nginx | awk '/Version/ { print $3 }')"
   # local nginx_version='1.19.0'
   local certbot_version="$(certbot --version)"
@@ -144,25 +147,30 @@ function main_nginx_script_source() {
   [[ -d "nginx-${nginx_version}" ]] || tar -xzvf "nginx-${nginx_version}.tar.gz"
   [[ -d "ngx_devel_kit" ]] || git clone "https://github.com/vision5/ngx_devel_kit.git" "ngx_devel_kit"
 
-  [[ -f "${path_cfg_nginx_modules}/mod-stream.conf" ]] && sudo sed -i 's%^load_module%# load_module%' "${path_cfg_nginx_modules}/mod-stream.conf"
-
   . "${nginx_script_source_path}/list-module"
 
   for key in ${!list_module[@]}; do
     temp_one=(${list_module[${key}]})
     nginx_module_config=$(cat "${key}/config")
     nginx_module_name=($(grep -E '(ngx_module_name=).*' <<<${nginx_module_config} | sed -e 's/ngx_module_name=//g; s/"//g; s/[[:space:]]//mg;'))
-    if [[ ${nginx_module_name} == '$ngx_addon_name' ]]; then
+    if [[ ${nginx_module_name} == '$ngx_addon_name' || ${nginx_module_name} == '${ngx_addon_name}' ]]; then
       nginx_module_name=($(grep -E '(ngx_addon_name=).*' <<<${nginx_module_config} | sed -e 's/ngx_addon_name=//g; s/"//g;'))
     fi
     nginx_module_config=$(echo ${nginx_module_name[0]} | sed -e 's/ngx_/mod-/g; s/_module/.conf/g; s/_/-/g')
     [[ -f "${path_cfg_nginx_modules}/${nginx_module_config}" ]] && sudo rm "${path_cfg_nginx_modules}/${nginx_module_config}"
     if [[ "${temp_one[2]}" == 'yes' ]]; then
       [[ -d "${key}" ]] || git clone "${temp_one[0]}"
+      if [[ "${temp_one[0]}" == 'lua-nginx-module' ]]; then
+        export LUAJIT_LIB=/usr/local/lib
+        export LUAJIT_INC=/usr/local/include/luajit-2.1
+        configure_arguments="$(echo ${configure_arguments} | sed -e 's%--with-ld-opt='%--with-ld-opt='-Wl,-rpath,/usr/local/lib,%g;')"
+      fi
       configure_arguments="${configure_arguments} ${temp_one[1]}=${main_project_path}/application/installation/src/nginx/${key}"
       if [[ "${temp_one[1]}" == '--add-dynamic-module' ]]; then
         for key in ${!nginx_module_name[@]}; do
+          #if [[ ${nginx_module_name[${key}]} != ngx*ngx* ]]; then
           echo "load_module \"${path_lib_nginx_modules}/${nginx_module_name[${key}]}.so\";" | sudo tee -a "${path_cfg_nginx_modules}/${nginx_module_config}"
+          #fi
         done
       fi
     fi
@@ -172,7 +180,12 @@ function main_nginx_script_source() {
 
   make clean
 
-  bash -c "./configure ${configure_arguments} --with-stream"
+  # echo -e "Configure argumanets:\n\t${configure_arguments}"
+  # exit
+
+  # bash -c "./configure ${configure_arguments}"
+  [[ -f "${path_cfg_nginx_modules}/mod-stream.conf" ]] && sudo sed -i 's%^load_module%# load_module%' "${path_cfg_nginx_modules}/mod-stream.conf"
+  bash -c "./configure $configure_arguments --with-stream"
 
   make -j${number_cores}
 
