@@ -11,7 +11,7 @@
 ## @File: monitoring-computer-parameter
 ## @Creation date file: 01.10.2020, 05:01:30
 
-[[ -z "${monitoring_computer_parameter_script_source}" ]] || declare -rx monitoring_computer_parameter_script_source="$BASH_SOURCE"
+[[ -z "${monitoring_computer_parameter_script_source}" ]] && declare -rx monitoring_computer_parameter_script_source="$BASH_SOURCE"
 
 if [[ -z "${monitoring_computer_parameter_script_source_path}" ]]; then
   temp_one="$(dirname ${monitoring_computer_parameter_script_source})"
@@ -49,30 +49,38 @@ if [[ -z "${main_cfg_script_source}" ]]; then
   done
 fi
 
-printf "Loading: %s\n" "$(readlink -m ${monitoring_computer_parameter_script_source})"
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
 function main_monitoring_computer_parameter_script_source() {
 
   # prinf "Initialise main function of monitoring-computer-parameter script source\n";
 
-  if [[ -z $(rpm -qa 'lm_sensors hddtemp') ]]; then
+  if [[ -z "$(rpm -qa lm_sensors hddtemp nmon collectd)" ]]; then
     . "${main_project_path}/application/installation/rpm/monitoring-computer-parameter"
   else
-    printf "Check lm_sensors, hddtemp is OK \n"
+    printf "Check lm_sensors, hddtemp, nmon, collectd is OK \n"
   fi
 
   if [[ "$(systemctl is-active lm_sensors)" != "active" ]]; then
-    sudo systemctl enable lm_sensors
-    sensors-detect
-    sudo systemctl start lm_sensors
-    echo "Please run sensors"
+    echo "Initialise and start lms_sensors ? (Y/n)"
+    read key
+    if [[ ${key} == 'y' ]]; then
+      sudo systemctl enable lm_sensors
+      sensors-detect
+      sudo systemctl start lm_sensors
+      echo "Please run sensors"
+    fi
   fi
 
   if [[ "$(systemctl is-active hddtemp)" != "active" ]]; then
-    sudo systemctl enable hddtemp
-    sensors-detect
-    sudo systemctl start hddtemp
-    echo "Please visit http://127.0.0.1:7634"
+    echo "Initialise and start hddtemp ? (Y/n)"
+    read key
+    if [[ ${key} == 'y' ]]; then
+      sudo systemctl enable hddtemp
+      sensors-detect
+      sudo systemctl start hddtemp
+      echo "Please visit http://127.0.0.1:7634"
+    fi
   fi
 
 }

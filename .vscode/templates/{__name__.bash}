@@ -11,7 +11,7 @@
 ## @File: {__name__}
 ## @Creation date file: {__date__}
 
-[[ -z "${{__name__}_script_source}" ]] || declare -rx {__name__}_script_source="$BASH_SOURCE"
+[[ -z "${{__name__}_script_source}" ]] && declare -rx {__name__}_script_source="$BASH_SOURCE"
 
 if [[ -z "${{__name__}_script_source_path}" ]]; then
   temp_one="$(dirname ${{__name__}_script_source})"
@@ -49,7 +49,7 @@ if [[ -z "${main_cfg_script_source}" ]]; then
   done
 fi
 
-printf "Loading: %s\n" "$(readlink -m ${{__name__}_script_source})";
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})";
 
 function install_{__name__}(){
 

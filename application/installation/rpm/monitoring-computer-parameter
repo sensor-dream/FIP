@@ -11,7 +11,7 @@
 ## @File: monitoring-computer-parameter
 ## @Creation date file: 01.10.2020, 05:01:30
 
-[[ -z "${monitoring_computer_parameter_script_source}" ]] || declare -rx monitoring_computer_parameter_script_source="$BASH_SOURCE"
+[[ -z "${monitoring_computer_parameter_script_source}" ]] && declare -rx monitoring_computer_parameter_script_source="$BASH_SOURCE"
 
 if [[ -z "${monitoring_computer_parameter_script_source_path}" ]]; then
   temp_one="$(dirname ${monitoring_computer_parameter_script_source})"
@@ -49,14 +49,18 @@ if [[ -z "${main_cfg_script_source}" ]]; then
   done
 fi
 
-printf "Loading: %s\n" "$(readlink -m ${monitoring_computer_parameter_script_source})"
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
 function install_monitoring_computer_parameter() {
 
   local install_pkg=(
     'lm_sensors'
     'hddtemp'
+    'nmon'
+    'collectd'
   )
+
+  [[ -z "$(lspci | grep NVIDIA)" ]] || install_pkg=("${install_pkg[@]}" 'gwe')
 
   sudo dnf install "${install_pkg[@]}"
 
