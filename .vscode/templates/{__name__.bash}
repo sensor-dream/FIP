@@ -11,13 +11,15 @@
 ## @File: {__name__}
 ## @Creation date file: {__date__}
 
-declare -rx {__name__}_script_source="$BASH_SOURCE";
+[[ -z "${{__name__}_script_source}" ]] || declare -rx {__name__}_script_source="$BASH_SOURCE"
 
-temp_one="$(dirname ${{__name__}_script_source})"
-if [[ "${temp_one}" == '.' ]]; then
-  declare -rx {__name__}_script_source_path="$(pwd)"
-else
-  declare -rx {__name__}_script_source_path="${temp_one}"
+if [[ -z "${{__name__}_script_source_path}" ]]; then
+  temp_one="$(dirname ${{__name__}_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx {__name__}_script_source_path="$(pwd)"
+  else
+    declare -rx {__name__}_script_source_path="${temp_one}"
+  fi
 fi
 
 if [[ -z "${main_run_script_path}" ]]; then
