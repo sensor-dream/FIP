@@ -55,6 +55,12 @@ function main_monitoring_computer_parameter_script_source() {
 
   # prinf "Initialise main function of monitoring-computer-parameter script source\n";
 
+  if [[ -z $(rpm -qa 'lm_sensors hddtemp') ]]; then
+    . "${main_project_path}/application/installation/rpm/monitoring-computer-parameter"
+  else
+    printf "Check lm_sensors, hddtemp is OK \n"
+  fi
+
   if [[ "$(systemctl is-active lm_sensors)" != "active" ]]; then
     sudo systemctl enable lm_sensors
     sensors-detect
