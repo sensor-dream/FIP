@@ -45,6 +45,7 @@ printf "Loading: %s\n" "$(readlink -m ${nginx_script_source})"
 function install_nginx() {
 
   local install_pkg=(
+    'nmap'
     'nginx'
     'nginx-filesystem'
     'nginx-mimetypes'
