@@ -13,7 +13,11 @@
 
 declare -rx functions_script_source="$BASH_SOURCE"
 
-printf "Loading: %s\n" "$(readlink -m ${functions_script_source})"
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function trim_space() {
+  echo "$(sed -e 's/[[:space:]]\+/ /g; s/^[ ]//; s/[ \t]$//;' <<<$@)"
+}
 
 function X_GNOME_Autostart_disabled() {
 
@@ -52,3 +56,40 @@ function X_GNOME_Autostart_disabled() {
   fi
 }
 export -f X_GNOME_Autostart_disabled
+
+#  Список файлов пакета и где они находятся
+function get_list_rpm_file() {
+  echo "$(repoquery -lq $1)"
+}
+
+#  Список местонахождения файлов библиотеки
+function get_list_lib_file() {
+  echo "$(ldconfig -p | grep $1)"
+}
+
+#  check_install_packages <${array[*]}>
+#  check_install_packages <"a b c d">
+#  return list text  string
+function check_install_packages() {
+  echo $(rpm -qa $@)
+}
+
+#  check_install_packages <${array[*]}>
+#  check_install_packages <"a b c d">
+function find_packages_installation() {
+  temp_one=
+  local Arg=($(trim_space $@))
+  # local Arg=("$@");
+  # echo ${Arg[*]};
+  local installPackages=($(check_install_packages ${Arg[*]}))
+  local Install=()
+  for i in ${!Arg[*]}; do
+    if ! grep -q "${Arg[$i]}" <<<${installPackages[*]}; then
+      Install+=("${Arg[$i]}")
+    fi
+  done
+  echo -en '\e[1;5;31m'"Package(s) already install:\n\t"'\e[0m\e[1;033m'"${installPackages[@]}\n"'\e[0m'
+  tput sgr0
+  # echo ${Install[@]}
+  temp_one=(${Install[@]})
+}

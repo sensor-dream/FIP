@@ -56,7 +56,7 @@ function main_monitoring_computer_parameter_script_source() {
   # prinf "Initialise main function of monitoring-computer-parameter script source\n";
 
   if [[ -z "$(rpm -qa lm_sensors hddtemp nmon collectd)" ]]; then
-    . "${main_project_path}/application/installation/rpm/monitoring-computer-parameter"
+    . "${main_project_path}/application/installation/rpm/tools-monitoring-computer-and-system"
   else
     printf "Check lm_sensors, hddtemp, nmon, collectd is OK \n"
   fi

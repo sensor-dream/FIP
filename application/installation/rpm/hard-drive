@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: monitoring-computer-parameter
-## @Creation date file: 01.10.2020, 05:01:30
+## @File: hard-drive
+## @Creation date file: 06.10.2020, 20:55:50
 
-[[ -z "${monitoring_computer_parameter_script_source}" ]] && declare -rx monitoring_computer_parameter_script_source="$BASH_SOURCE"
+[[ -z "${hard_drive_script_source}" ]] && declare -rx hard_drive_script_source="$BASH_SOURCE"
 
-if [[ -z "${monitoring_computer_parameter_script_source_path}" ]]; then
-  temp_one="$(dirname ${monitoring_computer_parameter_script_source})"
+if [[ -z "${hard_drive_script_source_path}" ]]; then
+  temp_one="$(dirname ${hard_drive_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx monitoring_computer_parameter_script_source_path="$(pwd)"
+    declare -rx hard_drive_script_source_path="$(pwd)"
   else
-    declare -rx monitoring_computer_parameter_script_source_path="${temp_one}"
+    declare -rx hard_drive_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,27 +51,26 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_monitoring_computer_parameter() {
+function install_hard_drive() {
 
   local install_pkg=(
-    'lm_sensors'
+    'gparterd'
+    'duc'
     'hddtemp'
-    'nmon'
-    'collectd'
+    'baobab'
+    'gnome-disk-utility'
   )
 
-  [[ -z "$(lspci | grep NVIDIA)" ]] || install_pkg=("${install_pkg[@]}" 'gwe')
-
-  sudo dnf install "${install_pkg[@]}"
+  sudo dnf install "${install_pkg[@]}" "$@"
 
 }
 
-function main_monitoring_computer_parameter_script_source() {
+function main_hard_drive_script_source() {
 
-  # prinf "Initialise main function of monitoring-computer-parameter script source\n";
+  # prinf "Initialise main function of hard-drive script source\n";
 
-  install_monitoring_computer_parameter "$@"
+  install_hard_drive "$@"
 
 }
 
-main_monitoring_computer_parameter_script_source "$@"
+main_hard_drive_script_source "$@"
