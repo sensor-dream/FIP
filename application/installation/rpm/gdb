@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: CAD
-## @Creation date file: 06.10.2020, 20:13:01
+## @File: gdb
+## @Creation date file: 07.10.2020, 05:03:38
 
-[[ -z "${CAD_script_source}" ]] && declare -rx CAD_script_source="$BASH_SOURCE"
+[[ -z "${gdb_script_source}" ]] && declare -rx gdb_script_source="$BASH_SOURCE"
 
-if [[ -z "${CAD_script_source_path}" ]]; then
-  temp_one="$(dirname ${CAD_script_source})"
+if [[ -z "${gdb_script_source_path}" ]]; then
+  temp_one="$(dirname ${gdb_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx CAD_script_source_path="$(pwd)"
+    declare -rx gdb_script_source_path="$(pwd)"
   else
-    declare -rx CAD_script_source_path="${temp_one}"
+    declare -rx gdb_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,24 +51,28 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_CAD() {
+function install_gdb() {
 
   local install_pkg=(
-    'freecad'
-    'gcad3d'
-    'qucs'
+    'gdb'
+    'gdb-headless'
+    'gdb-doc'
+    'gdb-exploitable'
+    'gdb-gdbserver'
+    'gdb-heap'
+    'gdb-minimal'
   )
 
   sudo dnf install "${install_pkg[@]}" "$@"
 
 }
 
-function main_CAD_script_source() {
+function main_gdb_script_source() {
 
-  # prinf "Initialise main function of CAD script source\n";
+  # prinf "Initialise main function of gdb script source\n";
 
-  install_CAD "$@"
+  install_gdb --skip-broken "$@"
 
 }
 
-main_CAD_script_source "$@"
+main_gdb_script_source "$@"
