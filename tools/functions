@@ -16,7 +16,7 @@ declare -rx functions_script_source="$BASH_SOURCE"
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
 #
-## !!! Not stdin output
+## !!! No visible stdout messages
 #
 # cat > to.file in.file - <<EOF
 # MESSAGE BODY
