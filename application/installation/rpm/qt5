@@ -223,13 +223,13 @@ function install_qt5() {
     qt5-qtwebview
     PackageKit-Qt5
     qt-creator-data
-    qtcreator
+    qt-creator
     qt-devel
     quazip-qt5-devel
   )
 
   . "${main_project_path}/application/installation/rpm/gdb"
-  sudo dnf install "${install_pkg[@]}" "$@"
+  pm "$@" -- "${install_pkg[@]}"
 
 }
 

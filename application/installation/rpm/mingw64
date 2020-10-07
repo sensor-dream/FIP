@@ -475,7 +475,7 @@ function install_mingw64() {
     mingw64-zlib-static
   )
 
-  sudo dnf install "${install_pkg[@]}" "$@"
+  pm "$@" -- "${install_pkg[@]}"
 
 }
 

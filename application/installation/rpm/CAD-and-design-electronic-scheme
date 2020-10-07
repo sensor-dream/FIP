@@ -66,8 +66,7 @@ function install_CAD_and_design_electronic_scheme() {
     'kicad-packages3d'
     'fritzing'
   )
-
-  sudo dnf install "${install_pkg[@]}" "$@"
+  pm "$@" -- "${install_pkg[@]}"
 
   # sudo flatpak remote-add --if-not-exists flathub 'https://flathub.org/repo/flathub.flatpakrepo'
   # sudo flatpak install flathub 'org.librepcb.LibrePCB'
@@ -86,19 +85,21 @@ function install_CAD_and_design_electronic_scheme() {
     'polyclipping-devel'
     'pkgconf-pkg-config'
   )
+  pm "$@" -- "${install_pkg[@]}"
 
-  sudo dnf install "${install_pkg[@]}" "$@"
+  [[ -z "$(check_installed_packages qt5)" ]] && . "${main_project_path}/application/installation/rpm/qt5"
 
-  . "${main_project_path}/application/installation/rpm/qt5"
-  [[ -d "${main_project_path}/application/installation/src/LibrePCB" ]] || git clone --recursive https://github.com/LibrePCB/LibrePCB.git "${main_project_path}/application/installation/src/LibrePCB"
+  [[ -d "${main_project_path}/application/installation/src/LibrePCB" ]] || git clone --recursive "https://github.com/LibrePCB/LibrePCB.git" "${main_project_path}/application/installation/src/LibrePCB"
 
   cd "${main_project_path}/application/installation/src/LibrePCB"
   git submodule update --init --recursive
 
   [[ -d build ]] || mkdir build
   cd build
-  qmake-qt5 -r ../librepcb.pro CONFIG+=ccache CONFIG+=release PREFIX=/usr/local # UNBUNDLE+=quazip UNBUNDLE+=polyclipping
-  make -j2
+  sudo make uninstall
+  qmake-qt5 -r ../librepcb.pro CONFIG+=ccache CONFIG+=release CONFIG+=force_debug_info PREFIX=/usr/local # UNBUNDLE+=quazip UNBUNDLE+=polyclipping UNBUNDLE+=fontobene-qt5
+  make -j8
+  sudo make install
 
   cd "${main_run_script_path}"
 

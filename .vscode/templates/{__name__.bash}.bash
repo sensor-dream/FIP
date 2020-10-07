@@ -57,7 +57,7 @@ function install_{__name__}(){
 
 );
 
-  sudo dnf install "${install_pkg[@]}" "$@"
+  pm  "$@" -- "${install_pkg[@]}"
 
 }
 

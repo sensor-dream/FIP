@@ -2,7 +2,7 @@
 
 ## Installation rpm packages mariadb
 
-    sudo dnf install unixODBC perl-DBD-MySQL perl-DBI mysql-selinux mariadb-errmsg mariadb-common mariadb mariadb-server mariadb-gssapi-server mariadb-backup mariadb-connector-c mariadb-connector-c-config mariadb-connect-engine mariadb-connector-odbc mariadb-cracklib-password-check mariadb-server-utils
+    unixODBC perl-DBD-MySQL perl-DBI mysql-selinux mariadb-errmsg mariadb-common mariadb mariadb-server mariadb-gssapi-server mariadb-backup mariadb-connector-c mariadb-connector-c-config mariadb-connect-engine mariadb-connector-odbc mariadb-cracklib-password-check mariadb-server-utils
 
 ## Preaparation mariadb
 
@@ -60,8 +60,8 @@
 
     FILE_OS_RELEASE="/etc/os-release"
     OS_VERSION_ID="$(grep VERSION_ID ${FILE_OS_RELEASE} | awk -F= '{ print $2 }')"
-    sudo dnf install "https://dev.mysql.com/get/mysql80-community-release-fc${OS_VERSION_ID}-1.noarch.rpm"
+    "https://dev.mysql.com/get/mysql80-community-release-fc${OS_VERSION_ID}-1.noarch.rpm"
 
     sudo dnf config-manager --set-disable mysql80-community mysql-connectors-community
 
-    sudo dnf install mysql-workbench-community
+    mysql-workbench-community

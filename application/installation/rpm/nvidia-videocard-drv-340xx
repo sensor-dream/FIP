@@ -73,7 +73,7 @@ function install_nvidia_videocard_drv_340xx() {
     'libgcc'
     'libxcb'
   )
-  sudo dnf install "${install_pkg[@]}"
+  pm "$@" -- "${install_pkg[@]}"
 
   install_pkg=(
     'libvdpau'
@@ -84,7 +84,7 @@ function install_nvidia_videocard_drv_340xx() {
     # Tools for VAAPI (including vainfo)
     'libva-utils'
   )
-  sudo dnf install "${install_pkg[@]}"
+  pm "$@" -- "${install_pkg[@]}"
 
   install_pkg=(
     #
@@ -110,7 +110,7 @@ function install_nvidia_videocard_drv_340xx() {
     # This package provides the shared libraries i686 for xorg-x11-drv-nvidia xorg-x11-drv-nvidia-libs
     'xorg-x11-drv-nvidia-340xx-libs.i686'
   )
-  sudo dnf install "${install_pkg[@]}"
+  pm "$@" -- "${install_pkg[@]}"
 
 }
 

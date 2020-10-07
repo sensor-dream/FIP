@@ -63,7 +63,7 @@ function install_gdb() {
     'gdb-minimal'
   )
 
-  sudo dnf install "${install_pkg[@]}" "$@"
+  pm -f "$@" -- "${install_pkg[@]}"
 
 }
 
@@ -71,7 +71,7 @@ function main_gdb_script_source() {
 
   # prinf "Initialise main function of gdb script source\n";
 
-  install_gdb --skip-broken "$@"
+  install_gdb "$@"
 
 }
 

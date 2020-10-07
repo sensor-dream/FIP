@@ -90,7 +90,7 @@ function install_bashstyle_ng() {
 
   find_packages_installation "${dependicies[@]}"
 
-  [[ -z "${temp_one[@]}" ]] || sudo dnf install -y "${temp_one[@]}"
+  [[ -z "${temp_one[@]}" ]] || -y "${temp_one[@]}"
 
   echo "Please visit in https://nanolx.org/nanolx/bashstyle-ng"
 

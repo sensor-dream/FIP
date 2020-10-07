@@ -54,7 +54,7 @@ function install_certbot() {
     'python3-httplib2'
   )
 
-  sudo dnf install "${install_pkg[@]}"
+  pm "$@" -- "${install_pkg[@]}"
 
 }
 

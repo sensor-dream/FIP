@@ -114,7 +114,7 @@ function install_lua() {
     'luarocks'
   )
 
-  sudo dnf install "${install_pkg[@]}"
+  pm "$@" -- "${install_pkg[@]}"
 
 }
 

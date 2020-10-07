@@ -19,6 +19,94 @@ function trim_space() {
   echo "$(sed -e 's/[[:space:]]\+/ /g; s/^[ ]//; s/[ \t]$//;' <<<$@)"
 }
 
+#  Список файлов пакета и где они находятся
+function get_list_rpm_file() {
+  echo "$(repoquery -lq $1)"
+}
+
+#  Список местонахождения файлов библиотеки
+function get_list_lib_file() {
+  echo "$(ldconfig -p | grep $1)"
+}
+
+#  check_packages <${array[*]}>
+#  check_packages <"a b c d">
+#  return list text  string
+function check_packages() {
+  echo $(rpm -qa --qf '%{name}' $@)
+}
+
+#cat <<EOF >/dev/null
+if [[ "$(check_packages dnf-utils)" == 'dnf-utils' ]]; then
+  printf "Check dnf-utils is OK \n"
+else
+  sudo dnf install 'dnf-utils'
+fi
+#EOF
+
+#  check_instaldl_packages <${array[*]}>
+#  check_installd_packages <"a b c d">
+#  return list text  string
+function check_installed_packages() {
+  echo $(repoquery --installed --qf '%{name}' $@)
+}
+
+#  find_packages_installation <${array[*]}>
+#  find_packages_installation <"a b c d">
+function find_packages_installation() {
+  temp_one=
+  local Arg=($(trim_space $@))
+  # local Arg=("$@");
+  # echo ${Arg[*]};
+  local installPackages=($(check_installed_packages ${Arg[*]}))
+  local Install=()
+  for i in ${!Arg[*]}; do
+    if ! grep -q "${Arg[$i]}" <<<${installPackages[*]}; then
+      Install+=("${Arg[$i]}")
+    fi
+  done
+  echo -en '\e[1;5;31m'"Package(s) already used:\n\t"'\e[0m\e[1;033m'"${installPackages[@]}\n"'\e[0m'
+  tput sgr0
+  # echo ${Install[@]}
+  temp_one=(${Install[@]})
+}
+
+#  pm <${array[*]}>
+#  pm <"a b c d">
+function pm() {
+
+  local action='install'
+  local options='--skip-broken'
+  local exclude=''
+  local force=0
+
+  OPTIND=1
+
+  while getopts "frRan:x" OPT; do
+    case $OPT in
+    f)
+      options="${options} --allowerasing --best"
+      force=1
+      ;;
+    r) action='remove' ;;
+    R) action='reinstall' ;;
+    a) options="${options} --assumeyes" ;;
+    n) options="${options} --noautoremove" ;;
+    x) exclude="${exclude} -x $OPTARG" ;;
+    *) ;;
+    esac
+  done
+
+  shift $(($OPTIND - 1))
+  [ "${1:-}" = "--" ] && shift
+
+  find_packages_installation "${@}"
+  if [[ -n "${temp_one}" ]]; then
+    echo -en '\e[1;5;36m'"Package(s) install list:\n\t"'\e[0m\e[1;033m'"${temp_one[@]}\n"'\e[0m'
+    sudo dnf "${action}" ${temp_one[@]} "${exclude}"
+  fi
+}
+
 function X_GNOME_Autostart_disabled() {
 
   local name="$(echo $@ | sed 's%/etc/xdg/autostart/%%')"
@@ -56,40 +144,3 @@ function X_GNOME_Autostart_disabled() {
   fi
 }
 export -f X_GNOME_Autostart_disabled
-
-#  Список файлов пакета и где они находятся
-function get_list_rpm_file() {
-  echo "$(repoquery -lq $1)"
-}
-
-#  Список местонахождения файлов библиотеки
-function get_list_lib_file() {
-  echo "$(ldconfig -p | grep $1)"
-}
-
-#  check_install_packages <${array[*]}>
-#  check_install_packages <"a b c d">
-#  return list text  string
-function check_install_packages() {
-  echo $(rpm -qa $@)
-}
-
-#  check_install_packages <${array[*]}>
-#  check_install_packages <"a b c d">
-function find_packages_installation() {
-  temp_one=
-  local Arg=($(trim_space $@))
-  # local Arg=("$@");
-  # echo ${Arg[*]};
-  local installPackages=($(check_install_packages ${Arg[*]}))
-  local Install=()
-  for i in ${!Arg[*]}; do
-    if ! grep -q "${Arg[$i]}" <<<${installPackages[*]}; then
-      Install+=("${Arg[$i]}")
-    fi
-  done
-  echo -en '\e[1;5;31m'"Package(s) already install:\n\t"'\e[0m\e[1;033m'"${installPackages[@]}\n"'\e[0m'
-  tput sgr0
-  # echo ${Install[@]}
-  temp_one=(${Install[@]})
-}

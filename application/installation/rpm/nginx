@@ -58,7 +58,7 @@ function install_nginx() {
     'gperftools-devel'
   )
 
-  sudo dnf install "${install_pkg[@]}"
+  pm "$@" -- "${install_pkg[@]}"
 
 }
 

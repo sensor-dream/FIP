@@ -71,7 +71,7 @@ function install_tools_monitoring_computer_and_system() {
 
   [[ -z "$(lspci | grep NVIDIA)" ]] || install_pkg=("${install_pkg[@]}" 'gwe')
 
-  sudo dnf install "${install_pkg[@]}"
+  pm "$@" -- "${install_pkg[@]}"
 
 }
 

@@ -54,7 +54,7 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 function install_rpmsphere() {
 
   if [[ -z "$(rpm -qa rpmsphere-release)" ]]; then
-    sudo dnf install "https://github.com/rpmsphere/noarch/raw/master/r/rpmsphere-release-${os_version_id}-1.noarch.rpm"
+    "https://github.com/rpmsphere/noarch/raw/master/r/rpmsphere-release-${os_version_id}-1.noarch.rpm"
   else
     printf "Check rpmsphere repository is OK \n"
   fi
