@@ -228,7 +228,7 @@ function install_qt5() {
     quazip-qt5-devel
   )
 
-  . "${main_project_path}/application/installation/rpm/gdb"
+  [[ -z "$(check_installed_packages gdb)" ]] && . "${main_project_path}/application/installation/rpm/gdb"
   pm "$@" -- "${install_pkg[@]}"
 
 }

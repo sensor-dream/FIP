@@ -69,7 +69,7 @@ function install_tools_monitoring_computer_and_system() {
     'grub-customizer'
   )
 
-  [[ -z "$(lspci | grep NVIDIA)" ]] || install_pkg=("${install_pkg[@]}" 'gwe')
+  [[ -z "$(lspci | grep NVIDIA)" ]] || install_pkg+=('gwe')
 
   pm "$@" -- "${install_pkg[@]}"
 

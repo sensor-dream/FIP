@@ -40,7 +40,7 @@ if [[ -z "${main_cfg_script_source}" ]]; then
   done
 fi
 
-printf "Loading: %s\n" "$(readlink -m ${main_script_source})"
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
 function main_main_script_source() {
 

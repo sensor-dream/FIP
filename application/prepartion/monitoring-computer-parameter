@@ -55,10 +55,10 @@ function main_monitoring_computer_parameter_script_source() {
 
   # prinf "Initialise main function of monitoring-computer-parameter script source\n";
 
-  if [[ -z "$(rpm -qa lm_sensors hddtemp nmon collectd)" ]]; then
+  if [[ -z "$(check_installed_packages lm_sensors hddtemp nmon collectd)" ]]; then
     . "${main_project_path}/application/installation/rpm/tools-monitoring-computer-and-system"
   else
-    printf "Check lm_sensors, hddtemp, nmon, collectd is OK \n"
+    printf "Check lm_sensors, hddtemp, nmon, collectd is OK\n"
   fi
 
   if [[ "$(systemctl is-active lm_sensors)" != "active" ]]; then
@@ -68,7 +68,6 @@ function main_monitoring_computer_parameter_script_source() {
       sudo systemctl enable lm_sensors
       sensors-detect
       sudo systemctl start lm_sensors
-      echo "Please run sensors"
     fi
   fi
 
@@ -82,6 +81,9 @@ function main_monitoring_computer_parameter_script_source() {
       echo "Please visit http://127.0.0.1:7634"
     fi
   fi
+
+  echo "Please run sensors for more information"
+  echo "Please visit http://127.0.0.1:7634 for use hddtemp"
 
 }
 

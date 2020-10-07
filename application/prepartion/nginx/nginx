@@ -55,7 +55,7 @@ function install_nginx_dependence() {
     sudo dnf check-update
   fi
 
-  printf "Loading: %s\n" "$(readlink -m ${nginx_script_source})"
+  printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
   local install_pkg=(
     'libxml2'

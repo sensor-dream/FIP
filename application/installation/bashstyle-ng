@@ -88,9 +88,7 @@ function install_bashstyle_ng() {
     'python3-pytest-shutil'
   )
 
-  find_packages_installation "${dependicies[@]}"
-
-  [[ -z "${temp_one[@]}" ]] || -y "${temp_one[@]}"
+  pm "$@" -- "${dependicies[@]}"
 
   echo "Please visit in https://nanolx.org/nanolx/bashstyle-ng"
 
