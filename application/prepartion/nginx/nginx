@@ -82,10 +82,16 @@ function main_nginx_script_source() {
 
   # prinf "Initialise main function of nginx script source\n";
 
-  if [[ -z "$(rpm -qa 'nginx')" ]]; then
+  if [[ "$(check_installed_packages nginx)" != 'nginx' ]]; then
     . "${main_project_path}/application/installation/rpm/nginx"
   else
     printf "Check nginx is OK \n"
+  fi
+
+  if [[ "$(check_installed_packages php php-fpm)" != 'php php-fpm' ]]; then
+    . "${main_project_path}/application/programming-languages/rpm/php"
+  else
+    printf "Check php php-fpm is OK \n"
   fi
 
   local rev_timestamp="${timestamp}"

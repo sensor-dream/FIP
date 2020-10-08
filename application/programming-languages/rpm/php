@@ -1,0 +1,236 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: php
+## @Creation date file: 08.10.2020, 06:57:20
+
+[[ -z "${php_script_source}" ]] && declare -rx php_script_source="$BASH_SOURCE"
+
+if [[ -z "${php_script_source_path}" ]]; then
+  temp_one="$(dirname ${php_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx php_script_source_path="$(pwd)"
+  else
+    declare -rx php_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_php() {
+
+  local install_pkg=(
+    'php'
+    'php-JMSParser'
+    'php-Metadata'
+    'php-Monolog'
+    'php-PHPParser'
+    'php-PhpCollection'
+    'php-PhpOption'
+    'php-PsrLog'
+    'php-cilex1'
+    'php-cli'
+    'php-common'
+    'php-composer-ca-bundle'
+    'php-composer-semver'
+    'php-composer-spdx-licenses'
+    'php-composer-xdebug-handler'
+    'php-container-interop'
+    'php-cs-fixer'
+    'php-cs-fixer-phpunit-constraint-isidenticalstring'
+    'php-cs-fixer-phpunit-constraint-xmlmatchesxsd'
+    'php-devel'
+    'php-doctrine-annotations'
+    'php-doctrine-cache'
+    'php-doctrine-collections'
+    'php-doctrine-common'
+    'php-doctrine-event-manager'
+    'php-doctrine-inflector'
+    'php-doctrine-instantiator'
+    'php-doctrine-lexer'
+    'php-doctrine-persistence'
+    'php-doctrine-reflection'
+    'php-domxml-php4-php5'
+    'php-egulias-email-validator'
+    'php-embedded'
+    'php-erusev-parsedown'
+    'php-fedora-autoloader'
+    'php-fpm'
+    'php-gd'
+    'php-imap'
+    'php-intl'
+    'php-jms-serializer'
+    'php-json'
+    'php-jsonlint'
+    'php-justinrainbow-json-schema5'
+    'php-laminas-cache'
+    'php-laminas-config'
+    'php-laminas-eventmanager'
+    'php-laminas-filter'
+    'php-laminas-i18n'
+    'php-laminas-json'
+    'php-laminas-serializer'
+    'php-laminas-servicemanager'
+    'php-laminas-stdlib'
+    'php-laminas-zendframework-bridge'
+    'php-ldap'
+    'php-masterminds-html5'
+    'php-mbstring'
+    'php-myclabs-deep-copy'
+    'php-mysqlnd'
+    'php-opcache'
+    'php-pclzip'
+    'php-pdo'
+    'php-pear'
+    'php-pear-CAS'
+    'php-pear-MDB2'
+    'php-pear-MDB2-Driver-mysqli'
+    'php-pear-PHP-CodeSniffer'
+    'php-pecl-apcu'
+    'php-pecl-apcu-bc'
+    'php-pecl-apcu-devel'
+    'php-pecl-igbinary'
+    'php-pecl-krb5'
+    'php-pecl-krb5-devel'
+    'php-pecl-mcrypt'
+    'php-pecl-memcache'
+    'php-pecl-memcached'
+    'php-pecl-msgpack'
+    'php-pecl-yaml'
+    'php-pecl-zip'
+    'php-phpdocumentor-fileset'
+    'php-phpdocumentor-graphviz'
+    'php-phpdocumentor-reflection'
+    'php-phpdocumentor-reflection-common2'
+    'php-phpdocumentor-reflection-docblock2'
+    'php-phpdocumentor-reflection-docblock5'
+    'php-phpdocumentor-type-resolver1'
+    'php-phpspec-prophecy'
+    'php-phpunit-File-Iterator'
+    'php-phpunit-PHP-CodeCoverage'
+    'php-phpunit-PHP-Invoker'
+    'php-phpunit-PHP-Timer'
+    'php-phpunit-PHPUnit'
+    'php-phpunit-PHPUnit-MockObject'
+    'php-phpunit-Text-Template'
+    'php-phpunit-Version'
+    'php-phpunit-comparator'
+    'php-phpunit-diff'
+    'php-phpunit-environment'
+    'php-phpunit-exporter'
+    'php-phpunit-mock-objects5'
+    'php-phpunit-php-code-coverage5'
+    'php-phpunit-php-token-stream2'
+    'php-phpunitgoodpractices-polyfill'
+    'php-pimple1'
+    'php-process'
+    'php-psr-cache'
+    'php-psr-container'
+    'php-psr-simple-cache'
+    'php-sabre-event5'
+    'php-sebastian-code-unit-reverse-lookup'
+    'php-sebastian-comparator4'
+    'php-sebastian-diff4'
+    'php-sebastian-environment3'
+    'php-sebastian-exporter3'
+    'php-sebastian-exporter4'
+    'php-sebastian-global-state'
+    'php-sebastian-object-enumerator'
+    'php-sebastian-recursion-context'
+    'php-sebastian-recursion-context3'
+    'php-sebastian-recursion-context4'
+    'php-sebastian-resource-operations'
+    'php-seld-phar-utils'
+    'php-soap'
+    'php-sodium'
+    'php-symfony-browser-kit'
+    'php-symfony-class-loader'
+    'php-symfony-common'
+    'php-symfony-config'
+    'php-symfony-console'
+    'php-symfony-css-selector'
+    'php-symfony-debug'
+    'php-symfony-dependency-injection'
+    'php-symfony-dom-crawler'
+    'php-symfony-event-dispatcher'
+    'php-symfony-expression-language'
+    'php-symfony-filesystem'
+    'php-symfony-finder'
+    'php-symfony-http-foundation'
+    'php-symfony-http-kernel'
+    'php-symfony-intl'
+    'php-symfony-polyfill'
+    'php-symfony-process'
+    'php-symfony-property-access'
+    'php-symfony-stopwatch'
+    'php-symfony-translation'
+    'php-symfony-validator'
+    'php-symfony-var-dumper'
+    'php-symfony-yaml'
+    'php-symfony3-common'
+    'php-symfony3-console'
+    'php-symfony3-debug'
+    'php-symfony3-event-dispatcher'
+    'php-symfony3-filesystem'
+    'php-symfony3-finder'
+    'php-symfony3-options-resolver'
+    'php-symfony3-process'
+    'php-symfony3-stopwatch'
+    'php-theseer-tokenizer'
+    'php-twig'
+    'php-webmozart-assert'
+    'php-whitehat101-apr1-md5'
+    'php-xml'
+    'php-xmlrpc'
+    'php-zetacomponents-base'
+    'php-zetacomponents-document'
+    'phpdoc'
+  )
+
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_php_script_source() {
+
+  # prinf "Initialise main function of php script source\n";
+
+  install_php "$@"
+
+}
+
+main_php_script_source "$@"
