@@ -78,7 +78,7 @@ function find_packages_installation() {
       Install+=("${Arg[$i]}")
     fi
   done
-  echo -en '\e[1;5;31m'"Package(s) already used:\n\t"'\e[0m\e[1;033m'"${installPackages[@]}\n"'\e[0m'
+  [[ "${temp_one[@]}" =~ (\s+|\t+|\n+|$) ]] || echo -en '\e[1;5;31m'"Package(s) already used:\n\t"'\e[0m\e[1;033m'"${installPackages[@]}\n"'\e[0m'
   tput sgr0
   # echo ${Install[@]}
   temp_one=(${Install[@]})
@@ -114,7 +114,7 @@ function pm() {
   [ "${1:-}" = "--" ] && shift
 
   find_packages_installation "${@}"
-  if [[ -n "${temp_one}" ]]; then
+  if [[ -n "${temp_one}" && "${temp_one[@]}" != " " ]]; then
     echo -en '\e[1;5;36m'"Package(s) install list:\n\t"'\e[0m\e[1;033m'"${temp_one[@]}\n"'\e[0m'
     sudo dnf ${action} ${temp_one[@]} ${exclude}
   fi
