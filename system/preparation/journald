@@ -46,10 +46,10 @@ function main_journald_script_source() {
 
   # prinf "Initialise main function of journald script source\n";
 
-  if [[ "$(grep SystemMaxUse /etc/systemd/journald.conf)" != 'SystemMaxUse=128M' ]]; then
-    sudo sed -i "s/^.*SystemMaxUse=.*/SystemMaxUse=128M/" '/etc/systemd/journald.conf'
-    sudo journalctl --vacuum-size=128M
-    echo "Set vacuum-size=128M and configure journald"
+  if [[ "$(grep SystemMaxUse /etc/systemd/journald.conf)" != 'SystemMaxUse=256M' ]]; then
+    sudo sed -i "s/^.*SystemMaxUse=.*/SystemMaxUse=256M/" '/etc/systemd/journald.conf'
+    sudo journalctl --vacuum-size=256M
+    echo "Set vacuum-size=256M and configure journald"
   else
     echo "journald.conf already prepared"
   fi

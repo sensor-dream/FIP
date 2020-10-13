@@ -46,17 +46,16 @@ function main_disable_evolution_script_source() {
 
   # prinf "Initialise main function of disable-evolution script source\n";
   local list=(
-    'evolution-addressbook-factory'
-    'evolution-calendar-factory'
-    'evolution-source-registry'
-    'evolution-user-prompter'
-    'evolution-alarm-notify'
+    'evolution-addressbook-factory.service'
+    'evolution-calendar-factory.service'
+    'evolution-source-registry.service'
+    'evolution-user-prompter.service'
   )
 
-  if [[ "$(echo $(systemctl --user is-enabled ${list[@]}) | sed 's/\s//g')" != "maskedmaskedmaskedmaskedmasked" ]]; then
+  if [[ "$(echo $(systemctl --user is-enabled ${list[@]}) | sed 's/\s//g')" != "maskedmaskedmaskedmasked" ]]; then
     echo "Services evolution* stop and masked"
-    systemctl --user mask "${temp[@]}"
-    sudo systemctl mask "${temp[@]}"
+    systemctl --user mask "${list[@]}"
+    sudo systemctl mask "${list[@]}"
     find /etc/xdg/autostart -type f -name *Evolution* -exec bash -c 'X_GNOME_Autostart_disabled "$0"' '{}' \;
   else
     echo -e "Services evolution* is stop, disabled and masked.\nX_GNOME_Autostart disabled from: ${list[@]}"

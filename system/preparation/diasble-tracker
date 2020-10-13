@@ -53,14 +53,22 @@ printf "Loading:\n\t%s\n" "$(readlink -m ${diasble_tracker_script_source})"
 function main_diasble_tracker_script_source() {
 
   local list=(
-    'tracker-extract'
-    'tracker-miner-fs'
-    'tracker-miner-apps'
-    'tracker-storereboot'
-    'tracker-store'
+    # 'app-tracker\x2dminer\x2dfs\x2d3-autostart.service'
+    # 'app-tracker\x2dminer\x2drss\x2d3-autostart.service'
+    'tracker-extract-3.service'
+    'tracker-extract.service'
+    'tracker-miner-fs-3.service'
+    'tracker-miner-fs-control-3.service'
+    'tracker-miner-fs.service'
+    'tracker-miner-rss-3.service'
+    'tracker-miner-rss.service'
+    'tracker-store.service'
+    'tracker-writeback-3.service'
+    'tracker-writeback.service'
+    'tracker-xdg-portal-3.service'
   )
 
-  if [[ "$(echo $(systemctl --user is-enabled ${list[@]}) | sed 's/\s//g')" != "maskedmaskedmaskedmaskedmasked" ]]; then
+  if [[ "$(echo $(systemctl --user is-enabled ${list[@]}) | sed 's/\s//g')" != "maskedmaskedmaskedmaskedmaskedmaskedmaskedmaskedmaskedmaskedmasked" ]]; then
     printf "Stop tracker daemon: %s\n" $(tracker daemon -t all 2>/dev/null)
     printf "List services stop and masked:\n\t%s\n"
     tracker daemon -t all 2 >/dev/null

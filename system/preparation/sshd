@@ -46,8 +46,11 @@ function cfg_sshd_script_source() {
 
   # prinf "Initialise main function of sshd script source\n";
 
-  [[ -f "${main_project_path}/hidden/cfg-sshd-information" ]] || . "${main_project_path}/tools/cfg-sshd-information"
-  . "${main_project_path}/hidden/cfg-sshd-information"
+  if [[ -f "${main_project_path}/hidden/cfg-sshd-information" ]]; then
+      . "${main_project_path}/hidden/cfg-sshd-information"
+  else
+      . "${main_project_path}/tools/cfg-sshd-information"
+  fi
 
   local temp=$(sudo grep -E "^[#]?Port\s.*$" '/etc/ssh/sshd_config')
   if [[ -z "${temp}" ]]; then
