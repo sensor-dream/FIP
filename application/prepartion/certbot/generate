@@ -47,7 +47,7 @@ if [[ -z "${main_cfg_script_source}" ]]; then
   done
 fi
 
-printf "Loading: %s\n" "$(readlink -m ${generate_script_source})"
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
 function generate_wildcard_certificate_for_main_domain() {
 
@@ -73,6 +73,17 @@ function generate_wildcard_certificate_for_main_domain() {
   # exit
 
   [[ -z ${domain} ]] && domain="${cfg_docfg}"
+
+  if ! grep -q "127.0.0.1   ${domain}" '/etc/hosts'; then
+    echo "Add in hosts file: ${domain}"
+    if [[ $(echo "${domain}...s" | tr -cd "." | wc -m) -eq 1 ]]; then
+      echo -e "127.0.0.1   ${domain}\n::1         ${domain}" | sudo tee -a '/etc/hosts'
+    else
+      echo -e "127.0.0.1   ${domain} www.${domain}\n::1         ${domain} www.${domain}" | sudo tee -a '/etc/hosts'
+    fi
+  else
+    echo "Already added in hosts file: ${domain}"
+  fi
 
   sudo certbot certonly ${test} --manual --must-staple --manual-public-ip-logging-ok --preferred-challenges dns-01 --renew-by-default --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory -d "*.${domain}" -d "${domain}"
 

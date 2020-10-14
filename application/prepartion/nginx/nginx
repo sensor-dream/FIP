@@ -49,11 +49,13 @@ fi
 
 function install_nginx_dependence() {
 
+  cat <<EOF >/dev/null
   if [[ ! -f '/etc/yum.repos.d/openresty.repo' ]]; then
     wget https://openresty.org/package/fedora/openresty.repo
     sudo mv openresty.repo /etc/yum.repos.d/
     sudo dnf check-update
   fi
+EOF
 
   printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
@@ -70,9 +72,13 @@ function install_nginx_dependence() {
     'openssl-devel'
     'gcc'
     'curl'
-    'openresty'
-    'openresty-resty'
+    'gd'
+    'gd-devel'
+    'perl'
   )
+
+  # 'openresty'
+  # 'openresty-resty'
 
   pm "$@" -- "${install_pkg[@]}"
 
@@ -94,6 +100,12 @@ function main_nginx_script_source() {
     printf "Check php php-fpm is OK \n"
   fi
 
+  if [[ "$(check_installed_packages GeoIP)" != 'GeoIP' ]]; then
+    . "${main_project_path}/application/installation/rpm/geoip"
+  else
+    printf "Check GeoIP is OK \n"
+  fi
+
   local rev_timestamp="${timestamp}"
   echo "${rev_timestamp}" >'rev-timestamp.txt'
 
@@ -112,7 +124,15 @@ function main_nginx_script_source() {
   [[ -z "${nginx_version}" ]] && . "${main_project_path}/application/installation/rpm/nginx"
   [[ -z "${certbot_version}" ]] && . "${main_project_path}/application/installation/rpm/certbot"
 
-  # install_nginx_dependence
+  install_nginx_dependence
+
+  echo "Запустить генерацию сертификатов ? (N/y)"
+  read key
+  if [[ "${key}" == "y" ]]; then
+    echo "Введите название домена (def. ${cfg_docfg})"
+    read key
+    . "${main_project_path}/application/prepartion/certbot/generate" -d "${key}"
+  fi
 
   [[ $(systemctl is-enabled nginx) == 'enable' ]] || sudo systemctl enable nginx
   [[ $(systemctl is-active nginx) == 'active' ]] && sudo systemctl stop nginx
