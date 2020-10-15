@@ -55,9 +55,6 @@ function main_iptables_script_source() {
 
   [[ -f "${main_project_path}/hidden/cfg-network-information" ]] || . /"${main_project_path}/tools/cfg-network-information"
 
-  sudo iptables -L
-  . "${main_project_path}/application/prepartion/firewall/iptables-rulles"
-
 }
 
 main_iptables_script_source "$@"
