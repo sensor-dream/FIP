@@ -91,6 +91,7 @@ function cfg_sshd_script_source() {
     fi
   fi
 
+  cat <<EOF >/dev/null
   temp=$(sudo grep -E "^[#]?PubkeyAcceptedKeyTypes\s.*$" '/etc/ssh/sshd_config')
   if [[ -z "${temp}" ]]; then
     echo "PubkeyAcceptedKeyTypes +ssh-dss" | sudo tee -a '/etc/ssh/sshd_config'
@@ -101,6 +102,23 @@ function cfg_sshd_script_source() {
       echo "Set 'SSHD PubkeyAcceptedKeyTypes +ssh-dss'"
     else
       echo "SSHD 'PubkeyAcceptedKeyTypes +ssh-dss' already use"
+    fi
+  fi
+EOF
+
+  temp=$(ssh -Q PubkeyAcceptedKeyTypes | grep 'ssh-rsa$')
+  if [[ -n "${temp}" ]]; then
+    temp=$(sudo grep -E "^[#]?PubkeyAcceptedKeyTypes\s.*$" ~/.ssh/config)
+    if [[ -z "${temp}" ]]; then
+      echo "PubkeyAcceptedKeyTypes +ssh-rsa" | tee -a ~/.ssh/config
+      echo "Set SSHD 'PubkeyAcceptedKeyTypes +ssh-rsa' in file "~"/.ssh/config"
+    else
+      if [[ "${temp}" != "PubkeyAcceptedKeyTypes +ssh-rsa" ]]; then
+        sudo sed -i -r "s/^[#]?PubkeyAcceptedKeyTypes\s.*$/PubkeyAcceptedKeyTypes +ssh-rsa/" ~/.ssh/config
+        echo "Set 'SSHD PubkeyAcceptedKeyTypes +ssh-rsa' in file "~"/.ssh/config"
+      else
+        echo "SSHD 'PubkeyAcceptedKeyTypes +ssh-rsa' already use in "~"/.ssh/config"
+      fi
     fi
   fi
 
