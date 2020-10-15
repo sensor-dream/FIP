@@ -56,30 +56,48 @@ function main_cfg_network_information_script_source() {
   # prinf "Initialise main function of cfg-network-information script source\n";
 
   echo
-  echo -n "Введите локальный IP: "
+  echo -n "Enter local IP addres network interface (eg. 192.168.0.1-192.168.0.254): "
   read cfg_local_ip
   if [[ -z "${cfg_local_ip}" ]]; then
-    echo "ЕПТА выходим"
+    echo "cfg_local_ip is nul, exit"
     exit
   fi
   echo
-  echo -n "РВведите маску диапазонов: "
+  echo -n "Enter local IP range mask (eg. 24 or 255.255.255.0): "
   read cfg_local_ip_mask
   if [[ -z "${cfg_local_ip_mask}" ]]; then
-    echo "ЕПТА выходим"
+    echo "cfg_local_ip_mask is null, exit"
     exit
   fi
   echo
-  echo -n "Введите шлюз "
-  read cfg_local_ip_shluze_epta
-  if [[ -z "${cfg_local_ip_shluze_epta}" ]]; then
-    echo "ЕПТА выходим"
+  echo -n "Enter local gateway IP (eg. 192.168.0.1): "
+  read cfg_local_ip_gateway
+  if [[ -z "${cfg_local_ip_gateway}" ]]; then
+    echo "cfg_local_ip_gateway is null, exit"
+    exit
+  fi
+  echo
+  echo -e '\e[1;31m'"$(ifconfig)"'\e[0m\'
+  echo
+  echo -n "Enter interface name(eg. eth0): "
+  read cfg_local_iface_name
+  if [[ -z "${cfg_local_iface_name}" ]]; then
+    echo "cfg_local_iface_name is null, exit"
+    exit
+  fi
+  echo
+  echo -n "Enter mac address interface (eg. 00:00:...): "
+  read cfg_local_interface_mac_addr
+  if [[ -z "${cfg_local_interface_mac_addr}" ]]; then
+    echo "cfg_local_interface_mac_addr is null, exit"
     exit
   fi
   cat <<EOF >"${main_project_path}/hidden/cfg-network-information"
 declare -rx cfg_local_ip="${cfg_local_ip}";
 declare -rx cfg_local_ip_mask="${cfg_local_ip_mask}";
-declare -rx cfg_local_ip_shluze_epta="${cfg_local_ip_shluze_epta}"
+declare -rx cfg_local_ip_gateway="${cfg_local_ip_gateway}"
+declare -rx cfg_local_iface_name="${cfg_local_iface_name}"
+declare -rx cfg_local_interface_mac_addr="${cfg_local_interface_mac_addr}"
 EOF
 
   chmod 0600 "${main_project_path}/hidden/cfg-network-information"
