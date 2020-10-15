@@ -47,14 +47,14 @@ function cfg_sshd_script_source() {
   # prinf "Initialise main function of sshd script source\n";
 
   if [[ -f "${main_project_path}/hidden/cfg-sshd-information" ]]; then
-      . "${main_project_path}/hidden/cfg-sshd-information"
+    . "${main_project_path}/hidden/cfg-sshd-information"
   else
-      . "${main_project_path}/tools/cfg-sshd-information"
+    . "${main_project_path}/tools/cfg-sshd-information"
   fi
 
   local temp=$(sudo grep -E "^[#]?Port\s.*$" '/etc/ssh/sshd_config')
   if [[ -z "${temp}" ]]; then
-    sudo echo "Port ${cfg_sshd_port}" >>'/etc/ssh/sshd_config'
+    echo "Port ${cfg_sshd_port}" | sudo tee -a '/etc/ssh/sshd_config'
     echo "Set SSHD 'Port ${cfg_sshd_port}'"
   else
     if [[ "${temp}" != "Port ${cfg_sshd_port}" ]]; then
@@ -67,7 +67,7 @@ function cfg_sshd_script_source() {
 
   temp=$(sudo grep -E "^[#]?PermitRootLogin\s.*$" '/etc/ssh/sshd_config')
   if [[ -z "${temp}" ]]; then
-    sudo echo "Port ${cfg_sshd_permit_root_login}" >>'/etc/ssh/sshd_config'
+    echo "Port ${cfg_sshd_permit_root_login}" | sudo tee -a '/etc/ssh/sshd_config'
     echo "Set SSHD 'PermitRootLogin ${cfg_sshd_permit_root_login}'"
   else
     if [[ "${temp}" != "PermitRootLogin ${cfg_sshd_permit_root_login}" ]]; then
@@ -80,7 +80,7 @@ function cfg_sshd_script_source() {
 
   temp=$(sudo grep -E "^[#]?MaxAuthTries\s.*$" '/etc/ssh/sshd_config')
   if [[ -z "${temp}" ]]; then
-    sudo echo "MaxAuthTries ${cfg_sshd_max_auth_tries}" >>'/etc/ssh/sshd_config'
+    echo "MaxAuthTries ${cfg_sshd_max_auth_tries}" | sudo tee -a '/etc/ssh/sshd_config'
     echo "Set SSHD 'MaxAuthTries ${cfg_sshd_max_auth_tries}'"
   else
     if [[ "${temp}" != "MaxAuthTries ${cfg_sshd_max_auth_tries}" ]]; then
@@ -91,10 +91,23 @@ function cfg_sshd_script_source() {
     fi
   fi
 
+  temp=$(sudo grep -E "^[#]?PubkeyAcceptedKeyTypes\s.*$" '/etc/ssh/sshd_config')
+  if [[ -z "${temp}" ]]; then
+    echo "PubkeyAcceptedKeyTypes +ssh-dss" | sudo tee -a '/etc/ssh/sshd_config'
+    echo "Set SSHD 'PubkeyAcceptedKeyTypes +ssh-dss'"
+  else
+    if [[ "${temp}" != "PubkeyAcceptedKeyTypes +ssh-dss" ]]; then
+      sudo sed -i -r "s/^[#]?PubkeyAcceptedKeyTypes\s.*$/PubkeyAcceptedKeyTypes +ssh-dss/" '/etc/ssh/sshd_config'
+      echo "Set 'SSHD PubkeyAcceptedKeyTypes +ssh-dss'"
+    else
+      echo "SSHD 'PubkeyAcceptedKeyTypes +ssh-dss' already use"
+    fi
+  fi
+
   # TODO Make a dynamic MOTD (Banner) for SSHD
   temp=$(sudo grep -E "^[#]?Banner\s.*$" '/etc/ssh/sshd_config')
   if [[ -z "${temp}" ]]; then
-    sudo echo "Banner ${cfg_sshd_show_banner}" >>'/etc/ssh/sshd_config'
+    echo "Banner ${cfg_sshd_show_banner}" | sudo tee -a '/etc/ssh/sshd_config'
     echo "Set SSHD 'Banner ${cfg_sshd_show_banner}'"
   else
     if [[ "${temp}" != "Banner ${cfg_sshd_show_banner}" ]]; then
@@ -113,6 +126,8 @@ function cfg_sshd_script_source() {
   else
     sudo systemctl start sshd
   fi
+
+  systemctl status sshd
 
 }
 
