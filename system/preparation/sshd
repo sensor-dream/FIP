@@ -52,12 +52,12 @@ function cfg_sshd_script_source() {
     . "${main_project_path}/tools/cfg-sshd-information"
   fi
 
-  local temp=$(sudo grep -E "^[#]?Port\s.*$" '/etc/ssh/sshd_config')
-  if [[ -z "${temp}" ]]; then
+  local temp_one=$(sudo grep -E "^[#]?Port\s.*$" '/etc/ssh/sshd_config')
+  if [[ -z "${temp_one}" ]]; then
     echo "Port ${cfg_sshd_port}" | sudo tee -a '/etc/ssh/sshd_config'
     echo "Set SSHD 'Port ${cfg_sshd_port}'"
   else
-    if [[ "${temp}" != "Port ${cfg_sshd_port}" ]]; then
+    if [[ "${temp_one}" != "Port ${cfg_sshd_port}" ]]; then
       sudo sed -i -r "s/^[#]?Port\s.*$/Port ${cfg_sshd_port}/" '/etc/ssh/sshd_config'
       echo "Set SSHD 'Port ${cfg_sshd_port}'"
     else
@@ -65,12 +65,12 @@ function cfg_sshd_script_source() {
     fi
   fi
 
-  temp=$(sudo grep -E "^[#]?PermitRootLogin\s.*$" '/etc/ssh/sshd_config')
-  if [[ -z "${temp}" ]]; then
+  temp_one=$(sudo grep -E "^[#]?PermitRootLogin\s.*$" '/etc/ssh/sshd_config')
+  if [[ -z "${temp_one}" ]]; then
     echo "Port ${cfg_sshd_permit_root_login}" | sudo tee -a '/etc/ssh/sshd_config'
     echo "Set SSHD 'PermitRootLogin ${cfg_sshd_permit_root_login}'"
   else
-    if [[ "${temp}" != "PermitRootLogin ${cfg_sshd_permit_root_login}" ]]; then
+    if [[ "${temp_one}" != "PermitRootLogin ${cfg_sshd_permit_root_login}" ]]; then
       sudo sed -i -r "s/^[#]?PermitRootLogin\s.*$/PermitRootLogin ${cfg_sshd_permit_root_login}/" '/etc/ssh/sshd_config'
       echo "Set 'SSHD PermitRootLogin ${cfg_sshd_permit_root_login}'"
     else
@@ -78,12 +78,12 @@ function cfg_sshd_script_source() {
     fi
   fi
 
-  temp=$(sudo grep -E "^[#]?MaxAuthTries\s.*$" '/etc/ssh/sshd_config')
-  if [[ -z "${temp}" ]]; then
+  temp_one=$(sudo grep -E "^[#]?MaxAuthTries\s.*$" '/etc/ssh/sshd_config')
+  if [[ -z "${temp_one}" ]]; then
     echo "MaxAuthTries ${cfg_sshd_max_auth_tries}" | sudo tee -a '/etc/ssh/sshd_config'
     echo "Set SSHD 'MaxAuthTries ${cfg_sshd_max_auth_tries}'"
   else
-    if [[ "${temp}" != "MaxAuthTries ${cfg_sshd_max_auth_tries}" ]]; then
+    if [[ "${temp_one}" != "MaxAuthTries ${cfg_sshd_max_auth_tries}" ]]; then
       sudo sed -i -r "s/^[#]?MaxAuthTries\s.*$/MaxAuthTries ${cfg_sshd_max_auth_tries}/" '/etc/ssh/sshd_config'
       echo "Set 'SSHD MaxAuthTries ${cfg_sshd_max_auth_tries}'"
     else
@@ -92,12 +92,12 @@ function cfg_sshd_script_source() {
   fi
 
   cat <<EOF >/dev/null
-  temp=$(sudo grep -E "^[#]?PubkeyAcceptedKeyTypes\s.*$" '/etc/ssh/sshd_config')
-  if [[ -z "${temp}" ]]; then
+  temp_one=$(sudo grep -E "^[#]?PubkeyAcceptedKeyTypes\s.*$" '/etc/ssh/sshd_config')
+  if [[ -z "${temp_one}" ]]; then
     echo "PubkeyAcceptedKeyTypes +ssh-dss" | sudo tee -a '/etc/ssh/sshd_config'
     echo "Set SSHD 'PubkeyAcceptedKeyTypes +ssh-dss'"
   else
-    if [[ "${temp}" != "PubkeyAcceptedKeyTypes +ssh-dss" ]]; then
+    if [[ "${temp_one}" != "PubkeyAcceptedKeyTypes +ssh-dss" ]]; then
       sudo sed -i -r "s/^[#]?PubkeyAcceptedKeyTypes\s.*$/PubkeyAcceptedKeyTypes +ssh-dss/" '/etc/ssh/sshd_config'
       echo "Set 'SSHD PubkeyAcceptedKeyTypes +ssh-dss'"
     else
@@ -106,14 +106,14 @@ function cfg_sshd_script_source() {
   fi
 EOF
 
-  temp=$(ssh -Q PubkeyAcceptedKeyTypes | grep 'ssh-rsa$')
-  if [[ -n "${temp}" ]]; then
-    temp=$(sudo grep -E "^[#]?PubkeyAcceptedKeyTypes\s.*$" ~/.ssh/config)
-    if [[ -z "${temp}" ]]; then
+  temp_one=$(ssh -Q PubkeyAcceptedKeyTypes | grep 'ssh-rsa$')
+  if [[ -n "${temp_one}" ]]; then
+    temp_one=$(sudo grep -E "^[#]?PubkeyAcceptedKeyTypes\s.*$" ~/.ssh/config)
+    if [[ -z "${temp_one}" ]]; then
       echo "PubkeyAcceptedKeyTypes +ssh-rsa" | tee -a ~/.ssh/config
       echo "Set SSHD 'PubkeyAcceptedKeyTypes +ssh-rsa' in file "~"/.ssh/config"
     else
-      if [[ "${temp}" != "PubkeyAcceptedKeyTypes +ssh-rsa" ]]; then
+      if [[ "${temp_one}" != "PubkeyAcceptedKeyTypes +ssh-rsa" ]]; then
         sudo sed -i -r "s/^[#]?PubkeyAcceptedKeyTypes\s.*$/PubkeyAcceptedKeyTypes +ssh-rsa/" ~/.ssh/config
         echo "Set 'SSHD PubkeyAcceptedKeyTypes +ssh-rsa' in file "~"/.ssh/config"
       else
@@ -123,12 +123,12 @@ EOF
   fi
 
   # TODO Make a dynamic MOTD (Banner) for SSHD
-  temp=$(sudo grep -E "^[#]?Banner\s.*$" '/etc/ssh/sshd_config')
-  if [[ -z "${temp}" ]]; then
+  temp_one=$(sudo grep -E "^[#]?Banner\s.*$" '/etc/ssh/sshd_config')
+  if [[ -z "${temp_one}" ]]; then
     echo "Banner ${cfg_sshd_show_banner}" | sudo tee -a '/etc/ssh/sshd_config'
     echo "Set SSHD 'Banner ${cfg_sshd_show_banner}'"
   else
-    if [[ "${temp}" != "Banner ${cfg_sshd_show_banner}" ]]; then
+    if [[ "${temp_one}" != "Banner ${cfg_sshd_show_banner}" ]]; then
       sudo sed -i -r "s%^[#]?Banner\s.*$%Banner ${cfg_sshd_show_banner}%" '/etc/ssh/sshd_config'
       echo "Set SSHD 'Banner ${cfg_sshd_show_banner}'"
     else
@@ -136,9 +136,9 @@ EOF
     fi
   fi
 
-  temp="$(sudo systemctl is-enabled sshd)"
-  [[ "${temp}" == "masked" ]] && sudo systemctl unmask sshd
-  [[ "${temp}" == 'enabled' ]] || sudo systemctl enable sshd
+  temp_one="$(sudo systemctl is-enabled sshd)"
+  [[ "${temp_one}" == "masked" ]] && sudo systemctl unmask sshd
+  [[ "${temp_one}" == 'enabled' ]] || sudo systemctl enable sshd
   if [[ $(sudo systemctl is-active sshd) == 'active' ]]; then
     sudo systemctl restart sshd
   else

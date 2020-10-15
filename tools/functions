@@ -116,7 +116,7 @@ function pm() {
   find_packages_installation "${@}"
   if [[ -n "${temp_one}" && "${temp_one[@]}" != " " ]]; then
     echo -en '\e[1;5;36m'"Package(s) install list:\n\t"'\e[0m\e[1;033m'"${temp_one[@]}\n"'\e[0m'
-    sudo dnf ${action} ${temp_one[@]} ${exclude}
+    sudo dnf ${action} ${options} ${temp_one[@]} ${exclude}
   fi
 }
 
