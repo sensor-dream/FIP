@@ -1,24 +1,24 @@
 #!/bin/env bash
 # -*- coding: utf-8 -*-
 #
-## @Author: {__author__}
-## @Email: {__email__}
-## @Copyright © {__author__}. All rights reserved. Contacts: {__email__}
-## @Copyright © sensor-dream. All rights reserved. Contacts: {__email__}
-## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: {__email__}
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
-## @Site: {__link__}
-## @File: {__name__}
-## @Creation date file: {__date__}
+## @Site: https://sensor-dream.ru
+## @File: nftables
+## @Creation date file: 15.10.2020, 17:35:56
 
-[[ -z "${{__name__}_script_source}" ]] && declare -rx {__name__}_script_source="$BASH_SOURCE"
+[[ -z "${nftables_script_source}" ]] && declare -rx nftables_script_source="$BASH_SOURCE"
 
-if [[ -z "${{__name__}_script_source_path}" ]]; then
-  temp_one="$(dirname ${{__name__}_script_source})"
+if [[ -z "${nftables_script_source_path}" ]]; then
+  temp_one="$(dirname ${nftables_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx {__name__}_script_source_path="$(pwd)"
+    declare -rx nftables_script_source_path="$(pwd)"
   else
-    declare -rx {__name__}_script_source_path="${temp_one}"
+    declare -rx nftables_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,7 +51,7 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})";
 
-function install_{__name__}(){
+function install_nftables(){
 
   local install_pkg=(\
 
@@ -61,12 +61,12 @@ function install_{__name__}(){
 
 }
 
-function main_{__name__}_script_source(){
+function main_nftables_script_source(){
 
-  # printf "Initialise main function of {__name__} script source\n";
+  # prinf "Initialise main function of nftables script source\n";
 
-  install_{__name__} "$@"
+  install_nftables "$@"
 
 }
 
-main_{__name__}_script_source "$@";
+main_nftables_script_source "$@";

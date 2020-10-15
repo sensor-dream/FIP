@@ -63,7 +63,7 @@ function install_{__name__}(){
 
 function main_{__name__}_script_source(){
 
-  # printf "Initialise main function of {__name__} script source\n";
+  # printtf "Initialise main function of {__name__} script source\n";
 
   install_{__name__} "$@"
 
