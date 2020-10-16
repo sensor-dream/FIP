@@ -53,7 +53,11 @@ function main_iptables_script_source() {
 
   # prinf "Initialise main function of iptables script source\n";
 
-  [[ -f "${main_project_path}/hidden/cfg-network-information" ]] || . /"${main_project_path}/tools/cfg-network-information"
+  if [[ -z "${cfg_local_ip}" && -f "${main_project_path}/hidden/cfg-network-information" ]]; then
+    . "${main_project_path}/hidden/cfg-network-information"
+  else
+    . "${main_project_path}/tools/cfg-network-information"
+  fi
 
 }
 
