@@ -1,0 +1,96 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: enable-ksm
+## @Creation date file: 16.10.2020, 08:20:12
+
+[[ -z "${enable_ksm_script_source}" ]] && declare -rx enable_ksm_script_source="$BASH_SOURCE"
+
+if [[ -z "${enable_ksm_script_source_path}" ]]; then
+  temp_one="$(dirname ${enable_ksm_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx enable_ksm_script_source_path="$(pwd)"
+  else
+    declare -rx enable_ksm_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function main_enable_ksm_script_source() {
+
+  # printf "Initialise main function of enable-ksm script source\n";
+
+  local run=1
+  local sleep_millisecs=1000
+
+  # Включаем дедупликацию страниц памяти
+
+  if [[ -f /sys/kernel/mm/ksm/run ]]; then
+
+    [[ $(cat /sys/kernel/mm/ksm/run) -ne ${run} ]] && echo ${run} | sudo tee /sys/kernel/mm/ksm/run >/dev/null
+    [[ $(cat /sys/kernel/mm/ksm/sleep_millisecs) -ne ${sleep_millisecs} ]] && echo ${sleep_millisecs} | sudo tee /sys/kernel/mm/ksm/sleep_millisecs >/dev/null
+
+    if ! grep -q "sys.kernel.mm.ksm.run" '/etc/sysctl.conf'; then
+      echo -e "sys.kernel.mm.ksm.run = ${run}" | sudo tee -a '/etc/sysctl.conf' >/dev/null
+    else
+      sudo sed -i 's/^sys.kernel.mm.ksm.run.*$/sys.kernel.mm.ksm.run = '"${run}"'/im' '/etc/sysctl.conf'
+    fi
+
+    if ! grep -q "sys.kernel.mm.ksm.sleep_millisecs" '/etc/sysctl.conf'; then
+      echo -e "sys.kernel.mm.ksm.sleep_millisecs = ${sleep_millisecs}" | sudo tee -a '/etc/sysctl.conf' >/dev/null
+    else
+      sudo sed -i 's/^sys.kernel.mm.ksm.sleep_millisecs.*$/sys.kernel.mm.ksm.sleep_millisecs = '"${sleep_millisecs}"'/im' '/etc/sysctl.conf'
+    fi
+
+    echo "/sys/kernel/mm/ksm/run - $(cat /sys/kernel/mm/ksm/run)"
+    echo "/sys/kernel/mm/ksm/sleep_millisecs - $(cat /sys/kernel/mm/ksm/sleep_millisecs)"
+
+    cat <<EOF >/dev/null
+    if [[ $(check_installed_packages ksmtuned) != 'ksmtuned' ]]; then
+      sudo dnf install ksmtuned
+      sudo sed -i 's/^# KSM_SLEEP_MSEC.*$/KSM_SLEEP_MSEC='"${sleep_millisecs}"'/im' '/etc/ksmtuned.conf'
+      sudo systemctl enable ksmtuned
+      sudo systemctl start ksmtuned
+    fi
+EOF
+
+  fi
+
+}
+
+main_enable_ksm_script_source "$@"
