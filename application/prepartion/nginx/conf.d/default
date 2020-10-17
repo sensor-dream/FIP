@@ -84,6 +84,7 @@ sub_filter_last_modified on;
 sub_filter_once off;
 subs_filter_types text/css text/xml application/javascript application/x-javascript application/json;
 # subs_filter '<center>nginx/1.18.0</center>' '<center>\$hack_name_server</center>' gior;
+subs_filter 'nginx' '\$hack_name_server' gior;
 EOF
 
   [[ $(systemctl is-active nginx) == 'active' ]] || sudo systemctl start nginx
