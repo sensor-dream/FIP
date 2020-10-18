@@ -58,14 +58,14 @@ function install_tools_monitoring_computer_and_system() {
     'nmon'
     'collectd'
     'glances'
-    'cpu-x'
+    # 'cpu-x'
     'screenfetch'
     'neofetch'
     'hardinfo'
-    'gst'
+    # 'gst'
     'htop'
-    'saidar'
-    'i-nex'
+    # 'saidar'
+    # 'i-nex'
     'grub-customizer'
   )
 

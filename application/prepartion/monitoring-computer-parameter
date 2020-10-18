@@ -76,7 +76,6 @@ function main_monitoring_computer_parameter_script_source() {
     read key
     if [[ ${key} == 'y' ]]; then
       sudo systemctl enable hddtemp
-      sensors-detect
       sudo systemctl start hddtemp
       echo "Please visit http://127.0.0.1:7634"
     fi
