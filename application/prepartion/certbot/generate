@@ -54,14 +54,17 @@ function generate_wildcard_certificate_for_main_domain() {
   local test=
   local domain=
   local letsencrypt_rsa_key_size=2048
+  local vildcard=
+  local flag_vildcard=1
 
   OPTIND=1
 
-  while getopts "d:t" OPT; do
+  while getopts "d:tn" OPT; do
     case $OPT in
     d) domain="$OPTARG" ;;
     # --test-cert or --staging
     t) test='--staging' ;;
+    n) flag_vildcard=0 ;;
     *) ;;
     esac
   done
@@ -74,9 +77,11 @@ function generate_wildcard_certificate_for_main_domain() {
 
   [[ -z ${domain} ]] && domain="${cfg_docfg}"
 
+  [[ ${flag_vildcard} -eq 1 ]] && vildcard="-d *.${domain}"
+
   if ! grep -qE "127.0.0.1(\s|\t)+${domain}" '/etc/hosts'; then
     echo "Add in hosts file: ${domain}"
-    if [[ $(echo "${domain}...s" | tr -cd "." | wc -m) -eq 1 ]]; then
+    if [[ $(echo "${domain}s" | tr -cd "." | wc -m) -eq 1 ]]; then
       echo -e "127.0.0.1   ${domain}\n::1         ${domain}" | sudo tee -a '/etc/hosts'
     else
       echo -e "127.0.0.1   ${domain} www.${domain}\n::1         ${domain} www.${domain}" | sudo tee -a '/etc/hosts'
@@ -85,7 +90,7 @@ function generate_wildcard_certificate_for_main_domain() {
     echo "Already added in hosts file: ${domain}"
   fi
 
-  # sudo certbot certonly ${test} --manual --must-staple --manual-public-ip-logging-ok --preferred-challenges dns-01 --renew-by-default --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory -d "*.${domain}" -d "${domain}"
+  sudo certbot certonly ${test} --manual --must-staple --manual-public-ip-logging-ok --preferred-challenges dns-01 --renew-by-default --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory -d "${domain}" ${wildcard}
 
 }
 

@@ -18,6 +18,7 @@ printf "Loading: %s\n" "$(readlink -m ${list_module_script_source})"
 declare -A local list_module=(
   ['ngx_devel_kit']='https://github.com/vision5/ngx_devel_kit.git --add-module yes'
   ['headers-more-nginx-module']='https://github.com/openresty/headers-more-nginx-module.git --add-dynamic-module yes'
+  ['nginx_cookie_flag_module']='https://github.com/AirisX/nginx_cookie_flag_module.git --add-dynamic-module yes'
   ['ngx_http_geoip2_module']='https://github.com/leev/ngx_http_geoip2_module.git --add-dynamic-module yes'
   ['set-misc-nginx-module']='https://github.com/openresty/set-misc-nginx-module.git --add-dynamic-module yes'
   ['ngx_http_substitutions_filter_module']='git://github.com/yaoweibin/ngx_http_substitutions_filter_module.git --add-dynamic-module yes'

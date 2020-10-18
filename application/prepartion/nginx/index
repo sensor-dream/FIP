@@ -61,9 +61,10 @@ function main_index_script_source() {
 <head>
   <title>Zero page</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <meta name="description" content="Sensor-Dream Boxed System. Zero page of Server: SDBS - 23.06.06 - rev: $rev_timestamp" />
-  <meta name="keywords" content="Sensor, Dream, Boxed, System, Server, Contacts, License" />
-  <meta name="author" content="$cfg_email" />
+  <meta name="description" content="${cfg_full_org}. Zero page of Server: ${cfg_org} - 23.06.06 - rev: ${rev_timestamp}" />
+  <meta name="keywords" content="${cfg_full_org}, Server, Contacts, License" />
+  <meta name="author" content="${cfg_org}" />
+  <meta name="email" content="${cfg_email}" />
   <link rel="manifest" href="manifest.json">
   <style type="text/css">
     /*<![CDATA[*/
