@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: tools-monitoring-computer-and-system
-## @Creation date file: 01.10.2020, 05:01:30
+## @File: linux-perf-gui
+## @Creation date file: 20.10.2020, 15:43:18
 
-[[ -z "${tools_monitoring_computer_and_system_script_source}" ]] && declare -rx tools_monitoring_computer_and_system_script_source="$BASH_SOURCE"
+[[ -z "${linux_perf_gui_script_source}" ]] && declare -rx linux_perf_gui_script_source="$BASH_SOURCE"
 
-if [[ -z "${tools_monitoring_computer_and_system_script_source_path}" ]]; then
-  temp_one="$(dirname ${tools_monitoring_computer_and_system_script_source})"
+if [[ -z "${linux_perf_gui_script_source_path}" ]]; then
+  temp_one="$(dirname ${linux_perf_gui_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx tools_monitoring_computer_and_system_script_source_path="$(pwd)"
+    declare -rx linux_perf_gui_script_source_path="$(pwd)"
   else
-    declare -rx tools_monitoring_computer_and_system_script_source_path="${temp_one}"
+    declare -rx linux_perf_gui_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,36 +51,43 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_tools_monitoring_computer_and_system() {
+function install_linux_perf_gui() {
+
+  echo -e "https://github.com/KDAB/hotspot#on-fedora\n"
+
+  . "${main_project_path}/application/installation/rpm/kernel"
+  . "${main_project_path}/application/installation/rpm/qt5"
 
   local install_pkg=(
-    'lm_sensors'
-    'nmon'
-    'collectd'
-    'glances'
-    # 'cpu-x'
-    'screenfetch'
-    'neofetch'
-    'hardinfo'
-    'gst'
-    'htop'
-    # 'saidar'
-    # 'i-nex'
-    'grub-customizer'
+    'cmake'
+    'gcc'
+    'glibc-static'
+    'gcc-c++'
+    'libstdc++-static'
+    'extra-cmake-modules'
+    'elfutils-devel'
+    'kf5-threadweaver-devel'
+    'kf5-ki18n-devel'
+    'kf5-kconfigwidgets-devel'
+    'kf5-kitemviews-devel'
+    'kf5-kitemmodels-devel'
+    'kf5-kio-devel'
+    'kf5-solid-devel'
+    'kf5-kwindowsystem-devel'
+    'hotspot'
+    'perf'
   )
-
-  [[ -z "$(lspci | grep NVIDIA)" ]] || install_pkg+=('gwe')
 
   pm "$@" -- "${install_pkg[@]}"
 
 }
 
-function main_tools_monitoring_computer_and_system_script_source() {
+function main_linux_perf_gui_script_source() {
 
-  # prinf "Initialise main function of tools-monitoring-computer-and-system script source\n";
+  # printf "Initialise main function of linux-perf-gui script source\n";
 
-  install_tools_monitoring_computer_and_system "$@"
+  install_linux_perf_gui "$@"
 
 }
 
-main_tools_monitoring_computer_and_system_script_source "$@"
+main_linux_perf_gui_script_source "$@"

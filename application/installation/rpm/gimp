@@ -1,0 +1,139 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: gimp
+## @Creation date file: 20.10.2020, 20:13:28
+
+[[ -z "${gimp_script_source}" ]] && declare -rx gimp_script_source="$BASH_SOURCE"
+
+if [[ -z "${gimp_script_source_path}" ]]; then
+  temp_one="$(dirname ${gimp_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx gimp_script_source_path="$(pwd)"
+  else
+    declare -rx gimp_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_gimp() {
+
+  local install_pkg=(
+    # GNU Image Manipulation Program
+    'gimp'
+    # Extra files for GIMP
+    'gimp-data-extras'
+    # Graphical batch processing for Gimp, no scripting knowledge required
+    'gimp-dbp'
+    # Плагин GIMP для работы с форматом DDS
+    'gimp-dds-plugin'
+    #  GIMP plugin and extension development kit
+    'gimp-devel'
+    # GIMP plugin and extension development tools
+    'gimp-devel-tools'
+    # Script collection for the GIMP
+    'gimp-elsamuko'
+    # Help files for GIMP
+    'gimp-help'
+    # Russian (ru) language support for gimp-help
+    'gimp-help-ru'
+    # High-pass filter script for the GIMP
+    'gimp-high-pass-filter'
+    # Layer via copy/cut plug-in for GIMP
+    'gimp-layer-via-copy-cut'
+    # Gimp plugin to correct lens distortion
+    'gimp-lensfun'
+    # GIMP libraries
+    'gimp-libs'
+    # Content-aware resizing plug-in for the GIMP
+    'gimp-lqr-plugin'
+    # Luminosity mask channels plug-in for Gimp
+    'gimp-luminosity-masks'
+    # A collection of tool option presets and brushes for GIMP
+    'gimp-paint-studio'
+    # Gimp plug-in for texture synthesis
+    'gimp-resynthesizer'
+    # Save for web plug-in for GIMP
+    'gimp-save-for-web'
+    # Rudimentary CMYK support for The GIMP
+    'gimp-separate+'
+    # Decomposing image plug-in for Gimp
+    'gimp-wavelet-decompose'
+    # Gimp wavelet denoise plugin
+    'gimp-wavelet-denoise-plugin'
+    # Additional GIMP plugins
+    'gimpfx-foundry'
+    # G'MIC plugin for GIMP
+    'gmic-gimp'
+    # GIMP plugin to retrieve raw image data from digital cameras
+    'ufraw-gimp'
+    # GIMP plug-in providing the SANE scanner interface
+    'xsane-gimp'
+    # Simulate an out-of-focus blur
+    'gimp-focusblur-plugin'
+    # A simple plug-in to do fourier transform on your image
+    'gimp-fourier-plugin'
+    # A plugin for loading and saving HEIF images
+    'gimp-heif-plugin'
+    # Performance Co-Pilot (PCP) Perl bindings for importing external data into PCP archives
+    'perl-PCP-LogImport'
+    # The GIMP ToolKit
+    'gtk+'
+    # Development tools for GTK+ (GIMP ToolKit) application
+    'gtk+-devel'
+    # GIMP plug-in for gutenprint
+    'gutenprint-plugin'
+    # Perl interface to the 2.x series of the Gimp Toolkit library
+    'perl-Gtk2'
+    # XCF (GIMP) image loader for GTK+ applications
+    'xcf-pixbuf-loader'
+  )
+
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_gimp_script_source() {
+
+  # printf "Initialise main function of gimp script source\n";
+
+  install_gimp "$@"
+
+}
+
+main_gimp_script_source "$@"

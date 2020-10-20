@@ -1,0 +1,119 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: gnome-shell
+## @Creation date file: 20.10.2020, 15:01:04
+
+[[ -z "${gnome_shell_script_source}" ]] && declare -rx gnome_shell_script_source="$BASH_SOURCE"
+
+if [[ -z "${gnome_shell_script_source_path}" ]]; then
+  temp_one="$(dirname ${gnome_shell_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx gnome_shell_script_source_path="$(pwd)"
+  else
+    declare -rx gnome_shell_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_gnome_shell() {
+
+  echo 'Please read https://www.gnome-look.org for theme and ...'
+  echo "Run dnf search gtk | grep theme and dnf search shell-theme and dnf search icon-theme and dnf search cursor-theme"
+  echo "Local share themes path: ~/.local/share/themes"
+  echo "Local share icons path: ~/.local/share/icons"
+
+  local install_pkg=(
+    'glib2-devel'
+    'ImageMagick'
+    'gnome-tweaks'
+    'gnome-shell-extension-appindicator'
+    'gnome-shell-extension-apps-menu'
+    'gnome-shell-extension-desktop-icons'
+    'gnome-shell-extension-material-shell'
+    'gnome-shell-extension-openweather'
+    'gnome-shell-extension-screenshot-window-sizer'
+    'gnome-shell-extension-topicons-plus'
+    'gnome-shell-extension-system-monitor-applet'
+    'gnome-shell-extension-unite'
+    'gnome-shell-extension-user-theme'
+    'gnome-shell-extension-windowoverlay-icons'
+    'gtk-update-icon-cache'
+    'mingw64-gtk-update-icon-cache'
+    'gnome-themes-extra'
+    # GNOME Desktop theme optimized for small displays
+    'clearlooks-compact-gnome-theme'
+    # theme of Xenlism Wildfire
+    'xenlism-wildfire'
+    'xenlism-wildfire-day'
+    'xenlism-wildfire-friday'
+    'xenlism-wildfire-midnight'
+    'xenlism-wildfire-monday'
+    'xenlism-wildfire-night'
+    'xenlism-wildfire-saturday'
+    'xenlism-wildfire-sunday'
+    'xenlism-wildfire-thursday'
+    'xenlism-wildfire-tuesday'
+    'xenlism-wildfire-wednesday'
+    'gnome-shell-theme-selene'
+    'gnome-shell-theme-yaru'
+    'gnome-shell-theme-selene'
+    'gnome-shell-theme-flat-remix'
+    'flat-remix-gtk3-theme'
+    'flat-remix-theme'
+    'paper-icon-theme'
+    'papirus-icon-theme'
+    'elementary-icon-theme-gimp-palette'
+    'flat-remix-icon-theme'
+    'adwaita-cursor-theme'
+    'la-capitaine-cursor-theme'
+  )
+
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_gnome_shell_script_source() {
+
+  # printf "Initialise main function of gnome-shell script source\n";
+
+  install_gnome_shell "$@"
+
+}
+
+main_gnome_shell_script_source "$@"

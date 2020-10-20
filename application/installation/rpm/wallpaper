@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: tools-monitoring-computer-and-system
-## @Creation date file: 01.10.2020, 05:01:30
+## @File: wallpaper
+## @Creation date file: 20.10.2020, 14:53:10
 
-[[ -z "${tools_monitoring_computer_and_system_script_source}" ]] && declare -rx tools_monitoring_computer_and_system_script_source="$BASH_SOURCE"
+[[ -z "${wallpaper_script_source}" ]] && declare -rx wallpaper_script_source="$BASH_SOURCE"
 
-if [[ -z "${tools_monitoring_computer_and_system_script_source_path}" ]]; then
-  temp_one="$(dirname ${tools_monitoring_computer_and_system_script_source})"
+if [[ -z "${wallpaper_script_source_path}" ]]; then
+  temp_one="$(dirname ${wallpaper_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx tools_monitoring_computer_and_system_script_source_path="$(pwd)"
+    declare -rx wallpaper_script_source_path="$(pwd)"
   else
-    declare -rx tools_monitoring_computer_and_system_script_source_path="${temp_one}"
+    declare -rx wallpaper_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,36 +51,23 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_tools_monitoring_computer_and_system() {
+function install_wallpaper() {
 
   local install_pkg=(
-    'lm_sensors'
-    'nmon'
-    'collectd'
-    'glances'
-    # 'cpu-x'
-    'screenfetch'
-    'neofetch'
-    'hardinfo'
-    'gst'
-    'htop'
-    # 'saidar'
-    # 'i-nex'
-    'grub-customizer'
+    'dynamic-wallpaper-editor'
+    'variety'
   )
-
-  [[ -z "$(lspci | grep NVIDIA)" ]] || install_pkg+=('gwe')
 
   pm "$@" -- "${install_pkg[@]}"
 
 }
 
-function main_tools_monitoring_computer_and_system_script_source() {
+function main_wallpaper_script_source() {
 
-  # prinf "Initialise main function of tools-monitoring-computer-and-system script source\n";
+  # printf "Initialise main function of wallpaper script source\n";
 
-  install_tools_monitoring_computer_and_system "$@"
+  install_wallpaper "$@"
 
 }
 
-main_tools_monitoring_computer_and_system_script_source "$@"
+main_wallpaper_script_source "$@"
