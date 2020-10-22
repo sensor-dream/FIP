@@ -56,15 +56,17 @@ function generate_wildcard_certificate_for_main_domain() {
   local letsencrypt_rsa_key_size=2048
   local vildcard=
   local flag_vildcard=1
+  local flag_generate=1
 
   OPTIND=1
 
-  while getopts "d:tn" OPT; do
+  while getopts "d:tng" OPT; do
     case $OPT in
     d) domain="$OPTARG" ;;
     # --test-cert or --staging
     t) test='--staging' ;;
     n) flag_vildcard=0 ;;
+    g) flag_generate=0 ;;
     *) ;;
     esac
   done
@@ -90,7 +92,7 @@ function generate_wildcard_certificate_for_main_domain() {
     echo "Already added in hosts file: ${domain}"
   fi
 
-  sudo certbot certonly ${test} --manual --must-staple --manual-public-ip-logging-ok --preferred-challenges dns-01 --renew-by-default --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory -d "${domain}" ${wildcard}
+  [[ ${flag_generate} -eq 0 ]] || sudo certbot certonly ${test} --manual --must-staple --manual-public-ip-logging-ok --preferred-challenges dns-01 --renew-by-default --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory -d "${domain}" ${wildcard}
 
 }
 
