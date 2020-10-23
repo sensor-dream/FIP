@@ -80,6 +80,8 @@ function main_enable_ksm_script_source() {
       [[ $(systemctl is-active ksmtuned) != 'active' ]] && sudo systemctl start ksmtuned
     fi
 
+    sudo sysctl -p
+
   fi
 
 }
