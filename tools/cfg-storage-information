@@ -90,12 +90,28 @@ function main_cfg_storage_information_script_source() {
     echo "cfg_system_path_name is null, exit"
     exit
   fi
+  echo
+  echo -n "Enter  name development path (eg. Development): "
+  read cfg_development_path_name
+  if [[ -z "${cfg_development_path_name}" ]]; then
+    echo "cfg_development_path_name is null, exit"
+    exit
+  fi
+  echo
+  echo -n "Enter  name public www share path (eg. www_share): "
+  read cfg_www_public_path_name
+  if [[ -z "${cfg_www_public_path_name}" ]]; then
+    echo "cfg_www_public_path_name is null, exit"
+    exit
+  fi
   cat <<EOF >"${main_project_path}/hidden/cfg-storage-information"
 declare -rx cfg_storage_name="${cfg_storage_name}";
 declare -rx cfg_storage_path="${cfg_storage_path}";
 declare -rx cfg_storage_system_path="${cfg_storage_system_path}"
 declare -rx cfg_backup_path_name="${cfg_backup_path_name}"
 declare -rx cfg_system_path_name="${cfg_system_path_name}"
+declare -rx cfg_development_path_name="${cfg_development_path_name}"
+declare -rx cfg_www_public_path_name="${cfg_www_public_path_name}"
 EOF
 
   chmod 0600 "${main_project_path}/hidden/cfg-storage-information"

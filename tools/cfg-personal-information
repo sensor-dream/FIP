@@ -64,6 +64,12 @@ echo -n "Введите ваш персональный email ( def.set email ${
 read cfg_email
 [[ -z "${cfg_email}" ]] && cfg_email="${cfg_user}@${cfg_docfg}"
 echo
+stty -echo # скрыть отображение символов ввода
+echo -n "Введите ваш пароль пользователя email: "
+read cfg_email_password
+stty echo # включить отображение символов ввода
+echo -e "\n"
+echo
 echo -n "Введите аббревиатуру вашей организации ( def. set name SDBS ): "
 read cfg_org
 [[ -z "${cfg_org}" ]] && cfg_org="SDBS"
@@ -95,8 +101,9 @@ echo
 cat <<EOF >"${main_project_path}/hidden/cfg-personal-information"
 declare -rx cfg_full_name="${cfg_full_name}";
 declare -rx cfg_user="${cfg_user}";
-declare -rx cfg_email="${cfg_email}";
 declare -rx cfg_password="${cfg_password}";
+declare -rx cfg_email="${cfg_email}";
+declare -rx cfg_email_password="${cfg_email_password}";
 declare -rx cfg_org="${cfg_org}";
 declare -rx cfg_full_org="${cfg_full_org}";
 declare -rx cfg_docfg="${cfg_docfg}";

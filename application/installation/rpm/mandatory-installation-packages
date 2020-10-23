@@ -64,6 +64,11 @@ function install_mandatory_installation_packages() {
     'tmpwatch'
     'flent'
     'perf'
+    'screen'
+    'byobu'
+    'htop'
+    'ifconfig'
+    'nmap'
   )
 
   pm "$@" -- "${install_pkg[@]}"
