@@ -121,7 +121,6 @@ function generate_wildcard_certificate_for_main_domain() {
     echo "GENERATE simulate $([[ -z ${wildcard} ]] || echo 'wildcard ')ok: ${domain} ${wildcard//-d /}"
   fi
 
-
 }
 
 function main_generate_script_source() {
