@@ -53,46 +53,74 @@ function generate_wildcard_certificate_for_main_domain() {
 
   local test=
   local domain=
-  local letsencrypt_rsa_key_size=2048
-  local vildcard=
-  local flag_vildcard=1
+  local letsencrypt_rsa_key_size=4096
+  local wildcard=
+  local flag_wildcard=1
   local flag_generate=1
+  local flag_hosts=1
+  local name=
 
   OPTIND=1
 
-  while getopts "d:tng" OPT; do
+  while getopts "d:twghs:" OPT; do
     case $OPT in
     d) domain="$OPTARG" ;;
     # --test-cert or --staging
     t) test='--staging' ;;
-    n) flag_vildcard=0 ;;
+    w) flag_wildcard=0 ;;
     g) flag_generate=0 ;;
+    h) flag_hosts=0 ;;
+    s) letsencrypt_rsa_key_size="$OPTARG" ;;
     *) ;;
     esac
   done
   shift $(($OPTIND - 1))
   # shift `expr $OPTIND - 1`
-  # [ "${1:-}" = "--" ] && shift
+  [ "${1:-}" = "--" ] && shift
 
   # echo "${cfg_docfg}"
   # exit
 
   [[ -z ${domain} ]] && domain="${cfg_docfg}"
 
-  [[ ${flag_vildcard} -eq 1 ]] && vildcard="-d *.${domain}"
+  [[ ${flag_wildcard} -eq 1 ]] && wildcard="-d *.${domain}"
 
-  if ! grep -qE "127.0.0.1(\s|\t)+${domain}" '/etc/hosts'; then
-    echo "Add in hosts file: ${domain}"
-    if [[ $(echo "${domain}s" | tr -cd "." | wc -m) -eq 1 ]]; then
-      echo -e "127.0.0.1   ${domain}\n::1         ${domain}" | sudo tee -a '/etc/hosts'
+  if [[ ${flag_hosts} -eq 1 ]]; then
+    if ! grep -qE "127.0.0.1(\s|\t)+${domain}" '/etc/hosts'; then
+      echo "Add in hosts file: ${domain}"
+      if [[ $(echo "${domain}s" | tr -cd "." | wc -m) -ne 1 ]]; then
+        echo -e "127.0.0.1   ${domain}\n::1         ${domain}" | sudo tee -a '/etc/hosts'
+      else
+        echo -e "127.0.0.1   ${domain} www.${domain}\n::1         ${domain} www.${domain}" | sudo tee -a '/etc/hosts'
+      fi
     else
-      echo -e "127.0.0.1   ${domain} www.${domain}\n::1         ${domain} www.${domain}" | sudo tee -a '/etc/hosts'
+      echo "Already added in hosts file: ${domain}"
     fi
-  else
-    echo "Already added in hosts file: ${domain}"
   fi
 
-  [[ ${flag_generate} -eq 0 ]] || sudo certbot certonly ${test} --manual --must-staple --manual-public-ip-logging-ok --preferred-challenges dns-01 --renew-by-default --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory -d "${domain}" ${wildcard}
+  if [[ ${flag_generate} -eq 1 ]]; then
+    echo "GENERATE $([[ -z ${wildcard} ]] || echo 'wildcard ')ok: ${domain} ${wildcard//-d /}"
+    sudo certbot certonly ${test} --manual --must-staple --manual-public-ip-logging-ok --preferred-challenges dns-01 --renew-by-default --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory -d "${domain}" ${wildcard}
+    name=$(sudo ls -1 /etc/letsencrypt/archive | grep -E "${domain}.*[0-9]" | sort -rn | head -1)
+    if [[ -n ${name} ]]; then
+      echo "Last generated certificate found: ${name}"
+      echo "Delete /etc/letsencrypt/archive/${domain} path"
+      sudo rm -f -v -r "/etc/letsencrypt/archive/${domain}"
+      echo "Rename /etc/letsencrypt/archive/${name} -> /etc/letsencrypt/archive/${domain}"
+      sudo mv -f -v "/etc/letsencrypt/archive/${name}" "/etc/letsencrypt/archive/${domain}"
+      echo "Delete /etc/letsencrypt/renewal/${name}.conf"
+      sudo rm -f -v "/etc/letsencrypt/renewal/${name}.conf"
+      echo "Delete /etc/letsencrypt/live/${name} path"
+      sudo rm -f -v -r "/etc/letsencrypt/live/${name}"
+    fi
+    if [[ "$(systemctl is-active nginx)" == "active" ]]; then
+      echo "Restart nginx service"
+      sudo systemctl restart nginx
+    fi
+  else
+    echo "GENERATE simulate $([[ -z ${wildcard} ]] || echo 'wildcard ')ok: ${domain} ${wildcard//-d /}"
+  fi
+
 
 }
 
