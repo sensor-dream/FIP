@@ -108,7 +108,9 @@ function install_nvidia_videocard_drv_340xx() {
     # xorg-x11-drv-nvidia-340xx kernel module source code
     'xorg-x11-drv-nvidia-340xx-kmodsrc'
     # This package provides the shared libraries i686 for xorg-x11-drv-nvidia xorg-x11-drv-nvidia-libs
-    'xorg-x11-drv-nvidia-340xx-libs.i686'
+    'xorg-x11-drv-nvidia-340xx-libs*i686'
+    # nvme-cli provides NVM-Express user space tooling for Linux.
+    'nvme-cli'
   )
   pm "$@" -- "${install_pkg[@]}"
 
