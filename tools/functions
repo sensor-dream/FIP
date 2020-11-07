@@ -61,20 +61,46 @@ fi
 #  check_installd_packages <"a b c d">
 #  return list text  string
 function check_installed_packages() {
-  echo $(repoquery --installed --qf '%{name}' $@)
+  echo $(dnf repoquery --installed --qf '%{name}' $@)
+}
+
+function check_installed_grouplist() {
+  echo $(dnf group list --installed -v $@)
 }
 
 #  find_packages_installation <${array[*]}>
 #  find_packages_installation <"a b c d">
 function find_packages_installation() {
-  temp_one=
-  local Arg=($(trim_space $@))
+
+  local flag_group=0
+  local Arg=
+  local installPackages=
+  local Instal
+
+  OPTIND=1
+
+  while getopts "g" OPT; do
+    case $OPT in
+    g) flag_group=1 ;;
+    *) ;;
+    esac
+  done
+
+  shift $(($OPTIND - 1))
+  [ "${1:-}" = "--" ] && shif
+
+  Arg=($(trim_space $@))
   # local Arg=("$@");
   # echo ${Arg[*]};
-  local installPackages=($(check_installed_packages ${Arg[*]}))
-  local Install=()
+  if [[ ${flag_group} -eq 0 ]]; then
+    installPackages=($(check_installed_packages ${Arg[@]}))
+  else
+    installPackages=($(check_installed_grouplist ${Arg[@]}))
+  fi
+  Install=()
   for i in ${!Arg[*]}; do
-    if ! grep -q "${Arg[$i]}" <<<${installPackages[*]}; then
+    # echo ${Arg[$i]}
+    if ! grep -q "${Arg[$i]}" <<<${installPackages[@]}; then
       Install+=("${Arg[$i]}")
     fi
   done
@@ -92,10 +118,11 @@ function pm() {
   local options='--skip-broken'
   local exclude=''
   local force=0
+  local flag_group=
 
   OPTIND=1
 
-  while getopts "frRan:x" OPT; do
+  while getopts "frRgan:x" OPT; do
     case $OPT in
     f)
       options="${options} --allowerasing --best"
@@ -103,6 +130,10 @@ function pm() {
       ;;
     r) action='remove' ;;
     R) action='reinstall' ;;
+    g)
+      action="group ${action}"
+      flag_group="-g"
+      ;;
     a) options="${options} --assumeyes" ;;
     n) options="${options} --noautoremove" ;;
     x) exclude="${exclude} -x $OPTARG" ;;
@@ -113,7 +144,12 @@ function pm() {
   shift $(($OPTIND - 1))
   [ "${1:-}" = "--" ] && shift
 
-  find_packages_installation "${@}"
+  #if [[ "${action}" == 'groupinstall' ]]; then
+  #  sudo dnf ${action} ${options} "$@" ${exclude}
+  #  return
+  #fi
+
+  find_packages_installation "${flag_group}" "${@}"
   if [[ -n "${temp_one}" && "${temp_one[@]}" != " " ]]; then
     echo -en '\e[1;5;36m'"Package(s) install list:\n\t"'\e[0m\e[1;033m'"${temp_one[@]}\n"'\e[0m'
     sudo dnf ${action} ${options} ${temp_one[@]} ${exclude}

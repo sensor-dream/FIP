@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: syslog
-## @Creation date file: 03.11.2020, 16:18:19
+## @File: python
+## @Creation date file: 07.11.2020, 17:10:02
 
-[[ -z "${syslog_script_source}" ]] && declare -rx syslog_script_source="$BASH_SOURCE"
+[[ -z "${python_script_source}" ]] && declare -rx python_script_source="$BASH_SOURCE"
 
-if [[ -z "${syslog_script_source_path}" ]]; then
-  temp_one="$(dirname ${syslog_script_source})"
+if [[ -z "${python_script_source_path}" ]]; then
+  temp_one="$(dirname ${python_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx syslog_script_source_path="$(pwd)"
+    declare -rx python_script_source_path="$(pwd)"
   else
-    declare -rx syslog_script_source_path="${temp_one}"
+    declare -rx python_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,22 +51,23 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_syslog() {
+function install_python() {
 
   local install_pkg=(
-    'syslog-ng'
+    'python-classroom'
+    'python-science'
   )
 
-  pm "$@" -- "${install_pkg[@]}"
+  pm -g "$@" -- "${install_pkg[@]}"
 
 }
 
-function main_syslog_script_source() {
+function main_python_script_source() {
 
-  # printf "Initialise main function of syslog script source\n";
+  # printf "Initialise main function of python script source\n";
 
-  install_syslog "$@"
+  install_python "$@"
 
 }
 
-main_syslog_script_source "$@"
+main_python_script_source "$@"

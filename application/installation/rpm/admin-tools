@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: syslog
-## @Creation date file: 03.11.2020, 16:18:19
+## @File: admin-tools
+## @Creation date file: 07.11.2020, 17:36:09
 
-[[ -z "${syslog_script_source}" ]] && declare -rx syslog_script_source="$BASH_SOURCE"
+[[ -z "${admin_tools_script_source}" ]] && declare -rx admin_tools_script_source="$BASH_SOURCE"
 
-if [[ -z "${syslog_script_source_path}" ]]; then
-  temp_one="$(dirname ${syslog_script_source})"
+if [[ -z "${admin_tools_script_source_path}" ]]; then
+  temp_one="$(dirname ${admin_tools_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx syslog_script_source_path="$(pwd)"
+    declare -rx admin_tools_script_source_path="$(pwd)"
   else
-    declare -rx syslog_script_source_path="${temp_one}"
+    declare -rx admin_tools_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,22 +51,22 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_syslog() {
+function install_admin_tools() {
 
   local install_pkg=(
-    'syslog-ng'
+    'admin-tools'
   )
 
-  pm "$@" -- "${install_pkg[@]}"
+  pm -g "$@" -- "${install_pkg[@]}"
 
 }
 
-function main_syslog_script_source() {
+function main_admin_tools_script_source() {
 
-  # printf "Initialise main function of syslog script source\n";
+  # printf "Initialise main function of admin-tools script source\n";
 
-  install_syslog "$@"
+  install_admin_tools "$@"
 
 }
 
-main_syslog_script_source "$@"
+main_admin_tools_script_source "$@"

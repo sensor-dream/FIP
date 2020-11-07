@@ -19,6 +19,6 @@ multiple_cmd() {
 
 export -f multiple_cmd
 
-#find . -exec bash -c 'multiple_cmd "$0"' {} \;
+find . -exec bash -c 'multiple_cmd "$0"' {} \;
 
-find . -type d -exec bash -c 'multiple_cmd "$0"' {} \;
+# find . -type d -exec bash -c 'multiple_cmd "$0"' {} \;
