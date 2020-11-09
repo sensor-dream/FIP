@@ -71,6 +71,7 @@ function install_gnome_shell() {
     'gnome-shell-extension-user-theme'
     'gnome-shell-extension-windowoverlay-icons'
     'gnome-shell-extension-drive-menu'
+    'gnome-shell-extension-pop-shell'
     'gtk-update-icon-cache'
     'mingw64-gtk-update-icon-cache'
     'gnome-themes-extra'

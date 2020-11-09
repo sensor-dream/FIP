@@ -59,6 +59,18 @@ function install_hard_drive() {
     'hddtemp'
     'baobab'
     'gnome-disk-utility'
+    # NVMe management command line interface
+    # : https://github.com/linux-nvme/nvme-cli
+    # : GPLv2+
+    # : nvme-cli provides NVM-Express user space tooling for Linux.
+    'nvme-cli'
+    # An adminstration shell for NVMe storage targets
+    # : ftp://ftp.infradead.org/pub/nvmetcli/
+    # : ASL 2.0
+    # : This package contains the command line interface to the NVMe over Fabrics
+    # : nvmet in the Linux kernel. It allows configuring the nvmet interactively
+    # : as well as saving / restoring the configuration to / from a json file.
+    'nvmetcli'
   )
 
   pm "$@" -- "${install_pkg[@]}"
