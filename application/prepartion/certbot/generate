@@ -100,7 +100,7 @@ function generate_wildcard_certificate_for_main_domain() {
 
   if [[ ${flag_generate} -eq 1 ]]; then
     echo "GENERATE $([[ -z ${wildcard} ]] || echo 'wildcard ')ok: ${domain} ${wildcard//-d /}"
-    sudo certbot certonly ${test} --manual --must-staple --manual-public-ip-logging-ok --preferred-challenges dns-01 --renew-by-default --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory -d "${domain}" ${wildcard}
+    sudo certbot certonly ${test} --manual --must-staple --manual-public-ip-logging-ok --preferred-challenges dns-01 --renew-by-default --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory -d ${domain} ${wildcard}
     name=$(sudo ls -1 /etc/letsencrypt/archive | grep -E "${domain}.*[0-9]" | sort -rn | head -1)
     if [[ -n ${name} ]]; then
       echo "Last generated certificate found: ${name}"
