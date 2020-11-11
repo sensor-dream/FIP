@@ -46,6 +46,8 @@ function install_nginx() {
 
   local install_pkg=(
     'nmap'
+    'php'
+    'php-fpm'
     'nginx'
     'nginx-filesystem'
     'nginx-mimetypes'
@@ -56,6 +58,7 @@ function install_nginx() {
     'libxslt-devel'
     'gperftools'
     'gperftools-devel'
+    'gd'
   )
 
   pm "$@" -- "${install_pkg[@]}"

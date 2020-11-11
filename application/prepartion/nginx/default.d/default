@@ -53,7 +53,7 @@ function main_default_d_default_script_source() {
 
   # prinf "Initialise main function of default script source\n";
 
-  [[ -z "${nginx_script_source_path}" ]] && local nginx_script_source_path='.'
+  [[ -z "${nginx_script_source_path}" ]] && local nginx_script_source_path=..
   [[ -z "$rev_timestamp" ]] && local rev_timestamp="$(cat ${nginx_script_source_path}/rev-timestamp.txt)"
   [[ $(systemctl is-active nginx) == 'active' ]] && sudo systemctl stop nginx
 
@@ -86,7 +86,7 @@ ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
 ssl_stapling on;
 ssl_stapling_verify on;
 # replace with the IP address of your resolver
-resolver 8.8.8.8 8.8.4.4 valid=300s;
+resolver 1.1.1.1 8.8.8.8 1.0.0.1 8.8.4.4 valid=300s;
 resolver_timeout 5s;
 ssl_session_cache shared:SSL:10m;
 ssl_session_timeout 1440m;
@@ -104,7 +104,8 @@ ssl_early_data on;
 # Having HTTPOnly and Secure in HTTP response header can help to protect your web applications from cross-site scripting and session manipulation attacks.
 set_cookie_flag HttpOnly secure;
 
-# Requests sent within early data are subject to replay attacks. To protect against such attacks at the application layer, the $ssl_early_data variable should be used.  proxy_set_header Early-Data $ssl_early_data;
+# Requests sent within early data are subject to replay attacks. To protect against such attacks at the application layer, the  variable should be used.
+proxy_set_header Early-Data \$ssl_early_data;
 
 # HSTS (ngx_http_headers_module is required) (63072000 seconds)
 # add_header Strict-Transport-Security "max-age=63072000 includeSubdomains; preload";
@@ -132,12 +133,6 @@ client_body_buffer_size 200K;
 client_header_buffer_size 2k;
 client_max_body_size 200k;
 large_client_header_buffers 3 1k;
-
-location ~* \.(ico|png|jpg)$ {
-  expires 5d;
-  add_header Cache-Control public;
-}
-
 EOF
 
   [[ $(systemctl is-active nginx) == 'active' ]] || sudo systemctl start nginx
