@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: php
-## @Creation date file: 08.10.2020, 06:57:20
+## @File: gstreamermm
+## @Creation date file: 11.11.2020, 22:24:02
 
-[[ -z "${php_script_source}" ]] && declare -rx php_script_source="$BASH_SOURCE"
+[[ -z "${gstreamermm_script_source}" ]] && declare -rx gstreamermm_script_source="$BASH_SOURCE"
 
-if [[ -z "${php_script_source_path}" ]]; then
-  temp_one="$(dirname ${php_script_source})"
+if [[ -z "${gstreamermm_script_source_path}" ]]; then
+  temp_one="$(dirname ${gstreamermm_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx php_script_source_path="$(pwd)"
+    declare -rx gstreamermm_script_source_path="$(pwd)"
   else
-    declare -rx php_script_source_path="${temp_one}"
+    declare -rx gstreamermm_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,22 +51,29 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_php() {
+function install_gstreamermm() {
 
   local install_pkg=(
-    'php'
+    # Краткое опис : C++ wrapper for GStreamer library
+    # URL          : http://www.gtkmm.org/
+    # Описание     : GStreamermm is a C++ wrapper library for the multimedia library
+    # : GStreamer (http://gstreamer.freedesktop.org).  It is designed to allow
+    # : C++ development of applications that work with multi-media.
+    'gstreamermm'
+    'gstreamermm-devel'
+    'gstreamermm-doc'
   )
 
-  pm -g "$@" -- "${install_pkg[@]}"
+  pm "$@" -- "${install_pkg[@]}"
 
 }
 
-function main_php_script_source() {
+function main_gstreamermm_script_source() {
 
-  # prinf "Initialise main function of php script source\n";
+  # printf "Initialise main function of gstreamermm script source\n";
 
-  install_php "$@"
+  install_gstreamermm "$@"
 
 }
 
-main_php_script_source "$@"
+main_gstreamermm_script_source "$@"

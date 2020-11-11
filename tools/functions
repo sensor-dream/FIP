@@ -98,15 +98,19 @@ function find_packages_installation() {
   # local Arg=("$@");
   # echo ${Arg[*]};
   if [[ ${flag_group} -eq 0 ]]; then
-    installPackages=($(check_installed_packages ${Arg[@]}))
+    installPackages=" $(check_installed_packages ${Arg[@]}) "
   else
-    installPackages=($(check_installed_grouplist ${Arg[@]}))
+    installPackages=" $(check_installed_grouplist ${Arg[@]}) "
   fi
+
+  # echo "check: |${installPackages}|"
+  # exit
+
   Install=()
   Installed=()
   for i in ${!Arg[*]}; do
     # echo ${Arg[$i]}
-    if ! grep -qE "(\s)?${Arg[$i]}(\s)?" <<<${installPackages[@]}; then
+    if ! grep -q " ${Arg[$i]} " <<<${installPackages}; then
       Install+=("${Arg[$i]}")
     else
       Installed+=("${Arg[$i]}")

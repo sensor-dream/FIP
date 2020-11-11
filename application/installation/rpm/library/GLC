@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: php
-## @Creation date file: 08.10.2020, 06:57:20
+## @File: GLC
+## @Creation date file: 11.11.2020, 21:09:49
 
-[[ -z "${php_script_source}" ]] && declare -rx php_script_source="$BASH_SOURCE"
+[[ -z "${GLC_script_source}" ]] && declare -rx GLC_script_source="$BASH_SOURCE"
 
-if [[ -z "${php_script_source_path}" ]]; then
-  temp_one="$(dirname ${php_script_source})"
+if [[ -z "${GLC_script_source_path}" ]]; then
+  temp_one="$(dirname ${GLC_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx php_script_source_path="$(pwd)"
+    declare -rx GLC_script_source_path="$(pwd)"
   else
-    declare -rx php_script_source_path="${temp_one}"
+    declare -rx GLC_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,22 +51,28 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_php() {
+function install_GLC() {
 
   local install_pkg=(
-    'php'
+    # Краткое опис : C++ class library for OpenGL application based on Qt 4
+    # URL          : http://www.glc-lib.net/
+    # Описание     : GLC_lib is a C++ class library that enables the quick creation of OpenGL
+    # : application based on Qt 4. Some GLC_lib features : Camera orbiting, Obj
+    # : textured file support, 3D Primitive... And more.
+    'GLC_lib'
+    'GLC_lib-devel'
   )
 
-  pm -g "$@" -- "${install_pkg[@]}"
+  pm "$@" -- "${install_pkg[@]}"
 
 }
 
-function main_php_script_source() {
+function main_GLC_script_source() {
 
-  # prinf "Initialise main function of php script source\n";
+  # printf "Initialise main function of GLC script source\n";
 
-  install_php "$@"
+  install_GLC "$@"
 
 }
 
-main_php_script_source "$@"
+main_GLC_script_source "$@"

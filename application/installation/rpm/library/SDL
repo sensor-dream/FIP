@@ -1,0 +1,118 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: SDL
+## @Creation date file: 11.11.2020, 19:35:06
+
+[[ -z "${SDL_script_source}" ]] && declare -rx SDL_script_source="$BASH_SOURCE"
+
+if [[ -z "${SDL_script_source_path}" ]]; then
+  temp_one="$(dirname ${SDL_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx SDL_script_source_path="$(pwd)"
+  else
+    declare -rx SDL_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_SDL() {
+
+  local install_pkg=(
+    # Краткое опис : A cross-platform multimedia library
+    # URL          : https://www.libsdl.org/
+    # Описание     : Simple DirectMedia Layer (SDL) is a cross-platform multimedia library designed
+    # : to provide fast access to the graphics frame buffer and audio device
+    'SDL'
+    'SDL_sound'
+    'SDL-devel'
+    'SDL-static'
+    'SDL_Pango'
+    'SDL_Pango-devel'
+    'SDL_gfx'
+    'SDL_gfx-devel'
+    'SDL_image'
+    'SDL_image-devel'
+    'SDL_mixer'
+    'SDL_mixer-devel'
+    'SDL_mng'
+    'SDL_mng-devel'
+    'SDL_net'
+    'SDL_net-devel'
+    'SDL_sound-devel'
+    'SDL_ttf'
+    'SDL_ttf-devel'
+    # Краткое опис : Cross-platform multimedia library
+    # URL          : http://www.libsdl.org/
+    # Описание     : Simple DirectMedia Layer (SDL) is a cross-platform multimedia library designed
+    # : to provide fast access to the graphics frame buffer and audio device.
+    'SDL2'
+    'SDL2-devel'
+    'SDL2-static'
+    'SDL2_gfx'
+    'SDL2_gfx-devel'
+    'SDL2_gfx-docs'
+    'SDL2_image-devel'
+    'SDL2_image'
+    'SDL2_mixer'
+    'SDL2_mixer-devel'
+    'SDL2_net'
+    'SDL2_net-devel'
+    'SDL2_ttf'
+    'SDL2_ttf-devel'
+    # Краткое опис : An open-source port of Prince of Persia
+    # URL          : https://github.com/NagyD/SDLPoP
+    # Описание     : SDLPoP is an open-source port of Prince of Persia, based on the disassembly
+    # : of the DOS version.
+    'SDLPoP'
+
+  )
+
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_SDL_script_source() {
+
+  # printf "Initialise main function of SDL script source\n";
+
+  install_SDL "$@"
+
+}
+
+main_SDL_script_source "$@"

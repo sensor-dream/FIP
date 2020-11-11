@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: php
-## @Creation date file: 08.10.2020, 06:57:20
+## @File: GLee
+## @Creation date file: 11.11.2020, 20:49:44
 
-[[ -z "${php_script_source}" ]] && declare -rx php_script_source="$BASH_SOURCE"
+[[ -z "${GLee_script_source}" ]] && declare -rx GLee_script_source="$BASH_SOURCE"
 
-if [[ -z "${php_script_source_path}" ]]; then
-  temp_one="$(dirname ${php_script_source})"
+if [[ -z "${GLee_script_source_path}" ]]; then
+  temp_one="$(dirname ${GLee_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx php_script_source_path="$(pwd)"
+    declare -rx GLee_script_source_path="$(pwd)"
   else
-    declare -rx php_script_source_path="${temp_one}"
+    declare -rx GLee_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,22 +51,28 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_php() {
+function install_GLee() {
 
   local install_pkg=(
-    'php'
+    # Краткое опис : GL Easy Extension library
+    # URL          : http://elf-stone.com/glee.php
+    # Описание     : GLee (GL Easy Extension library) is a free cross-platform extension loading
+    # : library for OpenGL. It provides seamless support for OpenGL functions up
+    # : to version 3.0 and 399 extensions.
+    'GLee'
+    'GLee-devel'
   )
 
-  pm -g "$@" -- "${install_pkg[@]}"
+  pm "$@" -- "${install_pkg[@]}"
 
 }
 
-function main_php_script_source() {
+function main_GLee_script_source() {
 
-  # prinf "Initialise main function of php script source\n";
+  # printf "Initialise main function of GLee script source\n";
 
-  install_php "$@"
+  install_GLee "$@"
 
 }
 
-main_php_script_source "$@"
+main_GLee_script_source "$@"

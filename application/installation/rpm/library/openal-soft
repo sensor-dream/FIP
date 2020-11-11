@@ -1,0 +1,88 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: openal-soft
+## @Creation date file: 11.11.2020, 19:27:21
+
+[[ -z "${openal_soft_script_source}" ]] && declare -rx openal_soft_script_source="$BASH_SOURCE"
+
+if [[ -z "${openal_soft_script_source_path}" ]]; then
+  temp_one="$(dirname ${openal_soft_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx openal_soft_script_source_path="$(pwd)"
+  else
+    declare -rx openal_soft_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_openal_soft() {
+
+  local install_pkg=(
+    # Краткое опис : Open Audio Library
+    # URL          : http://openal-soft.org/
+    # Описание     : OpenAL Soft is a cross-platform software implementation of the OpenAL 3D
+    # : audio API. It's built off of the open-sourced Windows version available
+    # : originally from the SVN repository at openal.org. OpenAL provides
+    # : capabilities for playing audio in a virtual 3d environment. Distance
+    # : attenuation, doppler shift, and directional sound emitters are among
+    # : the features handled by the API. More advanced effects, including air
+    # : absorption, low-pass filters, and reverb, are available through the
+    # : EFX extension. It also facilitates streaming audio, multi-channel buffers,
+    # : and audio capture.
+    'openal-soft'
+    'openal-soft-devel'
+    'openal-soft-examples'
+    'openal-soft-qt'
+    'mingw64-openal-soft'
+    'mingw32-openal-soft'
+  )
+
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_openal_soft_script_source() {
+
+  # printf "Initialise main function of openal-soft script source\n";
+
+  install_openal_soft "$@"
+
+}
+
+main_openal_soft_script_source "$@"

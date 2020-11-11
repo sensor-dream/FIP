@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: php
-## @Creation date file: 08.10.2020, 06:57:20
+## @File: run-one
+## @Creation date file: 11.11.2020, 16:27:05
 
-[[ -z "${php_script_source}" ]] && declare -rx php_script_source="$BASH_SOURCE"
+[[ -z "${run_one_script_source}" ]] && declare -rx run_one_script_source="$BASH_SOURCE"
 
-if [[ -z "${php_script_source_path}" ]]; then
-  temp_one="$(dirname ${php_script_source})"
+if [[ -z "${run_one_script_source_path}" ]]; then
+  temp_one="$(dirname ${run_one_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx php_script_source_path="$(pwd)"
+    declare -rx run_one_script_source_path="$(pwd)"
   else
-    declare -rx php_script_source_path="${temp_one}"
+    declare -rx run_one_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,22 +51,16 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_php() {
-
-  local install_pkg=(
-    'php'
-  )
-
-  pm -g "$@" -- "${install_pkg[@]}"
+function install_run_one() {
 
 }
 
-function main_php_script_source() {
+function main_run_one_script_source() {
 
-  # prinf "Initialise main function of php script source\n";
+  # printf "Initialise main function of run-one script source\n";
 
-  install_php "$@"
+  install_run_one "$@"
 
 }
 
-main_php_script_source "$@"
+main_run_one_script_source "$@"
