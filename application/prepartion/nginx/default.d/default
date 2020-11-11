@@ -118,17 +118,6 @@ add_header X-XSS-Protection "1; mode=block" always;
 
 add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
-#
-# DDoS prevention
-#
-# Nginx Timeout parameters
-client_body_timeout 5s;
-client_header_timeout 5s;
-# Limit HTTP Request size
-client_body_buffer_size 200K;
-client_header_buffer_size 2k;
-client_max_body_size 200k;
-large_client_header_buffers 3 1k;
 EOF
 
   [[ $(systemctl is-active nginx) == 'active' ]] || sudo systemctl start nginx

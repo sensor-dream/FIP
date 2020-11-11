@@ -106,7 +106,18 @@ http {
     types_hash_max_size 4096; # default 4096
     types_hash_bucket_size 64; # default 64
 
-    client_max_body_size 0;
+    #
+    # DDoS prevention
+    #
+    # Nginx Timeout parameters
+    # Default is 60, May need to be increased for very large uploads
+    client_body_timeout 5s;
+    client_header_timeout 5s;
+    # Limit HTTP Request size
+    client_body_buffer_size 200K;
+    client_header_buffer_size 2k;
+    client_max_body_size 200k;
+    large_client_header_buffers 3 1k;
 
     include             /etc/nginx/mime.types;
     default_type        application/octet-stream;

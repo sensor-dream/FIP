@@ -158,6 +158,8 @@ function main_nginx_script_source() {
     sudo sed -i 's/^net.ipv4.tcp_syncookies.*$/net.ipv4.tcp_syncookies = 1/im' '/etc/sysctl.conf'
   fi
 
+  sudo sysctl -p
+
   [[ -d '/etc/ssl/private' ]] || sudo mkdir -p '/etc/ssl/private'
   [[ -f '/etc/ssl/private/dhparam.pem' ]] || sudo openssl dhparam -out '/etc/ssl/private/dhparam.pem' 4096
   [[ -f '/etc/ssl/private/tickets.key' ]] || openssl rand 80 | sudo tee '/etc/ssl/private/tickets.key'
