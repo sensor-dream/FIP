@@ -75,10 +75,6 @@ if (\$request_uri ~ ^[^?]*//) {
 #     rewrite ^ \$left/\$right permanent;
 # }
 
-location = /favicon.ico { access_log off; log_not_found off; }
-location = /robots.txt { access_log off; log_not_found off; }
-location = /sitemap.xml { access_log off; log_not_found off; }
-
 ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
 
 # OCSP stapling

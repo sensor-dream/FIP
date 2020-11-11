@@ -59,7 +59,6 @@ function install_nginx_dependence() {
   fi
 EOF
 
-
   local install_pkg=(
     'libxml2'
     'libxslt'
@@ -133,6 +132,8 @@ function main_nginx_script_source() {
     echo "Введите название домена (def. ${cfg_docfg})"
     read key
     . "${main_project_path}/application/prepartion/certbot/generate" -d "${key}"
+  else
+    . "${main_project_path}/application/prepartion/certbot/generate" -g -d "${cfg_docfg}"
   fi
 
   [[ $(systemctl is-enabled nginx) == 'enable' ]] || sudo systemctl enable nginx

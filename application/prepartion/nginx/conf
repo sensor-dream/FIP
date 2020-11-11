@@ -153,14 +153,24 @@ http {
         # verify chain of trust of OCSP response using Root CA and Intermediate certs
         ssl_trusted_certificate "/etc/letsencrypt/live/${cfg_docfg}/chain.pem";
 
+        location = /favicon.ico { access_log off; log_not_found off; }
+        location = /robots.txt { access_log off; log_not_found off; }
+        location = /sitemap.xml { access_log off; log_not_found off; }
 
-        error_page 404 /404.html;
-            location = /40x.html {
+        # redirect server error pages to the static page /40x.html
+        #
+        error_page  404  /404.html;
+        location = /40x.html {
+          root  /usr/share/nginx/html;
         }
 
-        error_page 500 502 503 504 /50x.html;
-            location = /50x.html {
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+          root  /usr/share/nginx/html;
         }
+
     }
 
 }
