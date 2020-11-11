@@ -50,10 +50,10 @@ function check_packages() {
 }
 
 #cat <<EOF >/dev/null
-if [[ "$(check_packages dnf-utils)" == 'dnf-utils' ]]; then
-  printf "Check dnf-utils is OK \n"
+if [[ "$(check_packages dnf-utils mc)" == 'mcdnf-utils' ]]; then
+  printf "Check dnf-utils and mc is OK \n"
 else
-  sudo dnf install 'dnf-utils'
+  sudo dnf install dnf-utils mc
 fi
 #EOF
 
@@ -65,7 +65,7 @@ function check_installed_packages() {
 }
 
 function check_installed_grouplist() {
-  echo $(dnf group list --installed -v $@)
+  echo $(dnf grouplist --installed -v $@)
 }
 
 #  find_packages_installation <${array[*]}>
@@ -73,15 +73,20 @@ function check_installed_grouplist() {
 function find_packages_installation() {
 
   local flag_group=0
+  local flag_mess='Package'
   local Arg=
   local installPackages=
-  local Instal
+  local Instal=
+  local Installed=
 
   OPTIND=1
 
   while getopts "g" OPT; do
     case $OPT in
-    g) flag_group=1 ;;
+    g)
+      flag_group=1
+      flag_mess="Group"
+      ;;
     *) ;;
     esac
   done
@@ -98,13 +103,16 @@ function find_packages_installation() {
     installPackages=($(check_installed_grouplist ${Arg[@]}))
   fi
   Install=()
+  Installed=()
   for i in ${!Arg[*]}; do
     # echo ${Arg[$i]}
-    if ! grep -q "${Arg[$i]}" <<<${installPackages[@]}; then
+    if ! grep -qE "(\s)?${Arg[$i]}(\s)?" <<<${installPackages[@]}; then
       Install+=("${Arg[$i]}")
+    else
+      Installed+=("${Arg[$i]}")
     fi
   done
-  [[ "${temp_one[@]}" =~ (\s+|\t+|\n+|$) ]] || echo -en '\e[1;5;31m'"Package(s) already used:\n\t"'\e[0m\e[1;033m'"${installPackages[@]}\n"'\e[0m'
+  [[ -n "${Installed[@]}" ]] && echo -en '\e[1;32m'"${flag_mess}(s) already used:\n\t"'\e[0m'"${Installed[@]}\n"
   tput sgr0
   # echo ${Install[@]}
   temp_one=(${Install[@]})
@@ -119,6 +127,7 @@ function pm() {
   local exclude=''
   local force=0
   local flag_group=
+  local flag_mess='Package'
 
   OPTIND=1
 
@@ -133,6 +142,7 @@ function pm() {
     g)
       action="group ${action}"
       flag_group="-g"
+      flag_mess='Group'
       ;;
     a) options="${options} --assumeyes" ;;
     n) options="${options} --noautoremove" ;;
@@ -151,7 +161,7 @@ function pm() {
 
   find_packages_installation "${flag_group}" "${@}"
   if [[ -n "${temp_one}" && "${temp_one[@]}" != " " ]]; then
-    echo -en '\e[1;5;36m'"Package(s) install list:\n\t"'\e[0m\e[1;033m'"${temp_one[@]}\n"'\e[0m'
+    echo -en '\e[1;36m'"${flag_mess}(s) install list:\n\t"'\e[0m'"${temp_one[@]}\n"
     sudo dnf ${action} ${options} ${temp_one[@]} ${exclude}
   fi
 }

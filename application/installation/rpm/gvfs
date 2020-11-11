@@ -53,8 +53,11 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
 function install_gvfs() {
 
-  # The gvfs package provides backend implementations for the gio
-  # : framework in GLib. It includes ftp, sftp, cifs
+  # Краткое опис : Backends for the gio framework in GLib
+  # URL          : https://wiki.gnome.org/Projects/gvfs
+  # Лицензия     : GPLv3 and LGPLv2+ and BSD and MPLv2.0
+  # Описание     : The gvfs package provides backend implementations for the gio
+  #               : framework in GLib. It includes ftp, sftp, cifs.
 
   local install_pkg=(
     'gvfs'

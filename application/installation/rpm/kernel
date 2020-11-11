@@ -67,6 +67,7 @@ function install_kernel() {
     'kernel-tools'
     'kernel-tools-libs'
     'kernel-tools-libs-devel'
+    'strace'
     'trace-cmd'
     'kernelshark'
   )

@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: iptables
-## @Creation date file: 15.10.2020, 17:44:35
+## @File: flash-player
+## @Creation date file: 11.11.2020, 02:17:17
 
-[[ -z "${iptables_script_source}" ]] && declare -rx iptables_script_source="$BASH_SOURCE"
+[[ -z "${flash_player_script_source}" ]] && declare -rx flash_player_script_source="$BASH_SOURCE"
 
-if [[ -z "${iptables_script_source_path}" ]]; then
-  temp_one="$(dirname ${iptables_script_source})"
+if [[ -z "${flash_player_script_source_path}" ]]; then
+  temp_one="$(dirname ${flash_player_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx iptables_script_source_path="$(pwd)"
+    declare -rx flash_player_script_source_path="$(pwd)"
   else
-    declare -rx iptables_script_source_path="${temp_one}"
+    declare -rx flash_player_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,30 +51,26 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_iptables() {
+function install_flash_player() {
 
-  [[ "$(rpm -qa 'sshguard-nftables' | awk -F'-' '{ print $1 }')" == 'sshguard' ]] && sudo dnf remove sshguard-nftables
+  . "${main_project_path}/repository/adobe"
 
   local install_pkg=(
-    'iptables'
-    'iptables-devel'
-    'iptables-libs'
-    'iptables-nft'
-    'iptables-services'
-    'ptables-utils'
-    'sshguard-iptables'
+    'flash-plugin'
+    'alsa-plugins-pulseaudio'
+    'libcurl'
   )
 
   pm "$@" -- "${install_pkg[@]}"
 
 }
 
-function main_iptables_script_source() {
+function main_flash_player_script_source() {
 
-  # prinf "Initialise main function of iptables script source\n";
+  # printf "Initialise main function of flash-player script source\n";
 
-  install_iptables "$@"
+  install_flash_player "$@"
 
 }
 
-main_iptables_script_source "$@"
+main_flash_player_script_source "$@"

@@ -53,10 +53,19 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
 function install_rpmfusion() {
 
-  if [[ -z "$(rpm -qa rpmfusion-free-release rpmfusion-nonfree-release)" ]]; then
-    "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${os_version_id}.noarch.rpm" "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${os_version_id}.noarch.rpm"
+  if [[ -z "$(check_installed_packages rpmfusion-free-release rpmfusion-nonfree-release)" ]]; then
+    sudo dnf config-manager --set-disabled rpmfusion-nonfree-nvidia-driver
+    sudo dnf config-manager --set-disabled rpmfusion-nonfree-steam
+    sudo dnf install "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${os_version_id}.noarch.rpm" "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${os_version_id}.noarch.rpm" -y
+    sudo dnf config-manager --set-enabled rpmfusion-free
+    sudo dnf config-manager --set-enabled rpmfusion-free-updates
+    sudo dnf config-manager --set-enabled rpmfusion-nonfree
+    sudo dnf config-manager --set-enabled rpmfusion-nonfree-updates
+    sudo dnf groupupdate core -y
+    sudo dnf groupupdate multimedia -y
+    sudo dnf groupupdate sound-and-video -y
   else
-    printf "Check rpmfusion repositories is OK \n"
+    printf "Check rpmfusion repositories is OK  and aktivate is OK (if you haven't already disabled it manually :() \n"
   fi
 
 }

@@ -47,6 +47,8 @@ if [[ -z "${main_cfg_script_source}" ]]; then
   done
 fi
 
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
 function install_nginx_dependence() {
 
   cat <<EOF >/dev/null
@@ -57,7 +59,6 @@ function install_nginx_dependence() {
   fi
 EOF
 
-  printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
   local install_pkg=(
     'libxml2'

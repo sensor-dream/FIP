@@ -86,16 +86,11 @@ function install_mariadb() {
 
 }
 
-function preapration_mariadb() {
-
-}
-
 function main_mariadb_script_source() {
 
   # printf "Initialise main function of mariadb script source\n";
 
   install_mariadb "$@"
-  preapration_mariadb "$@"
 
 }
 
