@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: c
-## @Creation date file: 07.11.2020, 17:12:59
+## @File: GraphicsMagick
+## @Creation date file: 13.11.2020, 00:45:14
 
-[[ -z "${c_script_source}" ]] && declare -rx c_script_source="$BASH_SOURCE"
+[[ -z "${GraphicsMagick_script_source}" ]] && declare -rx GraphicsMagick_script_source="$BASH_SOURCE"
 
-if [[ -z "${c_script_source_path}" ]]; then
-  temp_one="$(dirname ${c_script_source})"
+if [[ -z "${GraphicsMagick_script_source_path}" ]]; then
+  temp_one="$(dirname ${GraphicsMagick_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx c_script_source_path="$(pwd)"
+    declare -rx GraphicsMagick_script_source_path="$(pwd)"
   else
-    declare -rx c_script_source_path="${temp_one}"
+    declare -rx GraphicsMagick_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,34 +51,34 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_c() {
+function install_GraphicsMagick() {
 
   local install_pkg=(
-    'c-development'
+    # Краткое опис : An ImageMagick fork, offering faster image generation and better quality
+    # URL : http://www.graphicsmagick.org/
+    # Лицензия : MIT
+    # Описание : GraphicsMagick is a comprehensive image processing package which is initially
+    # : based on ImageMagick 5.5.2, but which has undergone significant re-work by
+    # : the GraphicsMagick Group to significantly improve the quality and performance
+    # : of the software.
+    'GraphicsMagick'
+    'GraphicsMagick-c++'
+    'GraphicsMagick-c++-devel'
+    'GraphicsMagick-doc'
+    'GraphicsMagick-perl'
+    'GraphicsMagick-devel'
   )
 
-  pm -g "$@" -- "${install_pkg[@]}"
-
-  install_pkg=(
-    # Краткое опис : A documentation system for C/C++
-    # URL          : http://www.doxygen.nl
-    # Лицензия     : GPL+
-    # Описание     : Doxygen can generate an online class browser (in HTML) and/or a
-    # : reference manual (in LaTeX) from a set of documented source files. The
-    # : documentation is extracted directly from the sources. Doxygen can
-    # : also be configured to extract the code structure from undocumented
-    # : source files.
-    'doxygen'
-  )
+  pm "$@" -- "${install_pkg[@]}"
 
 }
 
-function main_c_script_source() {
+function main_GraphicsMagick_script_source() {
 
-  # printf "Initialise main function of c script source\n";
+  # printf "Initialise main function of GraphicsMagick script source\n";
 
-  install_c "$@"
+  install_GraphicsMagick "$@"
 
 }
 
-main_c_script_source "$@"
+main_GraphicsMagick_script_source "$@"

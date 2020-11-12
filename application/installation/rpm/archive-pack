@@ -1,0 +1,305 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: archive-pack
+## @Creation date file: 12.11.2020, 21:49:29
+
+[[ -z "${archive_pack_script_source}" ]] && declare -rx archive_pack_script_source="$BASH_SOURCE"
+
+if [[ -z "${archive_pack_script_source_path}" ]]; then
+  temp_one="$(dirname ${archive_pack_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx archive_pack_script_source_path="$(pwd)"
+  else
+    declare -rx archive_pack_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_archive_pack() {
+
+  local install_pkg=(
+    # Краткое опис : A GNU archiving program
+    # URL          : http://www.gnu.org/software/cpio/
+    # Лицензия     : GPLv3+
+    # Описание     : GNU cpio copies files into or out of a cpio or tar archive.  Archives
+    # : are files which contain a collection of other files plus information
+    # : about them, such as their file name, owner, timestamps, and access
+    # : permissions.  The archive can be another file on the disk, a magnetic
+    # : tape, or a pipe.  GNU cpio supports the following archive formats:  binary,
+    # : old ASCII, new ASCII, crc, HPUX binary, HPUX old ASCII, old tar and POSIX.1
+    # : tar.  By default, cpio creates binary format archives, so that they are
+    # : compatible with older cpio programs.  When it is extracting files from
+    # : archives, cpio automatically recognizes which kind of archive it is reading
+    # : and can read archives created on machines with a different byte-order.
+    # :
+    # : Install cpio if you need a program to manage file archives.
+    'cpio'
+    # Краткое опис : The GNU data compression program
+    # URL          : http://www.gzip.org/
+    # Описание     : The gzip package contains the popular GNU gzip data compression
+    # : program. Gzipped files have a .gz extension.
+    # : Gzip should be installed on your system, because it is a
+    # : very commonly used data compression program.
+    'gzip'
+    # Краткое опис : The compression and decompression library
+    # URL          : http://www.zlib.net/
+    # Описание     : Zlib is a general-purpose, patent-free, lossless data compression
+    # : library which is used by many different programs.
+    'zlib'
+    # Краткое опис : Lightweight library to easily extract data from zip files
+    # URL          : http://zziplib.sourceforge.net/
+    # Описание     : The zziplib library is intentionally lightweight, it offers the ability to
+    # : easily extract data from files archived in a single zip file. Applications
+    # : can bundle files into a single zip archive and access them. The implementation
+    # : is based only on the (free) subset of compression with the zlib algorithm
+    # : which is actually used by the zip/unzip tools.
+    'zziplib'
+    # Краткое опис : A file compression and packaging utility compatible with PKZIP
+    # URL          : http://www.info-zip.org/Zip.html
+    # Лицензия     : BSD
+    # Описание     : The zip program is a compression and file packaging utility.  Zip is
+    # : analogous to a combination of the UNIX tar and compress commands and
+    # : is compatible with PKZIP (a compression and file packaging utility for
+    # : MS-DOS systems).
+    # :
+    # : Install the zip package if you need to compress files using the zip
+    # : program.
+    'zip'
+    # Краткое опис : A utility for unpacking zip files
+    # URL          : http://www.info-zip.org/UnZip.html
+    # Лицензия     : BSD
+    # Описание     : The unzip utility is used to list, test, or extract files from a zip
+    # ; archive.  Zip archives are commonly found on MS-DOS systems.  The zip
+    # ; utility, included in the zip package, creates zip archives.  Zip and
+    # ; unzip are both compatible with archives created by PKWARE(R)'s PKZIP
+    # ; for MS-DOS, but the programs' options and default behaviors do differ
+    # ; in some respects.
+    # ;
+    # ; Install the unzip package if you need to list, test or extract files from
+    # ; a zip archive.
+    'unzip'
+    # Краткое опис : Very high compression ratio file archiver
+    # URL          : http://p7zip.sourceforge.net/
+    # Лицензия     : LGPLv2 and (LGPLv2+ or CPL)
+    # Описание     : p7zip is a port of 7za.exe for Unix. 7-Zip is a file archiver with a very high
+    # ; compression ratio. The original version can be found at http://www.7-zip.org/.
+    'p7zip'
+    'p7zip-plugins'
+    'p7zip-gui'
+    'p7zip-doc'
+    # Краткое опис : Multi-format extractor
+    # URL          : https://theunarchiver.com/command-line
+    # Лицензия     : LGPLv2+
+    # Описание     : The command-line utilities lsar and unar are capable of listing and extracting
+    # ; files respectively in several formats including RARv5, RAR support includes
+    # ; encryption and multiple volumes, unar can serve as a free and open source
+    # ; replacement of unrar.
+    'unar'
+    # Краткое опис : A GNU file archiving program
+    # URL          : http://www.gnu.org/software/tar/
+    # Лицензия     : GPLv3+
+    # Описание     : The GNU tar program saves many files together in one archive and can
+    # ; restore individual files (or all of the files) from that archive. Tar
+    # ; can also be used to add supplemental files to an archive and to update
+    # ; or list files in the archive. Tar includes multivolume support,
+    # ; automatic archive compression/decompression, the ability to perform
+    # ; remote archives, and the ability to perform incremental and full
+    # ; backups.
+    # ;
+    # ; If you want to use tar for remote backups, you also need to install
+    # ; the rmt package on the remote box.
+    'tar'
+    # Краткое опис : A file compression utility
+    # URL          : http://www.bzip.org/
+    # Лицензия     : BSD
+    # Описание     : Bzip2 is a freely available, patent-free, high quality data compressor.
+    # ; Bzip2 compresses files to within 10 to 15 percent of the capabilities
+    # ; of the best techniques available.  However, bzip2 has the added benefit
+    # ; of being approximately two times faster at compression and six times
+    # ; faster at decompression than those techniques.  Bzip2 is not the
+    # ; fastest compression utility, but it does strike a balance between speed
+    # ; and compression capability.
+    # ;
+    # ; Install bzip2 if you need a compression utility.
+    'bzip2'
+    # Краткое опис : Zip, GZip, Tar and BZip2 library
+    # URL          : http://icsharpcode.github.io/SharpZipLib
+    # Лицензия     : GPLv2+ with exceptions and BSD and zlib
+    # Описание     : SharpZipLib, formerly NZipLib is a Zip, GZip, Tar and BZip2 library
+    # : written entirely in C# . It is implemented as an assembly (installable
+    # : in the GAC), and thus can easily be incorporated into other projects.
+    'sharpziplib'
+    'sharpziplib-devel'
+    # Краткое опис : Archiving and compression utility for LHarc/lha/lzh archives
+    # URL          : https://github.com/jca02266/lha
+    # Лицензия     : Distributable
+    # Описание     : LHA is an archiving and compression utility for LHarc/lha/lzh format archives.
+    'lha'
+    # Краткое опис : Enables getdata read ability of lzma compressed dirfiles
+    # URL          : http://getdata.sourceforge.net/
+    # Лицензия     : GPLv2+
+    # Описание     : Enables getdata to read dirfiles that are encoded (compressed) with lzma.
+    'getdata-lzma'
+    # Краткое опис : SDK for lzma compression
+    # URL          : http://sourceforge.net/projects/sevenzip/
+    # Лицензия     : LGPLv2
+    # Описание     : LZMA SDK provides the documentation, samples, header files, libraries,
+    # ; and tools you need to develop applications that use LZMA compression.
+    # ;
+    # ; LZMA is default and general compression method of 7z format
+    # ; in 7-Zip compression program (www.7-zip.org). LZMA provides high
+    # ; compression ratio and very fast decompression.
+    # ;
+    # ; LZMA is an improved version of famous LZ77 compression algorithm.
+    # ; It was improved in way of maximum increasing of compression ratio,
+    # ; keeping high decompression speed and low memory requirements for
+    # ; decompressing
+    'lzma-sdk'
+    # Краткое опис : Development libraries and headers for lzma-sdk
+    # URL          : http://sourceforge.net/projects/sevenzip/
+    # Лицензия     : LGPLv2
+    # Описание     : Development libraries and headers for lzma-sdk.
+    'lzma-sdk-devel'
+    # Краткое опис : Development libraries and headers for lzma-sdk457
+    # URL          : http://sourceforge.net/projects/sevenzip/
+    # Лицензия     : LGPLv2+
+    # Описание     : Development libraries and headers for lzma-sdk45
+    'lzma-sdk457-devel'
+    # Краткое опис : SDK for lzma compression
+    # URL          : http://sourceforge.net/projects/sevenzip/
+    # Лицензия     : LGPLv2+
+    # Описание     : LZMA SDK provides the documentation, samples, header files, libraries,
+    # ; and tools you need to develop applications that use LZMA compression.
+    # ;
+    # ; LZMA is default and general compression method of 7z format
+    # ; in 7-Zip compression program (7-zip.org). LZMA provides high
+    # ; compression ratio and very fast decompression.
+    # ;
+    # ; LZMA is an improved version of famous LZ77 compression algorithm.
+    # ; It was improved in way of maximum increasing of compression ratio,
+    # ; keeping high decompression speed and low memory requirements for
+    # ; decompressing.
+    'lzma-sdk457'
+    # Краткое опис : Older LZMA format compatibility binaries
+    # URL          : http://tukaani.org/xz/
+    # Лицензия     : Public Domain
+    # Описание     : The lzma-compat package contains compatibility links for older
+    # ; commands that deal with the older LZMA format.
+    'xz-lzma-compat'
+    # Краткое опис : A tool to extract ace archives
+    # URL : http://www.winace.com/
+    # Лицензия : Redistributable, no modification permitted
+    # Описание : unace is a command line utility to extract, view, and test the
+    # : contents of an ACE archive.
+    'unace'
+    # Краткое опис : Header files and libraries for Zlib development
+    # URL          : http://www.zlib.net/
+    # Лицензия     : zlib and Boost
+    # Описание     : The zlib-devel package contains the header files and libraries needed
+    # ; to develop programs that use the zlib compression and decompression
+    # ; library.
+    'zlib-devel'
+    # Краткое опис : Static libraries for Zlib development
+    # URL          : http://www.zlib.net/
+    # Лицензия     : zlib and Boost
+    # Описание     : The zlib-static package includes static libraries needed
+    # ; to develop programs that use the zlib compression and
+    # ; decompression library.
+    'zlib-static'
+    # Краткое опис : Cross-platform GUI library
+    # URL          : http://www.fbreader.org/
+    # Лицензия     : GPLv2+
+    # Описание     : ZLibrary is a cross-platform library to build applications running on
+    # ; desktop Linux, Windows, and different Linux-based PDAs.
+    'zlibrary'
+    # Краткое опис : Development files for zlibrary
+    # URL          : http://www.fbreader.org/
+    # Лицензия     : GPLv2+
+    # Описание     : This package contains the libraries amd header files that are needed
+    # ; for writing applications with Zlibrary.
+    'zlibrary-devel'
+    # Краткое опис : Devel libraries & headers for liblzma
+    # URL          : http://tukaani.org/xz/
+    # Лицензия     : Public Domain
+    # Описание     : Devel libraries and headers for liblzma.
+    'xz-devel'
+    # Краткое опис : Archiver for .arj files
+    # URL          : http://arj.sourceforge.net/
+    # Лицензия     : GPL+
+    # Описание     : This package is an open source version of the arj archiver. It has
+    # ; been created with the intent to preserve maximum compatibility and
+    # ; retain the feature set of original ARJ archiver as provided by ARJ
+    # ; Software, Inc.
+    'arj'
+    # Краткое опис : Utility for extracting cabinet (.cab) archives
+    # URL          : http://www.cabextract.org.uk/
+    # Лицензия     : GPLv2+
+    # Описание     : cabextract is a program which can extract files from cabinet (.cab)
+    # ; archives.
+    'cabextract'
+    # Краткое опис : Tool for viewing and creating archives
+    # URL          : https://wiki.gnome.org/Apps/FileRoller
+    #Лицензия     : GPLv2+
+    # Описание     : File Roller is an application for creating and viewing archives files,
+    # ; such as tar or zip files.
+    'file-roller'
+    # Краткое опис : Archive manager
+    # URL          : https://www.kde.org/applications/utilities/ark/
+    # Лицензия     : GPLv2+
+    # Описание     : Ark is a program for managing various archive formats.
+    # ;
+    # ; Archives can be viewed, extracted, created and modified from within Ark.
+    # ; The program can handle various formats such as tar, gzip, bzip2, zip,
+    # ; rar and lha (if appropriate command-line programs are installed).
+    'ark'
+  )
+
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_archive_pack_script_source() {
+
+  # printf "Initialise main function of archive-pack script source\n";
+
+  install_archive_pack "$@"
+
+}
+
+main_archive_pack_script_source "$@"

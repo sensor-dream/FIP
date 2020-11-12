@@ -1,0 +1,109 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: hashes-pack
+## @Creation date file: 12.11.2020, 22:39:16
+
+[[ -z "${hashes_pack_script_source}" ]] && declare -rx hashes_pack_script_source="$BASH_SOURCE"
+
+if [[ -z "${hashes_pack_script_source_path}" ]]; then
+  temp_one="$(dirname ${hashes_pack_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx hashes_pack_script_source_path="$(pwd)"
+  else
+    declare -rx hashes_pack_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_hashes_pack() {
+
+  local install_pkg=(
+    # Краткое опис : A set of cross-platform tools to compute hashes
+    # URL          : http://md5deep.sf.net/
+    # Лицензия     : GPLv2
+    # Описание     : This is md5deep, a set of cross-platform tools to compute hashes, or
+    # : message digests, for any number of files while optionally recursively
+    # : digging through the directory structure.  It can also take a list of known
+    # : hashes and display the filenames of input files whose hashes either do or
+    # : do not match any of the known hashes. This version supports MD5, SHA-1,
+    # : SHA-256, Tiger, and Whirlpool hashes.
+    md5deep
+    # Краткое опис : File hashing utility
+    # URL          : http://hg.saddi.com/sha-asaddi
+    # Лицензия     : BSD
+    # Описание     : file hashing utility that uses the
+    # : SHA-1, SHA-256, SHA-384, & SHA-512 hash algorithms.
+    # : It can be used for file integrity checking,
+    # : remote file comparisons, etc.
+    # : The portable algorithm implementations
+    # : can be useful in other projects too
+    sha
+    sha-devel
+    # Краткое опис : SHA Implementation Library
+    # URL          : http://www.aarongifford.com/computers/sha.html
+    # Лицензия     : BSD
+    # Описание     : The library implements the SHA-256, SHA-384, and SHA-512 hash algorithms. The
+    # : interface is similar to the interface to SHA-1 found in the OpenSSL library.
+    # :
+    # : sha2 is a simple program that accepts input from either STDIN or reads one or
+    # : more files specified on the command line, and then generates the specified hash
+    # : (either SHA-256, SHA-384, SHA-512, or any combination thereof, including all
+    # : three at once).
+    sha2
+    sha2-devel
+    # Краткое опис : Compute and check SHA3 message digest
+    # URL : https://metacpan.org/release/Digest-SHA3
+    # Лицензия : GPL+ or Artistic
+    # Описание : This script will compute and check the SHA3 message digest of a file
+    sha3sum
+  )
+
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_hashes_pack_script_source() {
+
+  # printf "Initialise main function of hashes-pack script source\n";
+
+  install_hashes_pack "$@"
+
+}
+
+main_hashes_pack_script_source "$@"

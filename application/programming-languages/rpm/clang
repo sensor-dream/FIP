@@ -1,0 +1,102 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: clang
+## @Creation date file: 13.11.2020, 00:01:51
+
+[[ -z "${clang_script_source}" ]] && declare -rx clang_script_source="$BASH_SOURCE"
+
+if [[ -z "${clang_script_source_path}" ]]; then
+  temp_one="$(dirname ${clang_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx clang_script_source_path="$(pwd)"
+  else
+    declare -rx clang_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_clang() {
+
+  local install_pkg=(
+    # Краткое опис : A C language family front-end for LLVM
+    # URL          : http://llvm.org
+    # Лицензия     : NCSA
+    # Описание     : clang: noun
+    # :     1. A loud, resonant, metallic sound.
+    # :     2. The strident call of a crane or goose.
+    # :     3. C-language family front-end toolkit.
+    # :
+    # : The goal of the Clang project is to create a new C, C++, Objective C
+    # : and Objective C++ front-end for the LLVM compiler. Its tools are built
+    # : as libraries and designed to be loosely-coupled and extensible.
+    'clang'
+    'clang-devel'
+    'clang-libs'
+    'clang-tools-extra'
+    # Краткое опис : A source code analysis framework
+    # URL          : http://llvm.org
+    #Лицензия     : NCSA and MIT
+    # Описание     : The Clang Static Analyzer consists of both a source code analysis
+    # : framework and a standalone tool that finds bugs in C and Objective-C
+    # : programs. The standalone tool is invoked from the command-line, and is
+    # : intended to run in tandem with a build of a project or code base
+    'clang-analyzer'
+    'libedit'
+    'libffi'
+    'libstdc++'
+    'llvm-libs'
+    'ncurses-libs'
+    'zlib'
+    'compiler-rt'
+    'libomp-devel'
+  )
+
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_clang_script_source() {
+
+  # printf "Initialise main function of clang script source\n";
+
+  install_clang "$@"
+
+}
+
+main_clang_script_source "$@"

@@ -70,6 +70,7 @@ function install_kernel() {
     'strace'
     'trace-cmd'
     'kernelshark'
+    'unique'
   )
 
   pm "$@" -- "${install_pkg[@]}"

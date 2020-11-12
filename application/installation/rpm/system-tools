@@ -253,6 +253,24 @@ function install_system_tools() {
     #
     'dar'
     #
+    # Краткое опис : Package maintenance system for Debian Linux
+    # URL          : https://tracker.debian.org/pkg/dpkg
+    # Лицензия     : GPLv2 and GPLv2+ and LGPLv2+ and Public Domain and BSD
+    # Описание     : This package provides the low-level infrastructure for handling the
+    # : installation and removal of Debian software packages.
+    # :
+    # : This package contains the tools (including dpkg-source) required
+    # : to unpack, build and upload Debian source packages.
+    # :
+    # : This package also contains the programs dpkg which used to handle the
+    # : installation and removal of packages on a Debian system.
+    # :
+    # : This package also contains dselect, an interface for managing the
+    # : installation and removal of packages on the system.
+    # :
+    # : dpkg and dselect will certainly be non-functional on a rpm-based system
+    # : because packages dependencies will likely be unmet.
+    'dpkg'
     #
     # : ddclient is a Perl client used to update dynamic DNS entries for accounts
     # : on many different dynamic DNS services. Features include: Operating as a

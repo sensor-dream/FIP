@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: terminal-packs
+## @File: terminal-pack
 ## @Creation date file: 11.11.2020, 16:31:42
 
-[[ -z "${terminal_packs_script_source}" ]] && declare -rx terminal_packs_script_source="$BASH_SOURCE"
+[[ -z "${terminal_pack_script_source}" ]] && declare -rx terminal_pack_script_source="$BASH_SOURCE"
 
-if [[ -z "${terminal_packs_script_source_path}" ]]; then
-  temp_one="$(dirname ${terminal_packs_script_source})"
+if [[ -z "${terminal_pack_script_source_path}" ]]; then
+  temp_one="$(dirname ${terminal_pack_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx terminal_packs_script_source_path="$(pwd)"
+    declare -rx terminal_pack_script_source_path="$(pwd)"
   else
-    declare -rx terminal_packs_script_source_path="${temp_one}"
+    declare -rx terminal_pack_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,7 +51,7 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_terminal_packs() {
+function install_terminal_pack() {
 
   local install_pkg=(
     # Краткое опис : Drop-down terminal for GNOME
@@ -60,10 +60,13 @@ function install_terminal_packs() {
     # : style of window is based on an FPS game, and one of its goals is to be easy to
     # : reach.
     'guake'
+    # !!! ->
+    # REQUIRED FOR KRUSADER
     # Краткое опис : KDE Terminal emulator
     # URL          : http://www.kde.org/applications/system/konsole/
     # Описание     : KDE Terminal emulator.
     'konsole5'
+    # <- !!!
     # Краткое опис : Terminal emulator mimicking a CRT display
     # URL          : https://github.com/Swordfish90/cool-retro-term
     # Описание     : cool-retro-term is a terminal emulator which tries to mimic the look and feel
@@ -76,12 +79,12 @@ function install_terminal_packs() {
 
 }
 
-function main_terminal_packs_script_source() {
+function main_terminal_pack_script_source() {
 
-  # printf "Initialise main function of terminal-packs script source\n";
+  # printf "Initialise main function of terminal-pack script source\n";
 
-  install_terminal_packs "$@"
+  install_terminal_pack "$@"
 
 }
 
-main_terminal_packs_script_source "$@"
+main_terminal_pack_script_source "$@"

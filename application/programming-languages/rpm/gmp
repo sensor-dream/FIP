@@ -1,0 +1,92 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: gmp
+## @Creation date file: 13.11.2020, 00:10:59
+
+[[ -z "${gmp_script_source}" ]] && declare -rx gmp_script_source="$BASH_SOURCE"
+
+if [[ -z "${gmp_script_source_path}" ]]; then
+  temp_one="$(dirname ${gmp_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx gmp_script_source_path="$(pwd)"
+  else
+    declare -rx gmp_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_gmp() {
+
+  local install_pkg=(
+    # Краткое опис : A GNU arbitrary precision library
+    # URL          : http://gmplib.org/
+    # Лицензия     : LGPLv3+ or GPLv2+
+    # Описание     : The gmp package contains GNU MP, a library for arbitrary precision
+    # : arithmetic, signed integers operations, rational numbers and floating
+    # : point numbers. GNU MP is designed for speed, for both small and very
+    # : large operands. GNU MP is fast because it uses fullwords as the basic
+    # : arithmetic type, it uses fast algorithms, it carefully optimizes
+    # : assembly code for many CPUs' most common inner loops, and it generally
+    # : emphasizes speed over simplicity/elegance in its operations.
+    # :
+    # : Install the gmp package if you need a fast arbitrary precision
+    # : library.
+    'gmp'
+    'gmp-devel'
+    'gmp-ecm'
+    'gmp-ecm-devel'
+    'gmp-static'
+    'gmp-c++'
+    'gmp-ecm-libs'
+    'unique'
+  )
+
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_gmp_script_source() {
+
+  # printf "Initialise main function of gmp script source\n";
+
+  install_gmp "$@"
+
+}
+
+main_gmp_script_source "$@"

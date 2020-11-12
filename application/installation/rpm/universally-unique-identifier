@@ -1,0 +1,92 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: universally-unique-identifier
+## @Creation date file: 12.11.2020, 23:24:47
+
+[[ -z "${universally_unique_identifier_script_source}" ]] && declare -rx universally_unique_identifier_script_source="$BASH_SOURCE"
+
+if [[ -z "${universally_unique_identifier_script_source_path}" ]]; then
+  temp_one="$(dirname ${universally_unique_identifier_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx universally_unique_identifier_script_source_path="$(pwd)"
+  else
+    declare -rx universally_unique_identifier_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_universally_unique_identifier() {
+
+  local install_pkg=(
+    # Краткое опис : Universally Unique Identifier library
+    # URL          : http://www.ossp.org/pkg/lib/uuid/
+    # Лицензия     : MIT
+    # Описание     : OSSP uuid is a ISO-C:1999 application programming interface (API)
+    # : and corresponding command line interface (CLI) for the generation
+    # : of DCE 1.1, ISO/IEC 11578:1996 and RFC 4122 compliant Universally
+    # : Unique Identifier (UUID). It supports DCE 1.1 variant UUIDs of version
+    # : 1 (time and node based), version 3 (name based, MD5), version 4
+    # : (random number based) and version 5 (name based, SHA-1). Additional
+    # : API bindings are provided for the languages ISO-C++:1998 and Perl:5
+    # : Optional backward compatibility exists for the ISO-C DCE-1.1 and Perl
+    # : Data::UUID APIs.
+    'uuid'
+    'uuid-devel'
+    # Краткое опис : Applications for uuencoding, uudecoding, ...
+    # URL          : http://www.fpx.de/fp/Software/UUDeview/
+    # Лицензия     : GPLv2+
+    # Описание     : Handles uuencoding, xxencoding, yEnc, and base-64 encoding (MIME). Can do
+    # : automatic splitting of large encodes, automatic posting.  A must for
+    # : anyone serious encoding/decoding.
+    'uudeview'
+  )
+
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_universally_unique_identifier_script_source() {
+
+  # printf "Initialise main function of universally-unique-identifier script source\n";
+
+  install_universally_unique_identifier "$@"
+
+}
+
+main_universally_unique_identifier_script_source "$@"
