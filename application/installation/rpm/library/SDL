@@ -95,12 +95,6 @@ function install_SDL() {
     'SDL2_net-devel'
     'SDL2_ttf'
     'SDL2_ttf-devel'
-    # Краткое опис : An open-source port of Prince of Persia
-    # URL          : https://github.com/NagyD/SDLPoP
-    # Описание     : SDLPoP is an open-source port of Prince of Persia, based on the disassembly
-    # : of the DOS version.
-    'SDLPoP'
-
   )
 
   pm "$@" -- "${install_pkg[@]}"

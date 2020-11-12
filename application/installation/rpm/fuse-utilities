@@ -1,0 +1,219 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: fuse-utilities
+## @Creation date file: 13.11.2020, 04:10:55
+
+[[ -z "${fuse_utilities_script_source}" ]] && declare -rx fuse_utilities_script_source="$BASH_SOURCE"
+
+if [[ -z "${fuse_utilities_script_source_path}" ]]; then
+  temp_one="$(dirname ${fuse_utilities_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx fuse_utilities_script_source_path="$(pwd)"
+  else
+    declare -rx fuse_utilities_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_fuse_utilities() {
+
+  local install_pkg=(
+    # Краткое опис : File System in Userspace (FUSE) v2 utilities
+    # URL          : http://fuse.sf.net
+    # Лицензия     : GPL+
+    # Описание     : With FUSE it is possible to implement a fully functional filesystem in a
+    # : userspace program. This package contains the FUSE v2 userspace tools to
+    # : mount a FUSE filesystem.
+    'fuse'
+    # Краткое опис : FUSE driver for AFP filesystem
+    # URL          : http://alexthepuffin.googlepages.com/home
+    # Лицензия     : GPL+
+    # Описание     : A FUSE file system server to access files exported from Mac OS system
+    # : via AppleTalk or TCP using Apple Filing Protocol.
+    # : The command line client for AFP is in fuse-afp package
+    'fuse-afp'
+    # Краткое опис : FUSE filesystem Bittorrent
+    #URL          : https://github.com/johang/btfs
+    #Лицензия     : GPLv3
+    # Описание     : With BTFS, you can mount any .torrent file or magnet link and then use it as
+    # : any read-only directory in your file tree. The contents of the files will be
+    # : downloaded on-demand as they are read by applications. Tools like ls, cat and
+    # : cp works as expected. Applications like vlc and mplayer can also work without
+    # : changes.
+    'fuse-btfs'
+    # Краткое опис : Common files for File System in Userspace (FUSE) v2 and v3
+    # URL          : http://fuse.sf.net
+    # Лицензия     : GPL+
+    # Описание     : Common files for FUSE v2 and FUSE v3.
+    'fuse-common'
+    # Краткое опис : FUSE-Filesystem to convert filesystem encodings
+    # URL          : http://fuse-convmvfs.sourceforge.net/
+    # Лицензия     : GPLv2
+    # Описание     : This is a filesystem client use the FUSE(Filesystem in
+    # : USErspace) interface to convert file name from one charset
+    # : to another. Inspired by convmv.
+    'fuse-convmvfs'
+    # Краткое опис : File System in Userspace (FUSE) v2 devel files
+    # URL          : http://fuse.sf.net
+    # Лицензия     : LGPLv2+
+    # Описание     : With FUSE it is possible to implement a fully functional filesystem in a
+    # : userspace program. This package contains development files (headers,
+    # : pgk-config) to develop FUSE v2 based applications/filesystems.
+    'fuse-devel'
+    # Краткое опис : FUSE filesystem to access BitLocker encrypted volumes
+    # URL          : https://github.com/Aorimn/dislocker
+    # Лицензия     : GPLv2+
+    # Описание     : Dislocker has been designed to read BitLocker encrypted partitions ("drives")
+    # : under a Linux system. The driver has the capability to read/write partitions
+    # : encrypted using Microsoft Windows Vista, 7, 8, 8.1 and 10 (AES-CBC, AES-XTS,
+    # : 128 or 256 bits, with or without the Elephant diffuser, encrypted partitions);
+    # : BitLocker-To-Go encrypted partitions (USB/FAT32 partitions).
+    # :
+    # : A mount point needs to be given to dislocker-fuse. Once keys are decrypted, a
+    # : file named 'dislocker-file' appears into this provided mount point. This file
+    # : is a virtual NTFS partition, it can be mounted as any NTFS partition and then
+    # : reading from it or writing to it is possible.
+    'fuse-dislocker'
+    # Краткое опис : Encrypted pass-thru filesystem in userspace
+    # URL          : http://www.arg0.net/encfs
+    # Лицензия     : GPLv3+
+    # Описание     : EncFS implements an encrypted filesystem in userspace using FUSE.  FUSE
+    # : provides a Linux kernel module which allows virtual filesystems to be written
+    # : in userspace.  EncFS encrypts all data and filenames in the filesystem and
+    # : passes access through to the underlying filesystem.  Similar to CFS except that
+    # : it does not use NFS.
+    'fuse-encfs'
+    # Краткое опис : Free exFAT file system implementation
+    # URL          : https://github.com/relan/exfat
+    # Лицензия     : GPLv2+
+    # Описание     : This driver is the first free exFAT file system implementation with write
+    # : support. exFAT is a simple file system created by Microsoft. It is intended
+    # : to replace FAT32 removing some of it's limitations. exFAT is a standard FS
+    # : for SDXC memory cards.
+    'fuse-exfat'
+    # Краткое опис : File System in Userspace (FUSE) v2 libraries
+    # URL          : http://fuse.sf.net
+    # Лицензия     : LGPLv2+
+    # Описание     : Devel With FUSE it is possible to implement a fully functional filesystem in a
+    # : userspace program. This package contains the FUSE v2 libraries.
+    'fuse-libs'
+    # Краткое опис : FUSE overlay+shiftfs implementation for rootless containers
+    # URL          : %{git0}
+    # Лицензия     : GPLv3+
+    # Описание     : FUSE overlay+shiftfs implementation for rootless containers.
+    'fuse-overlayfs'
+    # Краткое опис : Stores your data in ICMP ping packets
+    # URL          : https://github.com/yarrick/pingfs
+    # Лицензия     : ISC
+    # Описание     : pingfs is a filesystem where the data is stored only in the Internet itself, as
+    # : ICMP Echo packets (pings) travelling from you to remote servers and back again.
+    'fuse-pingfs'
+    # Краткое опис : FUSE-Filesystem to access remote filesystems via SSH
+    # URL          : https://github.com/libfuse/sshfs
+    # Лицензия     : GPLv2
+    # Описание     : This is a FUSE-filesystem client based on the SSH File Transfer Protocol.
+    # : Since most SSH servers already support this protocol it is very easy to set
+    # : up: i.e. on the server side there's nothing to do.  On the client side
+    # : mounting the filesystem is as easy as logging into the server with ssh.
+    'fuse-sshfs'
+    # Краткое опис : Pseudo file system for playing music modules as WAVs
+    # URL          : http://zakalwe.fi/uade
+    # Лицензия     : GPLv2+ and Distributable
+    # Описание     : Pseudo file system for playing music modules as WAVs. This allows audio players
+    # : which do not support music modules, to play them.
+    'fuse-uadefs'
+    # Краткое опис : Filesystem to navigate, extract, create and modify ZIP archives
+    # URL          : https://bitbucket.org/agalanin/fuse-zip/
+    # Лицензия     : GPLv3+
+    # Описание     : fuse-zip is a FUSE file system to navigate, extract, create and modify
+    # : ZIP archives based in libzip implemented in C++.
+    # :
+    # : With fuse-zip you really can work with ZIP archives as real directories.
+    # : Unlike KIO or Gnome VFS, it can be used in any application without
+    # : modifications.
+    # :
+    # : Unlike other FUSE filesystems, only fuse-zip provides write support
+    # : to ZIP archives. Also, fuse-zip is faster that all known implementations
+    # : on large archives with many files.
+    'fuse-zip'
+    # Краткое опис : File System in Userspace (FUSE) v3 utilities
+    # URL          : http://fuse.sf.net
+    # Лицензия     : GPL+
+    # Описание     : With FUSE it is possible to implement a fully functional filesystem in a
+    # : userspace program. This package contains the FUSE v3 userspace tools to
+    # : mount a FUSE filesystem.
+    'fuse3'
+    # Краткое опис : File System in Userspace (FUSE) v3 devel files
+    # URL          : http://fuse.sf.net
+    # Лицензия     : LGPLv2+
+    # Описание     : With FUSE it is possible to implement a fully functional filesystem in a
+    # : userspace program. This package contains development files (headers,
+    # : pgk-config) to develop FUSE v3 based applications/filesystems.
+    'fuse3-devel'
+    # Краткое опис : File System in Userspace (FUSE) v3 libraries
+    # URL          : http://fuse.sf.net
+    # Лицензия     : LGPLv2+
+    # Описание     : Devel With FUSE it is possible to implement a fully functional filesystem in a
+    # : userspace program. This package contains the FUSE v3 libraries.
+    'fuse3-libs'
+    # Краткое опис : Plan9 filesystem client for FUSE
+    # URL          : https://github.com/svinota/py9p
+    # Лицензия     : MIT
+    # Описание     : Protocol 9P is developed for Plan9 operating system from Bell Labs.
+    # : It is used for remote file access, and since files are key objects
+    # : in Plan9, 9P can be used also for composite file access, RPC etc.
+    # :
+    # : This package contains FUSE client for the 9p protocol. It is in the
+    # : beta development state.
+    'fuse9p'
+  )
+
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_fuse_utilities_script_source() {
+
+  # printf "Initialise main function of fuse-utilities script source\n";
+
+  install_fuse_utilities "$@"
+
+}
+
+main_fuse_utilities_script_source "$@"
