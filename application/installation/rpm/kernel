@@ -54,25 +54,22 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 function install_kernel() {
 
   local install_pkg=(
-    'kernel'
-    'kernel-core'
-    'kernel-devel'
-    'kernel-headers'
-    'kernel-modules'
-    'kernel-modules-extra'
-    'kernel-rpm-macros'
-    'kernel-srpm-macros'
-    'kernel-cross-headers'
-    'kernel-modules-internal'
-    'kernel-tools'
-    'kernel-tools-libs'
-    'kernel-tools-libs-devel'
-    'strace'
-    'trace-cmd'
-    'kernelshark'
-    'unique'
+    kernel
+    kernel-core
+    kernel-cross-headers
+    kernel-devel
+    kernel-headers
+    kernel-modules
+    kernel-modules-extra
+    kernel-modules-internal
+    kernel-rpm-macros
+    kernel-srpm-macros
+    kernel-tools
+    kernel-tools-libs
+    kernel-tools-libs-devel
   )
 
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >package-list/kernel.txt
   pm "$@" -- "${install_pkg[@]}"
 
 }

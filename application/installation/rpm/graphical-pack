@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: games-pak
-## @Creation date file: 13.11.2020, 04:34:17
+## @File: graphical-pack
+## @Creation date file: 13.11.2020, 07:36:39
 
-[[ -z "${games_pak_script_source}" ]] && declare -rx games_pak_script_source="$BASH_SOURCE"
+[[ -z "${graphical_pack_script_source}" ]] && declare -rx graphical_pack_script_source="$BASH_SOURCE"
 
-if [[ -z "${games_pak_script_source_path}" ]]; then
-  temp_one="$(dirname ${games_pak_script_source})"
+if [[ -z "${graphical_pack_script_source_path}" ]]; then
+  temp_one="$(dirname ${graphical_pack_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx games_pak_script_source_path="$(pwd)"
+    declare -rx graphical_pack_script_source_path="$(pwd)"
   else
-    declare -rx games_pak_script_source_path="${temp_one}"
+    declare -rx graphical_pack_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,26 +51,37 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_games_pak() {
+function install_graphical_pack() {
 
   local install_pkg=(
-    # Краткое опис : An open-source port of Prince of Persia
-    # URL          : https://github.com/NagyD/SDLPoP
-    # Описание     : SDLPoP is an open-source port of Prince of Persia, based on the disassembly
-    # : of the DOS version.
-    'SDLPoP'
+    digikam
+    geeqie
+    gpick
+    gthumb
+    gwenview
+    krita
+    luminance-hdr
+    mypaint
+    nomacs
+    OpenColorIO
+    rawtherapee
+    shotwell
+    shutter
+    xfig
   )
 
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >package-list/graphical-pack.txt
   pm "$@" -- "${install_pkg[@]}"
 
 }
 
-function main_games_pak_script_source() {
+function main_graphical_pack_script_source() {
 
-  # printf "Initialise main function of games-pak script source\n";
+  # printf "Initialise main function of graphical-pack script source\n";
 
-  install_games_pak "$@"
+  . "${main_project_path}/application/installation/rpm/gimp"
+  install_graphical_pack "$@"
 
 }
 
-main_games_pak_script_source "$@"
+main_graphical_pack_script_source "$@"

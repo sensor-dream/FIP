@@ -1,0 +1,318 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: core-pack
+## @Creation date file: 13.11.2020, 05:28:06
+
+[[ -z "${core_pack_script_source}" ]] && declare -rx core_pack_script_source="$BASH_SOURCE"
+
+if [[ -z "${core_pack_script_source_path}" ]]; then
+  temp_one="$(dirname ${core_pack_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx core_pack_script_source_path="$(pwd)"
+  else
+    declare -rx core_pack_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_core_pack() {
+
+  local install_pkg=(
+    acpid
+    aide
+    akmods
+    annobin
+    apachetop
+    atop
+    autoconf
+    autoconf-archive
+    automake
+    bannergrab
+    binutils
+    blktrace
+    bluefish
+    bmon
+    boost
+    boost-static
+    byobu
+    ccache
+    cmake
+    cmake-data
+    cmake-doc
+    cmake-fedora
+    cmake-filesystem
+    cmake-gui
+    cmake-rpm-macros
+    collectd
+    colorize
+    conky
+    conky-manager
+    cpp
+    cpulimit
+    curl
+    curlftpfs
+    curlpp
+    curlpp-devel
+    darkstat
+    dconf
+    dconf-devel
+    dconf-editor
+    dhcping
+    dkms
+    dnstop
+    dracut
+    drm-utils
+    dsniff
+    dwz
+    elfutils-libelf-devel
+    etherape
+    ethtool
+    fatrace
+    file-devel
+    flent
+    fping
+    gcc
+    gcc-c++
+    gcc-gdb-plugin
+    gconf-editor
+    gettext
+    glances
+    glib
+    glibc
+    glibc-benchtests
+    glibc-devel
+    glibc-langpack-eu
+    glibc-langpack-ru
+    glibc-locale-source
+    glibc-minimal-langpack
+    glibc-nss-devel
+    glibc-static
+    glibc-utils
+    gmp
+    gnutls
+    gnutls-devel
+    gnutls-guile
+    goaccess
+    gparted
+    grub-customizer
+    gst
+    gvfs
+    gvfs-afc
+    gvfs-afp
+    gvfs-archive
+    gvfs-client
+    gvfs-devel
+    gvfs-fuse
+    gvfs-goa
+    gvfs-gphoto2
+    gvfs-mtp
+    gvfs-nfs
+    gvfs-smb
+    gvfs-tests
+    hddfancontrol
+    hddtemp
+    hdparm
+    htop
+    iftop
+    incron
+    inotify-tools
+    inxi
+    iotop
+    iptraf-ng
+    irqbalance
+    isl
+    jemalloc
+    jnettop
+    joe
+    kernelshark
+    kmodtool
+    libasan
+    libcurl-devel
+    libdrm
+    libdrm-devel
+    libgcc
+    libgomp
+    libmpc
+    libmpc-devel
+    libpcap
+    libpcap-devel
+    libstoragemgmt
+    libsysstat
+    libsysstat-devel
+    libtool
+    libubsan
+    libzstd-devel
+    lm_sensors
+    lm_sensors-libs
+    logwatch
+    lshw
+    lynis
+    lynx
+    m4
+    m4ri
+    m4ri-devel
+    m4rie
+    m4rie-devel
+    m4rie-static
+    m4ri-static
+    make
+    minicom
+    monit
+    mpfr
+    mtr
+    multitail
+    mytop
+    nano
+    nanomsg
+    nanomsg-devel
+    nanomsg-doc
+    ncurses
+    ncurses-c++-libs
+    ncurses-devel
+    ncurses-libs
+    ncurses-static
+    neofetch
+    nethogs
+    netsniff-ng
+    net-snmp
+    nfacct
+    ngrep
+    nload
+    nmap
+    nmon
+    openssl
+    openssl-libs
+    openssl-pkcs11
+    patch
+    patchelf
+    patchutils
+    pcp-system-tools
+    perf
+    pkgconf-pkg-config
+    powertop
+    psacct
+    pwgen
+    redhat-lsb-core
+    redhat-rpm-config
+    rpm-apidocs
+    rpm-build
+    rpmbuild-order
+    rpmconf
+    rpmconf-base
+    rpm-cron
+    rpmdeplint
+    rpm-devel
+    rpmdevtools
+    rpmemd
+    rpmlint
+    rpm-ostree
+    rpm-ostree-devel
+    rpm-ostree-libs
+    rpmreaper
+    rpmrebuild
+    rpm-sign
+    rpmspectool
+    rrdtool
+    saidar
+    screen
+    screenfetch
+    ShellCheck
+    smartmontools
+    smokeping
+    strace
+    swatch
+    sysfsutils
+    sysstat
+    sysusage
+    tcpdump
+    tcputils
+    thinkfan
+    tmpwatch
+    traceroute
+    udisks
+    udisks2
+    udisks2-bcache
+    udisks2-btrfs
+    udisks2-iscsi
+    udisks2-lsm
+    udisks2-lvm2
+    udisks2-zram
+    udisks-devel
+    unique
+    uptimed
+    utf8proc
+    vconfig
+    vim-common
+    vim-enhanced
+    vim-filesystem
+    vim-minimal
+    vnstat
+    wget
+    which
+    whowatch
+    wireshark
+    wireshark-cli
+    wireshark-devel
+    xmlsec1-gnutls
+    xmlsec1-openssl
+    xosview
+    zlib-devel
+    zram-generator-defaults
+    zstd
+  )
+
+  # trace-cmd'
+  # 'cpu-x'
+  # 'saidar'
+  # 'i-nex'
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >package-list/core-pack.txt
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_core_pack_script_source() {
+
+  # printf "Initialise main function of core-pack script source\n";
+
+  install_core_pack "$@"
+
+}
+
+main_core_pack_script_source "$@"

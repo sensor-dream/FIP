@@ -1,0 +1,14 @@
+digikam
+geeqie
+gpick
+gthumb
+gwenview
+krita
+luminance-hdr
+mypaint
+nomacs
+OpenColorIO
+rawtherapee
+shotwell
+shutter
+xfig

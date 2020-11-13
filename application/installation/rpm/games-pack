@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: mandatory-installation-packages
-## @Creation date file: 19.10.2020, 12:49:42
+## @File: games-pack
+## @Creation date file: 13.11.2020, 04:34:17
 
-[[ -z "${mandatory_installation_packages_script_source}" ]] && declare -rx mandatory_installation_packages_script_source="$BASH_SOURCE"
+[[ -z "${games_pack_script_source}" ]] && declare -rx games_pack_script_source="$BASH_SOURCE"
 
-if [[ -z "${mandatory_installation_packages_script_source_path}" ]]; then
-  temp_one="$(dirname ${mandatory_installation_packages_script_source})"
+if [[ -z "${games_pack_script_source_path}" ]]; then
+  temp_one="$(dirname ${games_pack_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx mandatory_installation_packages_script_source_path="$(pwd)"
+    declare -rx games_pack_script_source_path="$(pwd)"
   else
-    declare -rx mandatory_installation_packages_script_source_path="${temp_one}"
+    declare -rx games_pack_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,36 +51,27 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_mandatory_installation_packages() {
-
-  echo -e "https://github.com/KDAB/hotspot#on-fedora\n"
+function install_games_pack() {
 
   local install_pkg=(
-    'blktrace'
-    'iotop'
-    'fatrace'
-    'strace'
-    'pcp-system-tools'
-    'tmpwatch'
-    'flent'
-    'perf'
-    'screen'
-    'byobu'
-    'htop'
-    'ifconfig'
-    'nmap'
+    # Краткое опис : An open-source port of Prince of Persia
+    # URL          : https://github.com/NagyD/SDLPoP
+    # Описание     : SDLPoP is an open-source port of Prince of Persia, based on the disassembly
+    # : of the DOS version.
+    'SDLPoP'
   )
 
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >package-list/games-pack.txt
   pm "$@" -- "${install_pkg[@]}"
 
 }
 
-function main_mandatory_installation_packages_script_source() {
+function main_games_pack_script_source() {
 
-  # printf "Initialise main function of mandatory-installation-packages script source\n";
+  # printf "Initialise main function of games-pack script source\n";
 
-  install_mandatory_installation_packages "$@"
+  install_games_pack "$@"
 
 }
 
-main_mandatory_installation_packages_script_source "$@"
+main_games_pack_script_source "$@"

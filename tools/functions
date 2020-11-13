@@ -212,3 +212,23 @@ function X_GNOME_Autostart_disabled() {
   fi
 }
 export -f X_GNOME_Autostart_disabled
+
+function unset_dupes_in_array() {
+
+  # unset dupes
+  local -A dupes
+  local in=($@)
+  local out=()
+
+  for i in "${in[@]}"; do
+
+    # printf '%s\n' "${install_pkg[@]}" | sort -u
+
+    if [[ -z ${dupes[$i]} ]]; then
+      out+=("$i")
+    fi
+    dupes["$i"]=1
+  done
+  unset dupes # optional
+  echo "${out[@]}"
+}
