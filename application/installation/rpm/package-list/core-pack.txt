@@ -1,4 +1,6 @@
+acpi
 acpid
+acpitool
 aide
 akmods
 annobin
@@ -93,6 +95,8 @@ hddfancontrol
 hddtemp
 hdparm
 htop
+hwloc
+hwloc-gui
 iftop
 incron
 inotify-tools

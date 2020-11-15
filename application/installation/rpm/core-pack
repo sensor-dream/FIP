@@ -54,7 +54,9 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 function install_core_pack() {
 
   local install_pkg=(
+    acpi
     acpid
+    acpitool
     aide
     akmods
     annobin
@@ -149,6 +151,8 @@ function install_core_pack() {
     hddtemp
     hdparm
     htop
+    hwloc
+    hwloc-gui
     iftop
     incron
     inotify-tools
