@@ -478,7 +478,7 @@ URL          : http://projects.gnome.org/nemiver
 URL          : https://cgit.kde.org/massif-visualizer.git
 Лицензия     : GPLv2+
 Описание     : Massif Visualizer is a tool that visualizes massif data.
-             : 
+             :
              : You run your application in Valgrind with "--tool=massif" and then open the
              : generated "massif.out.<pid>" in the visualizer. Gzip or Bzip2 compressed massif
              : files can also be opened transparently.
@@ -491,3 +491,11 @@ URL          : https://wiki.gnome.org/Apps/Builder
 Описание     : Builder attempts to be an IDE for writing software for GNOME. It does not try
              : to be a generic IDE, but one specialized for writing GNOME software.
 
+Имя          : irqbalance
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : IRQ balancing daemon
+URL          : https://github.com/Irqbalance/irqbalance
+Лицензия     : GPLv2
+Описание     : irqbalance is a daemon that evenly distributes IRQ load across
+             : multiple CPUs for enhanced performance.
