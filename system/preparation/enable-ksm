@@ -57,19 +57,23 @@ function main_enable_ksm_script_source() {
 
   local run=1
   local sleep_millisecs=1000
-  # local merge_across_nodes=0
+  local merge_across_nodes=1
 
   # Включаем дедупликацию страниц памяти
 
   if [[ -f /sys/kernel/mm/ksm/run ]]; then
 
     [[ $(cat /sys/kernel/mm/ksm/run) -ne ${run} ]] && echo ${run} | sudo tee /sys/kernel/mm/ksm/run >/dev/null
-    [[ $(cat /sys/kernel/mm/ksm/sleep_millisecs) -ne ${sleep_millisecs} ]] && echo ${sleep_millisecs} | sudo tee /sys/kernel/mm/ksm/sleep_millisecs >/dev/null
-    [[ $(cat /sys/kernel/mm/ksm/merge_across_nodes) -ne ${merge_across_nodes} ]] && echo ${merge_across_nodes} | sudo tee /sys/kernel/mm/ksm/merge_across_nodes >/dev/null
+    if [[ $(cat /sys/kernel/mm/ksm/sleep_millisecs) -ne ${sleep_millisecs} ]]; then
+	echo ${sleep_millisecs} | sudo tee /sys/kernel/mm/ksm/sleep_millisecs >/dev/null
+    fi
+    if [[ $(cat /sys/kernel/mm/ksm/merge_across_nodes) -ne ${merge_across_nodes} ]]; then
+	echo ${merge_across_nodes} | sudo tee /sys/kernel/mm/ksm/merge_across_nodes >/dev/null
+    fi
 
     echo "/sys/kernel/mm/ksm/run - $(cat /sys/kernel/mm/ksm/run)"
     echo "/sys/kernel/mm/ksm/sleep_millisecs - $(cat /sys/kernel/mm/ksm/sleep_millisecs)"
-    # echo "/sys/kernel/mm/ksm/merge_across_nodes $(cat /sys/kernel/mm/ksm/merge_across_nodes)"
+    echo "/sys/kernel/mm/ksm/merge_across_nodes $(cat /sys/kernel/mm/ksm/merge_across_nodes)"
 
     if [[ $(check_installed_packages ksmtuned) != 'ksmtuned' ]]; then
       sudo dnf install ksmtuned

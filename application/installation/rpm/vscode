@@ -73,6 +73,7 @@ function install_vscode() {
     'nodejs'
     'npm'
     'fira-code-fonts'
+    'php'
   )
 
   pm "$@" -- "${install_pkg[@]}"

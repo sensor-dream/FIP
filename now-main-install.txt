@@ -1,0 +1,257 @@
+Find one packages list:
+    cat now-main-install.txt | awk -F': ' '/Имя(\s+)?:(\s+)?/ { print $2 }' | sort -udi
+Adding a package description to a file:
+    sudo dnf info $1 | grep 'Имя' 'Репозиторий' 'Из репо' 'Краткое' 'URL' 'Лицензия' 'Описание'
+
+Имя          : gst
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : System utility designed to stress and monitoring various hardware components
+URL          : https://gitlab.com/leinardi/gst
+Лицензия     : GPLv3+
+Описание     : GST is a GTK system utility designed to stress and monitoring various hardware
+             : components like CPU and RAM.
+             :
+             : - Run different CPU and memory stress tests
+             : - Run multi and single core benchmark
+             : - Show Processor information (name, cores, threads, family, model, stepping,
+             :   flags,bugs, etc)
+             : - Show Processor's cache information
+             : - Show Motherboard information (vendor, model, bios version, bios date, etc)
+             : - Show RAM information (size, speed, rank, manufacturer, part number, etc)
+             : - Show CPU usage (core %, user %, load avg, etc)
+             : - Show Memory usage
+             : - Show CPU's physical's core clock (current, min, max)
+             : - Show Hardware monitor (info provided by sys/class/hwmon)
+
+Имя          : optimizer
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : Find out what's eating up your system resources
+URL          : https://github.com/hannesschulze/optimizer/
+Лицензия     : GPLv3+
+Описание     : Find out what's eating up your system resources and delete unnecessary files
+             : from your disk.
+optimizer
+
+Имя          : speedcrunch
+Репозиторий  : @System
+Из репозитор : updates
+Краткое опис : A fast power user calculator
+URL          : https://www.speedcrunch.org
+Лицензия     : GPLv2+
+Описание     : SpeedCrunch is a fast, high precision and powerful desktop calculator.
+             : Among its distinctive features are a scrollable display, up to 50 decimal
+             : precisions, unlimited variable storage, intelligent automatic completion
+             : full keyboard-friendly and more than 15 built-in math function.
+
+Имя          : gparted
+Репозиторий  : fedora
+Краткое опис : Gnome Partition Editor
+URL          : http://gparted.org
+Лицензия     : GPLv2+
+Описание     : GParted stands for Gnome Partition Editor and is a graphical frontend to
+             : libparted. Among other features it supports creating, resizing, moving
+             : and copying of partitions. Also several (optional) filesystem tools provide
+             : support for filesystems not included in libparted. These optional packages
+             : will be detected at runtime and don't require a rebuild of GParted
+
+Имя          : gnome-tweaks
+Репозиторий  : fedora
+Краткое опис : Customize advanced GNOME 3 options
+URL          : https://wiki.gnome.org/action/show/Apps/Tweaks
+Лицензия     : GPLv3 and CC0
+Описание     : GNOME Tweaks allows adjusting advanced configuration settings in GNOME 3. This
+             : includes things like the fonts used in user interface elements, alternative user
+             : interface themes, changes in window management behavior, GNOME Shell appearance
+             : and extension, etc.
+
+Имя          : filelight
+Репозиторий  : fedora
+Краткое опис : Graphical disk usage statistics
+URL          : http://utils.kde.org/projects/filelight
+Лицензия     : GPLv2 or GPLv3
+Описание     : Filelight allows you to quickly understand exactly where your diskspace
+             : is being used by graphically representing your file system.
+
+Имя          : dynamic-wallpaper-editor
+Репозиторий  : fedora
+Краткое опис : Utility for creation or edition GNOME desktop's XML wallpapers
+URL          : https://github.com/maoschanz/dynamic-wallpaper-editor
+Лицензия     : GPLv3+
+Описание     : The GNOME desktop allows the wallpaper to change with time.
+             :
+             : These dynamic wallpapers are XML files, and you don't want to write these files
+             : yourself: Dynamic Wallpaper Editor is a little utility for the creation or the
+             : edition of these XML wallpapers.
+
+Имя          : keepassxc
+Репозиторий  : updates
+Краткое опис : Cross-platform password manager
+URL          : http://www.keepassxc.org/
+Лицензия     : Boost and BSD and CC0 and GPLv3 and LGPLv2 and LGPLv2+ and LGPLv3+ and Public Domain
+Описание     : KeePassXC is a community fork of KeePassX
+             : KeePassXC is an application for people with extremely high demands on secure
+             : personal data management.
+             : KeePassXC saves many different information e.g. user names, passwords, urls,
+             : attachemts and comments in one single database. For a better management
+             : user-defined titles and icons can be specified for each single entry.
+             : Furthermore the entries are sorted in groups, which are customizable as well.
+             : The integrated search function allows to search in a single group or the
+             : complete database.
+             : KeePassXC offers a little utility for secure password generation. The password
+             : generator is very customizable, fast and easy to use. Especially someone who
+             : generates passwords frequently will appreciate this feature.
+             : The complete database is always encrypted either with AES (alias Rijndael) or
+             : Twofish encryption algorithm using a 256 bit key. Therefore the saved
+             : information can be considered as quite safe.
+
+Имя          : qalculate
+Репозиторий  : updates
+Краткое опис : Multi-purpose calculator, text mode interface
+URL          : https://qalculate.github.io/
+Лицензия     : GPLv2+
+Описание     : Qalculate! is a multi-purpose desktop calculator for GNU/Linux. It is
+             : small and simple to use but with much power and versatility underneath.
+             : Features include customizable functions, units, arbitrary precision, plotting.
+             : This package provides the text-mode interface for Qalculate! The GTK and QT
+             : frontends are provided by qalculate-gtk and qalculate-kde packages resp.
+
+Имя          : fragments
+Репозиторий  : fedora
+Краткое опис : Easy to use BitTorrent client which follows the GNOME HIG
+URL          : https://gitlab.gnome.org/World/Fragments
+Лицензия     : GPLv3+
+Описание     : Fragments is an easy to use BitTorrent client which follows the GNOME HIG and
+             : includes well thought-out features.
+
+Имя          : nfoview
+Репозиторий  : fedora
+Краткое опис : A viewer for NFO files
+URL          : https://otsaloma.io/nfoview/
+Лицензия     : GPLv3+
+Описание     : NFO Viewer is a simple viewer for NFO files, which are "ASCII" art in
+             : the CP437 codepage. The advantages of using NFO Viewer instead of a
+             : text editor are preset font and encoding settings, automatic window
+             : size and clickable hyperlinks.
+
+Имя          : lm_sensors
+Источник     : lm_sensors-3.6.0-5.fc33.src.rpm
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : Hardware monitoring tools
+URL          : http://github.com/lm-sensors/lm-sensors/
+Лицензия     : GPLv2+ and Verbatim and MIT
+Описание     : The lm_sensors package includes a collection of modules for general SMBus
+             : access and hardware monitoring.
+
+Имя          : php
+Репозиторий  : updates
+Краткое опис : PHP scripting language for creating dynamic web sites
+URL          : http://www.php.net/
+Лицензия     : PHP and Zend and BSD and MIT and ASL 1.0 and NCSA
+Описание     : PHP is an HTML-embedded scripting language. PHP attempts to make it
+             : easy for developers to write dynamically generated web pages. PHP also
+             : offers built-in database integration for several commercial and
+             : non-commercial database management systems, so writing a
+             : database-enabled webpage with PHP is fairly simple. The most common
+             : use of PHP coding is probably as a replacement for CGI scripts.
+
+Имя          : npm
+Репозиторий  : @System
+Из репозитор : updates
+Краткое опис : Node.js Package Manager
+URL          : http://nodejs.org/
+Лицензия     : MIT and ASL 2.0 and ISC and BSD
+Описание     : npm is a package manager for node.js. You can use it to install and publish
+             : your node programs. It manages dependencies and does other cool stuff.
+
+Имя          : nodejs
+Репозиторий  : updates
+Краткое опис : JavaScript runtime
+URL          : http://nodejs.org/
+Лицензия     : MIT and ASL 2.0 and ISC and BSD
+Описание     : Node.js is a platform built on Chrome's JavaScript runtime
+             : for easily building fast, scalable network applications.
+             : Node.js uses an event-driven, non-blocking I/O model that
+             : makes it lightweight and efficient, perfect for data-intensive
+             : real-time applications that run across distributed devices.
+
+Имя          : fira-code-fonts
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : Monospaced font with programming ligatures
+URL          : https://github.com/tonsky/FiraCode
+Лицензия     : OFL
+Описание     : Fira Code is an extension of the Fira Mono font containing a set of ligatures
+             : for common programming multi-character combinations. This is just a font
+             : rendering feature: underlying code remains ASCII-compatible. This helps to
+             : read and understand code faster. For some frequent sequences like .. or //,
+             : ligatures allow us to correct spacing.
+
+Имя          : code
+Репозиторий  : code
+Краткое опис : Code editing. Redefined.
+URL          : https://code.visualstudio.com/
+Лицензия     : Multiple, see https://code.visualstudio.com/license
+Описание     : Visual Studio Code is a new choice of tool that combines the simplicity of a code editor with what developers need for the core edit-build-debug cycle. See https://code.visualstudio.com/docs/setup/linux for installation
+             : instructions and FAQ.
+
+Имя          : adobe-release-x86_64
+Репозиторий  : @System
+Из репозитор : @commandline
+Краткое опис : linux.adobe.com Repository Configuration
+URL          : http://linuxdownload.adobe.com/
+Лицензия     : BSD
+Описание     : linuxdownload.adobe.com repository contains RPM packages of Adobe Linux Software
+
+Имя          : flash-plugin
+Репозиторий  : @System
+Из репозитор : adobe-linux-x86_64
+Краткое опис : Adobe Flash Player NPAPI
+URL          : http://www.adobe.com/downloads/
+Лицензия     : Commercial
+Описание     : Adobe Flash Plugin 32.0.0.453
+
+
+Имя          : flash-player-ppapi
+Репозиторий  : adobe-linux-x86_64
+Краткое опис : Adobe Flash Player PPAPI 26.0
+URL          : http://www.adobe.com/downloads/
+Лицензия     : Commercial
+Описание     : Adobe Flash Player PPAPI 32.0.0.453
+             : Fully Supported: Chromium-based browsers
+
+Имя          : corectrl
+Репозиторий  : fedora
+Краткое опис : Friendly hardware control
+URL          : https://gitlab.com/corectrl/corectrl
+Лицензия     : GPLv3+ and Boost and BSD and MIT and Public Domain
+Описание     : CoreCtrl is a Free and Open Source GNU/Linux application that allows you to
+             : control with ease your computer hardware using application profiles. It aims to
+             : be flexible, comfortable and accessible to regular users.
+             :
+             : - For setup instructions run:
+             :
+             :   xdg-open /usr/share/doc/corectrl/README.fedora.md
+             :
+             : - or go to the project wiki:
+             :
+             :   https://gitlab.com/corectrl/corectrl/wikis
+
+Имя          : gtkhash
+Репозиторий  : fedora
+Краткое опис : GTK+ utility for computing message digests or checksums
+URL          : https://github.com/tristanheaven/gtkhash
+Лицензия     : GPLv2+
+Описание     : GtkHash is a GTK+ utility for computing message digests or checksums. Currently
+             : supported hash functions include
+             : * MD2, MD4 and MD5
+             : * SHA1, SHA224, SHA256, SHA384 and SHA512,
+             : * RIPEMD128, RIPEMD160, RIPEMD256 and RIPEMD320
+             : * TIGER128, TIGER160 and TIGER192
+             : * HAVAL128-3, HAVAL160-3, HAVAL192-3, HAVAL224-3 and HAVAL256-3
+             : * SNEFRU128 and SNEFRU256
+             : * ADLER32, CRC32, GOST and WHIRLPOOL
+             :
+             : This package contains the GTK+3 version of the program.
