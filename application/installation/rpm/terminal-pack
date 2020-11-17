@@ -67,12 +67,26 @@ function install_terminal_pack() {
     # Описание     : KDE Terminal emulator.
     'konsole5'
     # <- !!!
+    #
     # Краткое опис : Terminal emulator mimicking a CRT display
     # URL          : https://github.com/Swordfish90/cool-retro-term
     # Описание     : cool-retro-term is a terminal emulator which tries to mimic the look and feel
     # : of the old cathode tube screens. It has been designed to be eye-candy,
     # : customizable, and reasonably lightweight.
     'cool-retro-term'
+    #
+    # Имя          : tilda
+    # Репозиторий  : @System
+    # Из репозитор : fedora
+    # Краткое опис : A Gtk based drop down terminal for Linux and Unix
+    # URL          : http://github.com/lanoxx/tilda
+    # Лицензия     : GPLv2 and MIT
+    # Описание     : Tilda is a Linux terminal taking after the likeness of many classic terminals
+    # : from first person shooter games, Quake, Doom and Half-Life (to name a few),
+    # : where the terminal has no border and is hidden from the desktop until a key is
+    # : pressed.
+    'tilda'
+
   )
 
   pm "$@" -- "${install_pkg[@]}"

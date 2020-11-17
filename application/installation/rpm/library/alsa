@@ -62,8 +62,6 @@ function install_alsa() {
     'alsa-utils'
     'alsa-firmware'
     'alsa-plugins-arcamav'
-    'alsa-plugins-freeworld-a52'
-    'alsa-plugins-freeworld-lavrate'
     'alsa-plugins-jack'
     'alsa-plugins-maemo'
     'alsa-plugins-oss'

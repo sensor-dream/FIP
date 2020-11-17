@@ -59,6 +59,16 @@ function install_games_pack() {
     # Описание     : SDLPoP is an open-source port of Prince of Persia, based on the disassembly
     # : of the DOS version.
     'SDLPoP'
+    # Имя          : workrave
+    # Репозиторий  : fedora
+    # Краткое опис : Program that assists in the recovery and prevention of RSI
+    # URL          : http://www.workrave.org/
+    # Лицензия     : GPLv3+
+    # Описание     : Workrave is a program that assists in the recovery and prevention of
+    # : Repetitive Strain Injury (RSI). The program frequently alerts you to
+    # : take micro-pauses, rest breaks and restricts you to your daily limit.
+    'workrave'
+
   )
 
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >package-list/games-pack.txt

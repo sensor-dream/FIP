@@ -66,6 +66,15 @@ URL          : https://wiki.gnome.org/action/show/Apps/Tweaks
              : interface themes, changes in window management behavior, GNOME Shell appearance
              : and extension, etc.
 
+Имя          : gnome-extensions-app
+Репозиторий  : fedora
+Краткое опис : Manage GNOME Shell extensions
+URL          : https://gitlab.gnome.org/GNOME/gnome-shell
+Лицензия     : GPLv2+
+Описание     : GNOME Extensions is an application for configuring and removing
+             : GNOME Shell extensions.
+
+
 Имя          : filelight
 Репозиторий  : fedora
 Краткое опис : Graphical disk usage statistics
@@ -116,6 +125,16 @@ URL          : https://qalculate.github.io/
              : Features include customizable functions, units, arbitrary precision, plotting.
              : This package provides the text-mode interface for Qalculate! The GTK and QT
              : frontends are provided by qalculate-gtk and qalculate-kde packages resp.
+
+Имя          : qalculate-gtk
+Репозиторий  : updates
+Краткое опис : A multi-purpose desktop calculator for GNU/Linux
+URL          : https://qalculate.github.io/
+Лицензия     : GPLv2+
+Описание     : Qalculate! is a multi-purpose desktop calculator for GNU/Linux. It is
+             : small and simple to use but with much power and versatility underneath.
+             : Features include customizable functions, units, arbitrary precision, plotting.
+             : This package provides a (GTK+) graphical interface for Qalculate!
 
 Имя          : fragments
 Репозиторий  : fedora
@@ -255,3 +274,220 @@ URL          : https://github.com/tristanheaven/gtkhash
              : * ADLER32, CRC32, GOST and WHIRLPOOL
              :
              : This package contains the GTK+3 version of the program.
+
+Имя          : gtimelog
+Версия       : 0.11.3
+Выпуск       : 8.fc33
+Архитектура  : noarch
+Размер       : 266 k
+Источник     : gtimelog-0.11.3-8.fc33.src.rpm
+Репозиторий  : fedora
+Краткое опис : Unobtrusively keep track of your time
+URL          : http://mg.pov.lt/gtimelog/
+Лицензия     : GPLv2
+Описание     : GTimeLog is a small GTK+ app for keeping track of your time. It's main goal is
+             : to be as unobtrusive as possible.
+
+Имя          : workrave
+Репозиторий  : fedora
+Краткое опис : Program that assists in the recovery and prevention of RSI
+URL          : http://www.workrave.org/
+Лицензия     : GPLv3+
+Описание     : Workrave is a program that assists in the recovery and prevention of
+             : Repetitive Strain Injury (RSI). The program frequently alerts you to
+             : take micro-pauses, rest breaks and restricts you to your daily limit.
+
+Имя          : marker
+Репозиторий  : fedora
+Краткое опис : GTK 3 markdown editor
+URL          : https://github.com/fabiocolacio/Marker
+Лицензия     : GPLv3+ and GPLv2 and LGPLv3+ and CC-BY-SA and ISC and BSD and ASL 2.0 and MIT and CC0 and OFL and zlib
+Описание     : Marker is a markdown editor for Linux made with Gtk+-3.0.
+
+Имя          : gnome-documents
+Репозиторий  : fedora
+Краткое опис : A document manager application for GNOME
+URL          : https://wiki.gnome.org/Apps/Documents
+Лицензия     : GPLv2+
+Описание     : gnome-documents is a document manager application for GNOME,
+             : aiming to be a simple and elegant replacement for using Files to show
+             : the Documents directory.
+
+Имя          : geoclue2
+Репозиторий  : @System
+Из репозитор : anaconda
+Краткое опис : Geolocation service
+URL          : http://www.freedesktop.org/wiki/Software/GeoClue/
+Лицензия     : GPLv2+
+Описание     : Geoclue is a D-Bus service that provides location information. The primary goal
+             : of the Geoclue project is to make creating location-aware applications as
+             : simple as possible, while the secondary goal is to ensure that no application
+             : can access location information without explicit permission from user.
+
+Имя          : redshift
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : Adjusts the color temperature of your screen according to time of day
+URL          : http://jonls.dk/redshift/
+Лицензия     : GPLv3+
+Описание     : Redshift adjusts the color temperature of your screen according to your
+             : surroundings. This may help your eyes hurt less if you are working in
+             : front of the screen at night.
+             :
+             : The color temperature is set according to the position of the sun. A
+             : different color temperature is set during night and daytime. During
+             : twilight and early morning, the color temperature transitions smoothly
+             : from night to daytime temperature to allow your eyes to slowly
+             : adapt.
+             :
+             : This package provides the base program.
+
+Имя          : redshift-gtk
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : GTK integration for Redshift
+URL          : http://jonls.dk/redshift/
+Лицензия     : GPLv3+
+Описание     : This package provides GTK integration for Redshift, a screen color
+             : temperature adjustment program.
+
+Имя          : gnome-todo
+Репозиторий  : fedora
+Краткое опис : Personal task manager for GNOME
+URL          : https://git.gnome.org/browse/gnome-todo/
+Лицензия     : GPLv3+
+Описание     : GNOME To Do is a small application to manage your personal tasks. It
+             : uses GNOME technologies, and so it has complete integration with the
+             : GNOME desktop environment.
+
+Имя          : tilda
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : A Gtk based drop down terminal for Linux and Unix
+URL          : http://github.com/lanoxx/tilda
+Лицензия     : GPLv2 and MIT
+Описание     : Tilda is a Linux terminal taking after the likeness of many classic terminals
+             : from first person shooter games, Quake, Doom and Half-Life (to name a few),
+             : where the terminal has no border and is hidden from the desktop until a key is
+             : pressed.
+
+Имя          : pdfmod
+Репозиторий  : fedora
+Краткое опис : A simple application for modifying PDF documents
+URL          : https://wiki.gnome.org/Attic/PdfMod
+Лицензия     : GPLv2+
+Описание     : You can reorder, rotate, and remove pages, export images from a document,
+             : edit the title, subject, author, and keywords, and combine documents via
+             : drag and drop.
+
+Имя          : shaman
+Репозиторий  : fedora
+Краткое опис : Man pages viewer
+URL          : http://sites.google.com/site/mohammedisam2000/home/projects/
+Лицензия     : GPLv3+
+Описание     : Shaman is a software package that allows the user to view, search and run
+             : through the manual pages that are installed on the system in a Graphical User
+             : Interface (GUI). The aim is to make reading man pages an easy task for
+             : newcomers to the GNU/Linux system.
+
+Имя          : d-feet
+Репозиторий  : fedora
+Краткое опис : A powerful D-Bus Debugger
+URL          : https://wiki.gnome.org/Apps/DFeet
+Лицензия     : GPLv2+
+Описание     : D-Feet is an easy to use D-Bus debugger.
+             :
+             : D-Bus is an RPC library used on the Desktop.  D-Feet can be used to inspect
+             : D-Bus objects of running programs and invoke methods on those objects.
+
+Имя          : gitg
+Репозиторий  : fedora
+Краткое опис : GTK+ graphical interface for the git revision control system
+URL          : https://wiki.gnome.org/Apps/Gitg
+Лицензия     : GPLv2+
+Описание     : gitg is the GNOME GUI client to view git repositories.
+
+Имя          : meld
+Репозиторий  : fedora
+Краткое опис : Visual diff and merge tool
+URL          : https://meldmerge.org/
+Лицензия     : GPLv2+
+Описание     : Meld is a visual diff and merge tool targeted at developers. It helps you
+             : compare files, directories, and version controlled projects. It provides two-
+             : and three-way comparison of both files and directories, and the tabbed interface
+             : allows you to open many diffs at once.
+             : Meld has has support for many popular version control systems including Git,
+             : Mercurial, Bazaar, SVN and CVS. The diff viewer lets you edit files in place
+             : (diffs update dynamically), and a middle column shows detailed changes and
+             : allows merges. The margins show location of changes for easy navigation.
+
+Имя          : zeal
+Репозиторий  : fedora
+Краткое опис : Offline documentation browser inspired by Dash
+URL          : https://zealdocs.org/
+Лицензия     : GPLv3+ and BSD
+Описание     : Zeal is a simple offline documentation browser inspired by Dash.
+
+Версия       : 1.2.0
+Репозиторий  : fedora
+Краткое опис : A heap memory profiler for Linux
+URL          : https://cgit.kde.org/heaptrack.git/
+Лицензия     : GPLv2+
+Описание     : Heaptrack traces all memory allocations and annotates these events with stack
+             : traces.Dedicated analysis tools then allow you to interpret the heap memory
+             : profile to:
+             : - find hotspots that need to be optimized to reduce the memory footprint of your
+             :   application
+             : - find memory leaks, i.e. locations that allocate memory which is never
+             :   deallocated
+             : - find allocation hotspots, i.e. code locations that trigger a lot of memory
+             :   allocation calls
+             : - find temporary allocations, which are allocations that are directly followed
+             :   by their deallocation
+
+Имя          : sysprof
+Репозиторий  : updates
+Краткое опис : A system-wide Linux profiler
+URL          : http://www.sysprof.com
+Лицензия     : GPLv3+
+Описание     : Sysprof is a sampling CPU profiler for Linux that collects accurate,
+             : high-precision data and provides efficient access to the sampled
+             : calltrees.
+
++ application/installation/rpm/kernel
+
+Имя          : nemiver
+Репозиторий  : fedora
+Краткое опис : A GNOME C/C++ Debugger
+URL          : http://projects.gnome.org/nemiver
+Лицензия     : GPLv2+
+Описание     : Nemiver is an ongoing effort to write a standalone graphical debugger that
+             : integrates well in the GNOME desktop environment. It currently features a
+             : backend which uses the well known GNU Debugger (gdb) to debug C/C++ programs.
+             :
+             : The yelp package must be installed to make use of Nemiver's documentation.
+
+Имя          : massif-visualizer
+Версия       : 0.7.0
+Выпуск       : 6.fc33
+Архитектура  : x86_64
+Размер       : 185 k
+Источник     : massif-visualizer-0.7.0-6.fc33.src.rpm
+Репозиторий  : fedora
+Краткое опис : Visualizer for Massif heap memory profiler data files
+URL          : https://cgit.kde.org/massif-visualizer.git
+Лицензия     : GPLv2+
+Описание     : Massif Visualizer is a tool that visualizes massif data.
+             : 
+             : You run your application in Valgrind with "--tool=massif" and then open the
+             : generated "massif.out.<pid>" in the visualizer. Gzip or Bzip2 compressed massif
+             : files can also be opened transparently.
+
+Имя          : gnome-builder
+Репозиторий  : updates
+Краткое опис : IDE for writing GNOME-based software
+URL          : https://wiki.gnome.org/Apps/Builder
+Лицензия     : GPLv3+ and GPLv2+ and LGPLv3+ and LGPLv2+ and MIT and CC-BY-SA and CC0
+Описание     : Builder attempts to be an IDE for writing software for GNOME. It does not try
+             : to be a generic IDE, but one specialized for writing GNOME software.
+
