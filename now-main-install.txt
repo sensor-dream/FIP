@@ -979,7 +979,7 @@ URL          : http://gimpfx-foundry.sourceforge.net/
              : blurring or distorting them in certain ways. This package has 117+ new
              : scripts for GIMP that are not part of the graphic software's standard
              : installation.
-             : 
+             :
              : Among them are the Roy Lichtenstein effect script to render graphics in the
              : pop artist's style, the Planet Render script to create a planet of your
              : choosing and desired size and dimension. and the Old Photo script to give
@@ -994,7 +994,7 @@ URL          : http://gmic.eu/
              : several different user interfaces to convert/manipulate/filter/visualize
              : generic image datasets, from 1d scalar signals to 3d+t sequences of
              : multi-spectral volumetric images.
-             : 
+             :
              : Provides a plugin for using G'MIC from GIMP
 
 Имя          : ufraw-gimp
@@ -1023,7 +1023,7 @@ URL          : https://inkscape.org/
              : Illustrator, CorelDraw, or Xara X, using the W3C standard Scalable Vector
              : Graphics (SVG) file format.  It is therefore a very useful tool for web
              : designers and as an interchange format for desktop publishing.
-             : 
+             :
              : Inkscape supports many advanced SVG features (markers, clones, alpha
              : blending, etc.) and great care is taken in designing a streamlined
              : interface. It is very easy to edit nodes, perform complex path operations,
@@ -1043,3 +1043,25 @@ URL          : https://inkscape.org/
 Лицензия     : GPLv2+ and CC-BY
 Описание     : Viewer for files in W3C standard Scalable Vector Graphics (SVG) file
              : format.
+
+Имя          : variety
+Репозиторий  : updates
+Краткое опис : Wallpaper changer that automatically downloads wallpapers
+URL          : https://github.com/varietywalls/variety
+Лицензия     : GPLv3
+Описание     : Variety changes the desktop wallpaper on a regular basis,
+             : using user-specified or automatically downloaded images.
+             :
+             : Variety sits conveniently as an indicator in the panel
+             : and can be easily paused and resumed. The mouse wheel
+             : can be used to scroll wallpapers back and forth until
+             : you find the perfect one for your current mood.
+             :
+             : Apart from displaying images from local folders, several
+             : different online sources can be used to fetch wallpapers
+             : according to user-specified criteria.
+             :
+             : Variety can also automatically apply various fancy
+             : filters to the displayed images - charcoal painting,
+             : oil painting, heavy blurring, etc. - so that your
+             : desktop is always fresh and unique.

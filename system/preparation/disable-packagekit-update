@@ -53,7 +53,37 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
 function install_disable_packagekit_update() {
 
-  [[ "$(gsettings get org.gnome.software download-updates)" == 'true' ]] && gsettings set org.gnome.software download-updates false
+  local flag=0
+
+  OPTIND=1
+
+  while getopts "er" OPT; do
+    case $OPT in
+    e) flag=1 ;;
+    r) flag=2 ;;
+    *) ;;
+    esac
+  done
+
+  shift $(($OPTIND - 1))
+  [ "${1:-}" = "--" ] && shif
+
+  if [[ ${flag} -eq 1 ]]; then
+    sudo dnf install gnome-software simple-scan appstream-data PackageKit PackageKit-Qt5 PackageKit-Qt5-devel PackageKit-command-not-found PackageKit-cron PackageKit-glib-devel PackageKit-glib PackageKit-gstreamer-plugin PackageKit-gtk3-module
+    # sudo dnf install gnome-packagekit
+    # sudo systemctl unmask packagekit
+    # sudo systemctl enable packagekit
+    # sudo systemctl start packagekit
+  else
+    sudo systemctl stop packagekit
+    sudo systemctl disable packagekit
+    # sudo systemctl mask packagekit
+    if [[ ${flag} -eq 2 ]]; then
+      sudo dnf remove PackageKit\*
+    else
+      [[ "$(gsettings get org.gnome.software download-updates)" == 'true' ]] && gsettings set org.gnome.software download-updates false
+    fi
+  fi
 
 }
 
