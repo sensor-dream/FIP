@@ -54,7 +54,7 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 function install_graphical_pack() {
 
   local install_pkg=(
-    digikam
+    # digikam
     geeqie
     gpick
     gthumb
