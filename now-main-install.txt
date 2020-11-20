@@ -1065,3 +1065,27 @@ URL          : https://github.com/varietywalls/variety
              : filters to the displayed images - charcoal painting,
              : oil painting, heavy blurring, etc. - so that your
              : desktop is always fresh and unique.
+
+Имя          : frama-c
+Репозиторий  : @System
+Из репозитор : fedora
+Краткое опис : Framework for source code analysis of C software
+URL          : http://frama-c.com/
+Лицензия     : LGPLv2 and GPLv2 and GPLv2+ and BSD and QPL
+Описание     : Frama-C is a suite of tools dedicated to the analysis of the source
+             : code of software written in C.
+             :
+             : Frama-C gathers several static analysis techniques in a single
+             : collaborative framework. The collaborative approach of Frama-C allows
+             : static analyzers to build upon the results already computed by other
+             : analyzers in the framework. Thanks to this approach, Frama-C provides
+             : sophisticated tools, such as a slicer and dependency analysis.
+
+Имя          : ocaml-ppx-deriving (For frama-c)
+Репозиторий  : fedora
+Краткое опис : Type-driven code generation for OCaml
+URL          : https://github.com/ocaml-ppx/ppx_deriving
+Лицензия     : MIT
+Описание     : Deriving is a library simplifying type-driven code generation on OCaml.
+             : It includes a set of useful plugins: show, eq, ord (eq), enum, iter,
+             : map (iter), fold (iter), make, yojson, and protobuf.
