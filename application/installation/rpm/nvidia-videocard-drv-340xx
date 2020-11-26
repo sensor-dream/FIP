@@ -110,8 +110,8 @@ function install_nvidia_videocard_drv_340xx() {
     # This package provides the shared libraries i686 for xorg-x11-drv-nvidia xorg-x11-drv-nvidia-libs
     'xorg-x11-drv-nvidia-340xx-libs*i686'
   )
-  # pm "$@" -- "${install_pkg[@]}"
-  sudo dnf reinstall "${install_pkg[@]}"
+  pm "$@" -- "${install_pkg[@]}"
+  # sudo dnf reinstall "${install_pkg[@]}"
 
 }
 
