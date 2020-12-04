@@ -86,7 +86,7 @@ include /usr/share/nginx/modules/*.conf;
 events {
     # worker_connections 2048; # default
     # DDoS prevention
-    worker_connections 2048;
+    worker_connections 50000;
 }
 
 http {

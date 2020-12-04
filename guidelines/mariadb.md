@@ -17,7 +17,7 @@
     sudo sed -i 's%^datadir=/var/lib.*$%datadir='${base_path}'%' /etc/my.cnf.d/mariadb-server.cnf
 
     [[ -n "{$base_path}" ]] && sudo mkdir -p "${base_path}"
-    [[ -d "${base_path}" ]] && sudo chown -R "mysql"."mysql" "${base_path}"
+    [[ -d "${base_path}" ]] && sudo chown -R mysql: "${base_path}"
 
     sudo systemctl enable mariadb
     sudo systemctl start mariadb
