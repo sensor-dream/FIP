@@ -62,15 +62,105 @@ function install_graphical_pack() {
     krita
     luminance-hdr
     mypaint
+    #
+    # Имя          : pinta
+    # Репозиторий  : fedora
+    # Краткое опис : An easy to use drawing and image editing program
+    # URL          : http://pinta-project.com/
+    # Лицензия     : MIT and CC-BY
+    # Описание     : Pinta is an image drawing/editing program.
+    # : It's goal is to provide a simplified alternative to GIMP for casual users.
+    pinta
     nomacs
     OpenColorIO
     rawtherapee
     shotwell
     shutter
     xfig
+    #
+    # Имя          : kruler
+    # Репозиторий  : fedora
+    # Краткое опис : A screen ruler and color measurement tool
+    # URL          : https://www.kde.org/applications/graphics/kruler/
+    # Лицензия     : GPLv2 and GFDL
+    # Описание     : A screen ruler and color measurement tool.
+    kruler
+    #
+    # Имя          : peek
+    # Репозиторий  : fedora
+    # Краткое опис : Animated GIF screen recorder with an easy to use interface
+    # URL          : https://github.com/phw/peek
+    # Лицензия     : GPLv3+ and MIT
+    # Описание     : Peek makes it easy to create short screencasts of a screen area. It was built
+    # : for the specific use case of recording screen areas, e.g. for easily showing UI
+    # : features of your own apps or for showing a bug in bug reports. With Peek, you
+    # : simply place the Peek window over the area you want to record and press
+    # : "Record". Peek is optimized for generating animated GIFs, but you can also
+    # : directly record to WebM or MP4 if you prefer.
+    # :
+    # : Peek is not a general purpose screencast app with extended features but rather
+    # : focuses on the single task of creating small, silent screencasts of an area of
+    # : the screen for creating GIF animations or silent WebM or MP4 videos.
+    # :
+    # : Peek runs on X11 or inside a GNOME Shell Wayland session using XWayland. Support
+    # : for more Wayland desktops might be added in the future.
+    # :
+    # : Peek requires FFmpeg or running GNOME Shell session. FFmpeg avaliable in RPM
+    # : Fusion repo. Enabling the RPM Fusion repositories:
+    # :
+    # : * RPM Fusion
+    # :   - https://rpmfusion.org/Configuration
+    # :   - https://rpmfusion.org/Howto/Multimedia
+    peek
+    #
+    # Имя          : fontforge
+    # Репозиторий  : @System
+    # Из репозитор : fedora
+    # Краткое опис : Outline and bitmap font editor
+    # URL          : http://fontforge.github.io/
+    # Лицензия     : GPLv3+
+    # Описание     : FontForge (former PfaEdit) is a font editor for outline and bitmap
+    # : fonts. It supports a range of font formats, including PostScript
+    # : (ASCII and binary Type 1, some Type 3 and Type 0), TrueType, OpenType
+    # : (Type2) and CID-keyed fonts.
+    fontforge
+    #
+    # Имя          : hugin
+    # Репозиторий  : @System
+    # Из репозитор : fedora
+    # Краткое опис : A panoramic photo stitcher and more
+    # URL          : http://hugin.sourceforge.net/
+    # Лицензия     : GPLv2+
+    # Описание     : hugin can be used to stitch multiple images together. The resulting image can
+    # : span 360 degrees. Another common use is the creation of very high resolution
+    # : pictures by combining multiple images. It uses the Panorama Tools as back-end
+    # : to create high quality images
+    hugin
+    #
+    # Имя          : tiled
+    # Репозиторий  : fedora
+    # Краткое опис : Tiled Map Editor
+    # URL          : http://www.mapeditor.org
+    # Лицензия     : GPLv2+ and BSD
+    # Описание     : Tiled is a general purpose tile map editor. It is built to be easy to use,
+    # : yet flexible enough to work with varying game engines, whether your game
+    # : is an RPG, platformer or Breakout clone. Tiled is free software and written
+    # : in C++, using the Qt application framework.
+    # :
+    # : This package contains the tiled application and tmxviewer, a simple application
+    # : to view Tiled maps.
+    tiled
+    #
+    # Имя          : kolourpaint
+    # Репозиторий  : fedora
+    # Краткое опис : An easy-to-use paint program
+    # URL          : https://www.kde.org/applications/graphics/kolourpaint/
+    # Лицензия     : BSD
+    # Описание     : An easy-to-use paint program.
+    kolourpaint
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >package-list/graphical-pack.txt
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/graphical-pack.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }
@@ -79,8 +169,9 @@ function main_graphical_pack_script_source() {
 
   # printf "Initialise main function of graphical-pack script source\n";
 
-  . "${main_project_path}/application/installation/rpm/gimp"
   install_graphical_pack "$@"
+  . "${main_project_path}/application/installation/rpm/gimp"
+  . "${main_project_path}/application/installation/rpm/inkscape"
 
 }
 
