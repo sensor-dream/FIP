@@ -54,10 +54,9 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 function install_hard_drive() {
 
   local install_pkg=(
-    'gparterd'
-    'duc'
+    'gparted'
     'hddtemp'
-    'baobab'
+    # 'baobab'
     'gnome-disk-utility'
     # NVMe management command line interface
     # : https://github.com/linux-nvme/nvme-cli

@@ -288,6 +288,16 @@ function install_archive_pack() {
     # ; The program can handle various formats such as tar, gzip, bzip2, zip,
     # ; rar and lha (if appropriate command-line programs are installed).
     'ark'
+    # Имя          : unrar
+    # Репозиторий  : @System
+    # Из репозитор : rpmfusion-nonfree-updates
+    # Краткое опис : Utility for extracting, testing and viewing RAR archives
+    # URL          : https://www.rarlab.com/rar_add.htm
+    # Лицензия     : Freeware with further limitations
+    # Описание     : The unrar utility is a freeware program for extracting, testing and
+    #              : viewing the contents of archives created with the RAR archiver version
+    #              : 1.50 and above.
+    'unrar'
   )
 
   pm "$@" -- "${install_pkg[@]}"

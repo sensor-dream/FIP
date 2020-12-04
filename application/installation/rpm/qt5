@@ -55,6 +55,7 @@ function install_qt5() {
 
   local install_pkg=(
     'qt5-assistant'
+    'qt5-doc'
     'qt5-qdbusviewer'
     'qt5-qt3d'
     'qt5-qtbase'
@@ -98,7 +99,6 @@ function install_qt5() {
     'qt5-qtxmlpatterns'
     'qt5-rpm-macros'
     'qt5-srpm-macros'
-    'qt5-devel'
     'qt5-qt3d-devel'
     'qt5-qt3d-doc'
     'qt5-qt3d-examples'

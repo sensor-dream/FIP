@@ -73,7 +73,7 @@ function install_terminal_pack() {
     # Описание     : cool-retro-term is a terminal emulator which tries to mimic the look and feel
     # : of the old cathode tube screens. It has been designed to be eye-candy,
     # : customizable, and reasonably lightweight.
-    'cool-retro-term'
+    # 'cool-retro-term'
     #
     # Имя          : tilda
     # Репозиторий  : @System
@@ -85,7 +85,7 @@ function install_terminal_pack() {
     # : from first person shooter games, Quake, Doom and Half-Life (to name a few),
     # : where the terminal has no border and is hidden from the desktop until a key is
     # : pressed.
-    'tilda'
+    # 'tilda'
 
   )
 
