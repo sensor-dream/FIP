@@ -50,7 +50,7 @@ fi
 
 printf "Loading:\n\t%s\n" "$(readlink -m ${nvidia_videocard_drv_340xx_script_source})"
 
-function install_nvidia_videocard_drv_340xx() {
+function preinstall_nvidia_videocard_drv_340xx() {
 
   local install_pkg=(
     'kernel-devel'
@@ -85,8 +85,11 @@ function install_nvidia_videocard_drv_340xx() {
     'libva-utils'
   )
   pm "$@" -- "${install_pkg[@]}"
+}
 
-  install_pkg=(
+function install_nvidia_videocard_drv_340xx() {
+
+  local install_pkg=(
     #
     # FOR NVIDIA CARD
     # Querying OpenGL resource usage of applications using the NVIDIA OpenGL driver
@@ -115,13 +118,115 @@ function install_nvidia_videocard_drv_340xx() {
 
 }
 
-function uninstall_nvidia_videocard_drv_340xx() {
+function install_nvidia_videocard_drv_340xx_source() {
 
-  sudo dnf remove xorg-x11-drv-nvidia\* nvidia\* -x faceroot -x akmods
+  [[ -d "${main_project_path}/application/installation/src/NVIDIA" ]] || mkdir -p "${main_project_path}/application/installation/src/NVIDIA"
+
+  cd "${main_project_path}/application/installation/src/NVIDIA"
+
+  if [[ ! -f "inttf-nvidia-patcher.sh" ]]; then
+    wget -O inttf-nvidia-patcher.sh https://nvidia.if-not-true-then-false.com/patcher/inttf-nvidia-patcher.sh
+    chmod +x inttf-nvidia-patcher.sh
+    printf '\n%s\n' 'Get and patch NVIDIA 340.108 for kernel 5.9+'
+    ./inttf-nvidia-patcher.sh -v 340.108
+  fi
+
+  if [[ "$(systemctl get-default)" == 'graphical.target' ]]; then
+    if grep -Eq 'blacklist nouveau' "/etc/modprobe.d/blacklist.conf"; then
+      echo "blacklist nouveau is done"
+    else
+      echo "blacklist nouveau" | sudo tee -a "/etc/modprobe.d/blacklist.conf" >/dev/null
+    fi
+
+    if ! grep -Eq "rd.driver.blacklist=nouveau" /etc/default/grub; then
+      [[ -f "/etc/default/grub.back" ]] || sudo cp "/etc/default/grub" "/etc/default/grub.back"
+      sudo sed -i -e '/rhgb quiet/s/rhgb quiet/rd.driver.blacklist=nouveau rhgb quiet/' /etc/default/grub
+      ## Реконфигурем загрузчик
+      sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+    fi
+
+    [[ "$(check_installed_packages xorg-x11-drv-nouveau)" == 'xorg-x11-drv-nouveau' ]] && sudo dnf remove xorg-x11-drv-nouveau
+
+    [[ -f "/boot/initramfs-$(uname -r)-nouveau.img" ]] || sudo mv /boot/initramfs-$(uname -r).img /boot/initramfs-$(uname -r)-nouveau.img
+
+    sudo dracut /boot/initramfs-$(uname -r).img $(uname -r)
+
+    sudo systemctl set-default multi-user.target
+    reboot
+
+  fi
+
+  if [[ "$(systemctl get-default)" == 'multi-user.target' ]]; then
+
+    cd "${main_project_path}/application/installation/src/NVIDIA"
+    sudo ./NVIDIA-Linux-x86_64-340.108-patched-kernel-5.9.run -a
+
+    echo
+    echo 'Reboot in graphical mode ? (Y/n)'
+    read key
+    if [[ "${key}" != 'n' ]]; then
+      sudo systemctl set-default graphical.target
+      reboot
+    fi
+  fi
+
+}
+
+function reinstall_xorg_server_mesa_libglvnd() {
   sudo rm -f /usr/lib{,64}/libGL.so.* /usr/lib{,64}/libEGL.so.*
   sudo rm -f /usr/lib{,64}/xorg/modules/extensions/libglx.so
   sudo dnf reinstall xorg-x11-server-Xorg mesa-libGL mesa-libEGL libglvnd\*
-  sudo mv /etc/X11/xorg.conf /etc/X11/xorg.conf.saved
+}
+
+function uninstall_nvidia_videocard_drv_340xx() {
+
+  if [[ "$(check_installed_packages xorg-x11-drv-nvidia-340xx)" == 'xorg-x11-drv-nvidia-340xx' ]]; then
+    sudo mv /etc/X11/xorg.conf /etc/X11/xorg.conf.xorg-x11-drv-nvidia-340xx.saved
+    sudo dnf remove xorg-x11-drv-nvidia\* nvidia\* -x faceroot -x akmods
+    reinstall_xorg_server_mesa_libglvnd
+  fi
+
+  if [[ -z "$(check_installed_packages xorg-x11-drv-nouveau xorg-x11-drv-nvidia-340xx)" ]]; then
+
+    if [[ "$(systemctl get-default)" == 'graphical.target' ]]; then
+      sudo systemctl set-default multi-user.target
+      reboot
+    fi
+
+    if [[ "$(systemctl get-default)" == 'multi-user.target' ]]; then
+
+      if grep -Eq "rd.driver.blacklist=nouveau" /etc/default/grub; then
+        sudo sed -i -e '/rd.driver.blacklist=nouveau/s/rd.driver.blacklist=nouveau\s+//' /etc/default/grub
+        ## Реконфигурем загрузчик
+        sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+      fi
+      if grep -Eq 'blacklist nouveau' "/etc/modprobe.d/blacklist.conf"; then
+        sudo sed -i -e 's/(.*)?blacklist nouveau(.*)?$//' /etc/modprobe.d/blacklist.conf
+      else
+        echo "Not found 'blacklist nouveau' in /etc/modprobe.d/blacklist.conf"
+      fi
+      sudo mv /etc/X11/xorg.conf /etc/X11/xorg.conf.NVIDIA-Linux-x86_64-340.108-patched-kernel-5.9.saved
+      cd "${main_project_path}/application/installation/src/NVIDIA"
+      sudo ./NVIDIA-Linux-x86_64-340.108-patched-kernel-5.9.run --uninstall
+      sudo dnf install xorg-x11-drv-nouveau
+
+      if [[ -f "/boot/initramfs-$(uname -r)-nouveau.img" ]]; then
+        sudo mv /boot/initramfs-$(uname -r)-nouveau.img /boot/initramfs-$(uname -r).img
+      else
+        sudo dracut /boot/initramfs-$(uname -r).img $(uname -r)
+      fi
+
+      reinstall_xorg_server_mesa_libglvnd
+
+      echo
+      echo 'Reboot in graphical mode ? (Y/n)'
+      read key
+      if [[ "${key}" != 'n' ]]; then
+        sudo systemctl set-default graphical.target
+        reboot
+      fi
+    fi
+  fi
 
 }
 
@@ -133,9 +238,10 @@ function main_nvidia_videocard_drv_340xx_script_source() {
 
   OPTIND=1
 
-  while getopts "u" OPT; do
+  while getopts "su" OPT; do
     case $OPT in
-    u) flag=1 ;;
+    s) flag=1 ;;
+    u) flag=2 ;;
     *) ;;
     esac
   done
@@ -143,10 +249,15 @@ function main_nvidia_videocard_drv_340xx_script_source() {
   shift $(($OPTIND - 1))
   [ "${1:-}" = "--" ] && shif
 
-  if [[ ${flag} -eq 1 ]]; then
+  if [[ ${flag} -eq 2 ]]; then
     uninstall_nvidia_videocard_drv_340xx
   else
-    install_nvidia_videocard_drv_340xx
+    preinstall_nvidia_videocard_drv_340xx
+    if [[ ${flag} -eq 1 ]]; then
+      install_nvidia_videocard_drv_340xx_source
+    else
+      install_nvidia_videocard_drv_340xx
+    fi
   fi
 
 }
