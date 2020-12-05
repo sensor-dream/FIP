@@ -1081,9 +1081,9 @@ URL          : http://frama-c.com/
              : analyzers in the framework. Thanks to this approach, Frama-C provides
              : sophisticated tools, such as a slicer and dependency analysis.
 
-Имя          : ocaml-ppx-deriving (For frama-c)
+Имя          : ocaml-ppx-deriving
 Репозиторий  : fedora
-Краткое опис : Type-driven code generation for OCaml
+Краткое опис : Type-driven code generation for OCaml (For frama-c)
 URL          : https://github.com/ocaml-ppx/ppx_deriving
 Лицензия     : MIT
 Описание     : Deriving is a library simplifying type-driven code generation on OCaml.
