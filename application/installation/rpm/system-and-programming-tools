@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: system-tools
+## @File: system-and-programming-tools
 ## @Creation date file: 11.11.2020, 03:31:17
 
-[[ -z "${system_tools_script_source}" ]] && declare -rx system_tools_script_source="$BASH_SOURCE"
+[[ -z "${system_and_programming_tools_script_source}" ]] && declare -rx system_and_programming_tools_script_source="$BASH_SOURCE"
 
-if [[ -z "${system_tools_script_source_path}" ]]; then
-  temp_one="$(dirname ${system_tools_script_source})"
+if [[ -z "${system_and_programming_tools_script_source_path}" ]]; then
+  temp_one="$(dirname ${system_and_programming_tools_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx system_tools_script_source_path="$(pwd)"
+    declare -rx system_and_programming_tools_script_source_path="$(pwd)"
   else
-    declare -rx system_tools_script_source_path="${temp_one}"
+    declare -rx system_and_programming_tools_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,7 +51,7 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_system_tools() {
+function install_system_and_programming_tools() {
 
   local install_pkg=(
     'system-tools'
@@ -1404,18 +1404,93 @@ function install_system_tools() {
     # : and then by comparing that checksum with the original file, it creates a patch
     # : file that can repair the corrupted file. Very cool, and saves re-downloading.
     'zidrav'
+    #
+    # Имя          : heaptrack
+    # Репозиторий  : fedora
+    # Краткое опис : A heap memory profiler for Linux
+    # URL          : https://cgit.kde.org/heaptrack.git/
+    # Лицензия     : GPLv2+
+    # Описание     : Heaptrack traces all memory allocations and annotates these events with stack
+    # : traces.Dedicated analysis tools then allow you to interpret the heap memory
+    # : profile to:
+    # : - find hotspots that need to be optimized to reduce the memory footprint of your
+    # :   application
+    # : - find memory leaks, i.e. locations that allocate memory which is never
+    # :   deallocated
+    # : - find allocation hotspots, i.e. code locations that trigger a lot of memory
+    # :   allocation calls
+    # : - find temporary allocations, which are allocations that are directly followed
+    # :   by their deallocation
+    'heaptrack'
+    #
+    # Имя          : accerciser
+    # Репозиторий  : fedora
+    # Краткое опис : Interactive Python accessibility explorer for the GNOME desktop
+    # URL          : https://wiki.gnome.org/Apps/Accerciser
+    # Лицензия     : BSD
+    # Описание     : Accerciser is an interactive Python accessibility explorer for the GNOME
+    # : desktop. It uses AT-SPI to inspect and control widgets, allowing you to check
+    # : if an application is providing correct information to assistive technologies
+    # : and automated test frameworks. Accerciser has a simple plugin framework which
+    # : you can use to create custom views of accessibility information.
+    'accerciser'
+    #
+    # Имя          : kuiviewer
+    # Репозиторий  : fedora
+    # Краткое опис : Displays designer UI files
+    # URL          : https://cgit.kde.org/kde-dev-utils.git
+    # Лицензия     : GPLv2+ and LGPLv2+
+    # Описание     : Displays designer UI files.
+    'kuiviewer'
+    #
+    # Имя          : edb
+    # Репозиторий  : fedora
+    # Краткое опис : A debugger based on the ptrace API and Qt
+    # URL          : https://github.com/eteran/edb-debugger
+    # Лицензия     : GPLv2+
+    # Описание     : edb a debugger based on the ptrace API.
+    # :
+    # : One of the main goals of this debugger is modularity.
+    # : The interface is written in Qt and thus source portable to many platforms.
+    # : The debugger core is a plugin and the platform specific code is isolated
+    # : to just a few files, porting to a new OS would require porting these few
+    # : files and implementing a plugin which implements the
+    # : DebuggerCoreInterface interface. Also, because the plugins are based
+    # : on the QPlugin API, and do their work through the DebuggerCoreInterface
+    # : object, they are almost always portable with just a simple recompile.
+    'edb'
+    #
+    # Имя          : dconf
+    # Репозиторий  : fedora
+    # Краткое опис : A configuration system
+    # URL          : https://wiki.gnome.org/Projects/dconf
+    # Лицензия     : LGPLv2+ and GPLv2+ and GPLv3+
+    # Описание     : dconf is a low-level configuration system. Its main purpose is to provide a
+    # : backend to the GSettings API in GLib.
+    'dconf'
+    #
+    # Имя          : gconf-editor
+    # Репозиторий  : @System
+    # Из репозитор : fedora
+    # Краткое опис : Editor/admin tool for GConf
+    # URL          : http://www.gnome.org
+    # Лицензия     : GPLv2+ and GFDL
+    # Описание     : gconf-editor allows you to browse and modify GConf configuration
+    # : sources.
+    'gconf-editor'
+    #
   )
 
   pm "$@" -- "${install_pkg[@]}"
 
 }
 
-function main_system_tools_script_source() {
+function main_system_and_programming_tools_script_source() {
 
-  # printf "Initialise main function of system-tools script source\n";
+  # printf "Initialise main function of system-and-programming-tools script source\n";
 
-  install_system_tools "$@"
+  install_system_and_programming_tools "$@"
 
 }
 
-main_system_tools_script_source "$@"
+main_system_and_programming_tools_script_source "$@"

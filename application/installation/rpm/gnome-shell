@@ -57,7 +57,14 @@ function install_gnome_shell() {
     'xorg-x11-utils'
     'glib2-devel'
     'ImageMagick'
+    'GraphicsMagick'
     'gnome-tweaks'
+    'gawk'
+    'translate-shell'
+    #
+    # Gnome shell extensions
+    #
+    'gnome-shell-extension-common'
     'gnome-extensions-app'
     'gnome-shell-extension-appindicator'
     'gnome-shell-extension-activities-configurator'
@@ -100,7 +107,6 @@ function install_gnome_shell() {
     'mingw64-gtk-update-icon-cache'
     # GNOME Desktop theme optimized for small displays
     'clearlooks-compact-gnome-theme'
-    'gnome-themes-extra'
     ## theme of Xenlism Wildfire
     # 'xenlism-wildfire'
     # 'xenlism-wildfire-day'
@@ -114,16 +120,39 @@ function install_gnome_shell() {
     # 'xenlism-wildfire-tuesday'
     # 'xenlism-wildfire-wednesday'
     # 'gnome-shell-theme-selene'
-    'gnome-shell-theme-yaru'
-    'gnome-shell-theme-flat-remix'
+    #
+    # GTK and other theme
+    #
+    'numix-gtk-theme'
     'flat-remix-gtk3-theme'
     'flat-remix-theme'
+    'gnome-themes-extra'
+    #
+    # Shell theme
+    #
+    'gnome-shell-theme-yaru'
+    'gnome-shell-theme-flat-remix'
+    #
+    # Icon theme
+    #
+    'adwaita-icon-theme'
+    'monochrome-icon-theme'
+    'numix-icon-theme'
+    'numix-icon-theme-circle'
+    'numix-icon-theme-square'
     'paper-icon-theme'
     'papirus-icon-theme'
+    'suru-icon-theme'
     'elementary-icon-theme-gimp-palette'
     'flat-remix-icon-theme'
+    #
+    # Cursor theme
+    #
     'adwaita-cursor-theme'
-    # 'la-capitaine-cursor-theme'
+    'bluecurve-cursor-theme'
+    'breeze-cursor-theme'
+    'dmz-cursor-themes'
+    'la-capitaine-cursor-theme'
   )
 
   pm "$@" -- "${install_pkg[@]}"
@@ -137,7 +166,10 @@ function install_gnome_shell() {
   echo 'Please read https://extensions.gnome.org/extension/97/coverflow-alt-tab'
   echo 'Please read https://extensions.gnome.org/extension/3628/arcmenu/'
   echo 'Please read https://extensions.gnome.org/extension/3780/ddterm/'
-
+  echo 'Please read https://extensions.gnome.org/extension/2950/compiz-alike-windows-effect'
+  echo 'Please read https://extensions.gnome.org/extension/3740/compiz-alike-magic-lamp-effect'
+  echo 'Please read https://extensions.gnome.org/extension/593/text-translator'
+  echo 'Please read https://extensions.gnome.org/extension/355/status-area-horizontal-spacing'
 }
 
 function main_gnome_shell_script_source() {
