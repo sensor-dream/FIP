@@ -1,0 +1,191 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: PackageKit
+## @Creation date file: 06.12.2020, 04:41:29
+
+[[ -z "${PackageKit_script_source}" ]] && declare -rx PackageKit_script_source="$BASH_SOURCE"
+
+if [[ -z "${PackageKit_script_source_path}" ]]; then
+  temp_one="$(dirname ${PackageKit_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx PackageKit_script_source_path="$(pwd)"
+  else
+    declare -rx PackageKit_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_PackageKit() {
+
+  local install_pkg=(
+    # Имя          : PackageKit
+    # Репозиторий : @System
+    # Из репозитор : updates
+    # Краткое опис : Package management service
+    # URL : http://www.freedesktop.org/software/PackageKit/
+    # Лицензия : GPLv2+ and LGPLv2+
+    # Описание : PackageKit is a D-Bus abstraction layer that allows the session user
+    # : to manage packages in a secure way using a cross-distro,
+    # : cross-architecture API.
+    'PackageKit'
+    #
+    # Имя          : PackageKit-command-not-found
+    # Репозиторий  : @System
+    # Из репозитор : updates
+    # Краткое опис : Ask the user to install command line programs automatically
+    # URL          : http://www.freedesktop.org/software/PackageKit/
+    # Лицензия     : GPLv2+ and LGPLv2+
+    # Описание     : A simple helper that offers to install new packages on the command line
+    # : using PackageKit.
+    'PackageKit-command-not-found'
+    #
+    # Имя          : PackageKit-Qt5
+    # Репозиторий  : @System
+    # Из репозитор : updates
+    # Краткое опис : Qt5 support library for PackageKit
+    # URL          : http://www.packagekit.org/
+    # Лицензия     : LGPLv2+
+    # Описание     : Qt5 support library for PackageKit.
+    'PackageKit-Qt5'
+    #
+    # Имя          : PackageKit-glib
+    # Репозиторий  : @System
+    # Из репозитор : updates
+    # Краткое опис : GLib libraries for accessing PackageKit
+    # URL          : http://www.freedesktop.org/software/PackageKit/
+    # Лицензия     : GPLv2+ and LGPLv2+
+    # Описание     : GLib libraries for accessing PackageKit.
+    'PackageKit-glib'
+    #
+    # Имя          : PackageKit-gstreamer-plugin
+    # Репозиторий  : @System
+    # Из репозитор : updates
+    # Краткое опис : Install GStreamer codecs using PackageKit
+    # URL          : http://www.freedesktop.org/software/PackageKit/
+    # Лицензия     : GPLv2+ and LGPLv2+
+    # Описание     : The PackageKit GStreamer plugin allows any Gstreamer application to install
+    # : codecs from configured repositories using PackageKit.
+    'PackageKit-gstreamer-plugin'
+    #
+    # Имя          : PackageKit-gtk3-module
+    # Репозиторий : @System
+    # Из репозитор : updates
+    # Краткое опис : Install fonts automatically using PackageKit
+    # URL : http://www.freedesktop.org/software/PackageKit/
+    # Лицензия : GPLv2+ and LGPLv2+
+    # Описание : The PackageKit GTK3+ module allows any Pango application to install
+    # : fonts from configured repositories using PackageKit.
+    'PackageKit-gtk3-module'
+    #
+    # Имя          : PackageKit-cron
+    # Репозиторий  : updates
+    # Краткое опис : Cron job and related utilities for PackageKit
+    # URL          : http://www.freedesktop.org/software/PackageKit/
+    # Лицензия     : GPLv2+ and LGPLv2+
+    # Описание     : Crontab and utilities for running PackageKit as a cron job.
+    'PackageKit-cron'
+    #
+    # Имя          : PackageKit-glib-devel
+    # Репозиторий  : updates
+    # Краткое опис : GLib Libraries and headers for PackageKit
+    # URL          : http://www.freedesktop.org/software/PackageKit/
+    # Лицензия     : GPLv2+ and LGPLv2+
+    # Описание     : GLib headers and libraries for PackageKit.
+    'PackageKit-glib-devel'
+    #
+    # Имя          : PackageKit-Qt5-devel
+    # Репозиторий  : updates
+    # Краткое опис : Development files for PackageKit-Qt5
+    # URL          : http://www.packagekit.org/
+    # Лицензия     : LGPLv2+
+    # Описание     : Development files for PackageKit-Qt5.
+    'PackageKit-Qt5-devel'
+    #
+    # Имя          : gnome-packagekit
+    # Репозиторий : fedora
+    # Краткое опис : Session applications to manage packages
+    # URL : http://www.packagekit.org
+    # Лицензия : GPLv2+
+    # Описание : gnome-packagekit provides session applications for the PackageKit API.
+    # : There are several utilities designed for installing, updating and
+    # : removing packages on your system.
+    'gnome-packagekit'
+    #
+    # Имя          : gnome-packagekit-common
+    # Репозиторий  : fedora
+    # Краткое опис : Common files required for gnome-packagekit
+    # URL          : http://www.packagekit.org
+    # Лицензия     : GPLv2+
+    # Описание     : Files shared by all subpackages of gnome-packagekit
+    'gnome-packagekit-common'
+    #
+    # Имя          : gnome-packagekit-installer
+    # Репозиторий  : fedora
+    # Краткое опис : PackageKit package installer
+    # URL          : http://www.packagekit.org
+    # Лицензия     : GPLv2+
+    # Описание     : A graphical package installer for PackageKit which is used to manage software
+    # : not shown in GNOME Software.
+    'gnome-packagekit-installer'
+    #
+    # Имя          : gnome-packagekit-updater
+    # Репозиторий : fedora
+    # Краткое опис : PackageKit package updater
+    # URL : http://www.packagekit.org
+    # Лицензия : GPLv2+
+    # Описание : A graphical package updater for PackageKit which is used to update packages
+    # : without rebooting.
+    'gnome-packagekit-updater'
+    #
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/PackageKit.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+}
+
+function main_PackageKit_script_source() {
+
+  # printf "Initialise main function of PackageKit script source\n";
+
+  install_PackageKit "$@"
+
+}
+
+main_PackageKit_script_source "$@"

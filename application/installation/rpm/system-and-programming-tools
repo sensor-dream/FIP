@@ -64,10 +64,6 @@ function install_system_and_programming_tools() {
   # Optional packages list
   install_pkg=(
     #
-    # A simple helper that offers to install new packages on the command line
-    # : using PackageKit.
-    'PackageKit-command-not-found'
-    #
     # AIDE (Advanced Intrusion Detection Environment) is a file integrity
     # : checker and intrusion detection program.
     'aide'
