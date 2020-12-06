@@ -226,6 +226,7 @@ function install_core_pack() {
     patch
     patchelf
     patchutils
+    pcp
     pcp-system-tools
     perf
     pkgconf-pkg-config
@@ -306,7 +307,8 @@ function install_core_pack() {
   # 'saidar'
   # 'i-nex'
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >package-list/core-pack.txt
+  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/core-pack.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

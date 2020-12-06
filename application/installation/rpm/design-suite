@@ -57,6 +57,8 @@ function install_design_suite() {
     'design-suite'
   )
 
+  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/design-suite.g.txt"
   pm -g "$@" -- "${install_pkg[@]}"
 
 }

@@ -73,6 +73,9 @@ function preinstall_nvidia_videocard_drv_340xx() {
     'libgcc'
     'libxcb'
   )
+  
+  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/nvidia-videocard-drv-340xx.txt"
   pm "$@" -- "${install_pkg[@]}"
 
   install_pkg=(
@@ -84,6 +87,8 @@ function preinstall_nvidia_videocard_drv_340xx() {
     # Tools for VAAPI (including vainfo)
     'libva-utils'
   )
+  
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >>"${main_project_path}/package-list/nvidia-videocard-drv-340xx.txt"
   pm "$@" -- "${install_pkg[@]}"
 }
 
@@ -113,6 +118,8 @@ function install_nvidia_videocard_drv_340xx() {
     # This package provides the shared libraries i686 for xorg-x11-drv-nvidia xorg-x11-drv-nvidia-libs
     'xorg-x11-drv-nvidia-340xx-libs*i686'
   )
+  
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >>"${main_project_path}/package-list/nvidia-videocard-drv-340xx.txt"
   pm "$@" -- "${install_pkg[@]}"
   # sudo dnf reinstall "${install_pkg[@]}"
 

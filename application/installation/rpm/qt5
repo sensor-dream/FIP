@@ -225,7 +225,8 @@ function install_qt5() {
     'quazip-qt5-devel'
   )
 
-  [[ -z "$(check_installed_packages gdb)" ]] && . "${main_project_path}/application/installation/rpm/gdb"
+  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/qt5.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

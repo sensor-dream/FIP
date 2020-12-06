@@ -954,8 +954,26 @@ function install_system_and_programming_tools() {
     # : decompressed with bzip2).
     'pbzip2'
     #
+    # Имя          : pcp
+    # Репозиторий  : @System
+    # Из репозитор : updates
+    # Краткое опис : System-level performance monitoring and performance management
+    # URL          : https://pcp.io
+    # Лицензия     : GPLv2+ and LGPLv2+ and CC-BY
+    # Описание     : Performance Co-Pilot (PCP) provides a framework and services to support
+    # : system-level performance monitoring and performance management.
+    # :
+    # : The PCP open source release provides a unifying abstraction for all of
+    # : the interesting performance data in a system, and allows client
+    # : applications to easily retrieve and process any subset of that data.
+    'pcp'
+    #
+    # Имя          : pcp-system-tools
+    # Репозиторий  : @System
+    # Из репозитор : updates
     # Краткое опис : Performance Co-Pilot (PCP) System and Monitoring Tools
-    #     # :          : https://pcp.io
+    # URL          : https://pcp.io
+    # Лицензия     : GPLv2+
     # Описание     : This PCP module contains additional system monitoring tools written
     # : in the Python language.
     'pcp-system-tools'
@@ -1477,6 +1495,8 @@ function install_system_and_programming_tools() {
     #
   )
 
+  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/system-and-programming-tools.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

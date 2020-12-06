@@ -1,0 +1,7 @@
+fbzx
+fuse-emulator
+fuse-emulator-roms
+fuse-emulator-utils
+libspectrum
+libspectrum-devel
+spectrum-roms

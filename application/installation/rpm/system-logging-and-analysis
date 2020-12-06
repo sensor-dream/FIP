@@ -54,10 +54,12 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 function install_system_logging_and_analysis() {
 
   local install_pkg=(
-    # 'syslog-ng'
+    'syslog-ng'
     'systemd-journal-remote'
   )
 
+  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/system-logging-and-analysis.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

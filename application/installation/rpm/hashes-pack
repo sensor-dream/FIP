@@ -94,6 +94,8 @@ function install_hashes_pack() {
     sha3sum
   )
 
+  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/hashes-pack.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }
