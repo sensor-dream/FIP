@@ -81,15 +81,15 @@ function preparate_sysctl_conf() {
 
   temp_one="$(cat ${sysctl_conf_file})"
 
-  insert_or_replace_string_data_in_var 'net.ipv4.neigh.default.gc_thresh1' "${net_ipv4_neigh_default_gc_thresh1}"
+  insert_or_replace_var_value_in_string_data 'net.ipv4.neigh.default.gc_thresh1' "${net_ipv4_neigh_default_gc_thresh1}"
 
-  insert_or_replace_string_data_in_var 'net.ipv4.neigh.default.gc_thresh2' "${net_ipv4_neigh_default_gc_thresh2}"
+  insert_or_replace_var_value_in_string_data 'net.ipv4.neigh.default.gc_thresh2' "${net_ipv4_neigh_default_gc_thresh2}"
 
-  insert_or_replace_string_data_in_var 'net.ipv4.neigh.default.gc_thresh3' "${net_ipv4_neigh_default_gc_thresh3}"
+  insert_or_replace_var_value_in_string_data 'net.ipv4.neigh.default.gc_thresh3' "${net_ipv4_neigh_default_gc_thresh3}"
 
-  insert_or_replace_string_data_in_var 'kernel.sysrq' "${kernel_sysrq}"
+  insert_or_replace_var_value_in_string_data 'kernel.sysrq' "${kernel_sysrq}"
 
-  insert_or_replace_string_data_in_var 'vm.admin_reserve_kbytes' "${vm_admin_reserve_kbytes}"
+  insert_or_replace_var_value_in_string_data 'vm.admin_reserve_kbytes' "${vm_admin_reserve_kbytes}"
 
   echo "${temp_one}" | sudo tee "${sysctl_conf_file}" >/dev/null
 

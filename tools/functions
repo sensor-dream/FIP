@@ -233,10 +233,18 @@ function unset_dupes_in_array() {
   echo "${out[@]}"
 }
 
-function insert_or_replace_string_data_in_var() {
+function insert_or_replace_var_value_in_string_data() {
   if ! grep -q "$1" <<<"${temp_one}"; then
     temp_one+=$'\n'"$1 = $2"
   else
     temp_one="$(sed 's/'$1'.*$/'$1' = '$2'/' <<<${temp_one})"
+  fi
+}
+
+function insert_or_replace_substring_in_string_data() {
+  if ! grep -q "$1" <<<"${temp_one}"; then
+    temp_one+=$'\n'"$2"
+  else
+    temp_one="$(sed 's/'$1'/'$2'/' <<<${temp_one})"
   fi
 }

@@ -152,8 +152,8 @@ function install_zram_swap() {
 
   temp_one="$(cat ${zram_generator_conf})"
 
-  insert_or_replace_string_data_in_var "zram-fraction" "${zram_fraction}"
-  insert_or_replace_string_data_in_var "max-zram-size" "${max_zram_size}"
+  insert_or_replace_var_value_in_string_data "zram-fraction" "${zram_fraction}"
+  insert_or_replace_var_value_in_string_data "max-zram-size" "${max_zram_size}"
 
   echo "${temp_one}" | sudo tee "${zram_generator_conf}" >/dev/null
 
@@ -161,10 +161,10 @@ function install_zram_swap() {
 
   temp_one="$(cat ${sysctl_conf_file})"
 
-  insert_or_replace_string_data_in_var "vm.vfs_cache_pressure" "${vm_vfs_cache_pressure}"
-  insert_or_replace_string_data_in_var "vm.swappiness" "${vm_swappiness}"
-  insert_or_replace_string_data_in_var "vm.dirty_background_ratio" "${vm_dirty_background_ratio}"
-  insert_or_replace_string_data_in_var "vm.dirty_ratio" "${vm_dirty_ratio}"
+  insert_or_replace_var_value_in_string_data "vm.vfs_cache_pressure" "${vm_vfs_cache_pressure}"
+  insert_or_replace_var_value_in_string_data "vm.swappiness" "${vm_swappiness}"
+  insert_or_replace_var_value_in_string_data "vm.dirty_background_ratio" "${vm_dirty_background_ratio}"
+  insert_or_replace_var_value_in_string_data "vm.dirty_ratio" "${vm_dirty_ratio}"
 
   echo "${temp_one}" | sudo tee "${sysctl_conf_file}" >/dev/null
 
