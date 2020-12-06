@@ -53,9 +53,14 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
 function install_zram_swap() {
 
+  echo
+  echo "Remove /etc/systemd/zram-generator.conf for run default parameters zram"
+  echo "Remove all string in /etc/systemd/zram-generator.conf file for not running zram drive"
+
   #
   # /etc/systemd/zram-generator.conf
   #
+  local zram_generator_conf='/etc/systemd/zram-generator.conf'
   # Допустимые значения zram-fraction:
   #         0.5 – выделение под пул 50% (выбор по умолчанию) от оперативной памяти;
   #         0.25 – 25%;
@@ -68,6 +73,7 @@ function install_zram_swap() {
   #
   # /etc/sysctl.conf
   #
+  local sysctl_conf_file='/etc/sysctl.conf'
   # vm.vfs_cache_pressure=500 увеличивает давление на кэш, что увеличивает склонность ядра к рекультивации памяти, используемой для кэширования объектов каталогов и индексов. Вы будете использовать меньше памяти в течение более длительного периода времени. Резкое падение производительности сводится на нет за счёт более раннего свопинга.
   local vm_vfs_cache_pressure=500
   # vm.swappiness=100 увеличивает параметр, насколько агрессивно ядро будет свопить страницы памяти, так как мы сначала используем ZRAM.
@@ -127,9 +133,9 @@ function install_zram_swap() {
   echo 'Please readme https://fedoraproject.org/wiki/Changes/SwapOnZRAM'
   echo
 
-  if [[ ! -f '/etc/systemd/zram-generator.conf' ]]; then
+  if [[ ! -f "${zram_generator_conf}" ]]; then
     if [[ -f '/lib/systemd/zram-generator.conf' ]]; then
-      sudo cp '/lib/systemd/zram-generator.conf' '/etc/systemd/zram-generator.conf'
+      sudo cp '/lib/systemd/zram-generator.conf' "${zram_generator_conf}"
     else
       echo '# This config file enables a /dev/zram0 device with the default settings:
 # — size — half of available RAM or 4GB, whichever is less
@@ -138,45 +144,35 @@ function install_zram_swap() {
 # To disable, uninstall zram-generator-defaults or create empty
 # /etc/systemd/zram-generator.conf file.
 [zram0]' |
-        sudo tee -a '/etc/systemd/zram-generator.conf' >/dev/null
+        sudo tee -a "${zram_generator_conf}" >/dev/null
     fi
   fi
 
-  if ! grep -q "zram-fraction" '/etc/systemd/zram-generator.conf'; then
-    echo -e "# выделение под пул ${zram_fraction}% от оперативной памяти (по умолчанию 50%)\nzram-fraction = ${zram_fraction}" | sudo tee -a '/etc/systemd/zram-generator.conf' >/dev/null
-  else
-    sudo sed -i 's/zram-fraction.*$/zram-fraction = '"${zram_fraction}"'/' '/etc/systemd/zram-generator.conf'
-  fi
+  [[ -f "${zram_generator_conf}.back" ]] || sudo cp "${zram_generator_conf}" "${zram_generator_conf}.back"
 
-  if ! grep -q "max-zram-size" '/etc/systemd/zram-generator.conf'; then
-    echo -e "# ${max_zram_size} максимально допустимый объём для пула в мегабайтах\nmax-zram-size = ${max_zram_size}" | sudo tee -a '/etc/systemd/zram-generator.conf' >/dev/null
-  else
-    sudo sed -i 's/max-zram-size.*$/max-zram-size = '"${max_zram_size}"'/' '/etc/systemd/zram-generator.conf'
-  fi
+  temp_one="$(cat ${zram_generator_conf})"
 
-  if ! grep -q "vm.vfs_cache_pressure" '/etc/sysctl.conf'; then
-    echo "vm.vfs_cache_pressure = ${vm_vfs_cache_pressure}" | sudo tee -a '/etc/sysctl.conf' >/dev/null
-  else
-    sudo sed -i 's/vm.vfs_cache_pressure.*$/vm.vfs_cache_pressure = '"${vm_vfs_cache_pressure}"'/' '/etc/sysctl.conf'
-  fi
+  insert_or_replace_string_data_in_var "zram-fraction" "${zram_fraction}"
+  insert_or_replace_string_data_in_var "max-zram-size" "${max_zram_size}"
 
-  if ! grep -q "vm.swappiness" '/etc/sysctl.conf'; then
-    echo "vm.swappiness = ${vm_swappiness}" | sudo tee -a '/etc/sysctl.conf' >/dev/null
-  else
-    sudo sed -i 's/vm.swappiness.*$/vm.swappinesse = '"${vm_swappiness}"'/' '/etc/sysctl.conf'
-  fi
+  echo "${temp_one}" | sudo tee "${zram_generator_conf}" >/dev/null
 
-  if ! grep -q "vm.dirty_background_ratio" '/etc/sysctl.conf'; then
-    echo "vm.dirty_background_ratio = ${vm_dirty_background_ratio}" | sudo tee -a '/etc/sysctl.conf' >/dev/null
-  else
-    sudo sed -i 's/vm.dirty_background_ratio.*$/vm.dirty_background_ratio = '"${vm_dirty_background_ratio}"'/' '/etc/sysctl.conf'
-  fi
+  [[ -f "${sysctl_conf_file}.back" ]] || sudo cp "${sysctl_conf_file}" "${sysctl_conf_file}.back"
 
-  if ! grep -q "vm.dirty_ratio" '/etc/sysctl.conf'; then
-    echo "vm.dirty_ratio = ${vm_dirty_ratio}" | sudo tee -a '/etc/sysctl.conf' >/dev/null
-  else
-    sudo sed -i 's/vm.dirty_ratio.*$/vm.dirty_ratio = '"${vm_dirty_ratio}"'/' '/etc/sysctl.conf'
-  fi
+  temp_one="$(cat ${sysctl_conf_file})"
+
+  insert_or_replace_string_data_in_var "vm.vfs_cache_pressure" "${vm_vfs_cache_pressure}"
+  insert_or_replace_string_data_in_var "vm.swappiness" "${vm_swappiness}"
+  insert_or_replace_string_data_in_var "vm.dirty_background_ratio" "${vm_dirty_background_ratio}"
+  insert_or_replace_string_data_in_var "vm.dirty_ratio" "${vm_dirty_ratio}"
+
+  echo "${temp_one}" | sudo tee "${sysctl_conf_file}" >/dev/null
+
+  # Return the values of variables to the state saved in files and delete your changes.
+  # sudo sysctl --system
+
+  # read values from file
+  sudo sysctl -p >/dev/null
 
 }
 
