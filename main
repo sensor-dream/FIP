@@ -46,7 +46,7 @@ function main_main_script_source() {
 
   # prinf "Initialise main function of main script source\n";
 
-  . "${main_project_path}/application/prepartion/nginx/nginx"
+  . "${main_project_path}/system/preparation/RUN"
 
 }
 
