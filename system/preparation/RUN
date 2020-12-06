@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: run-pack
+## @File: RUN
 ## @Creation date file: 07.12.2020, 04:21:13
 
-[[ -z "${run_pack_script_source}" ]] && declare -rx run_pack_script_source="$BASH_SOURCE"
+[[ -z "${RUN_script_source}" ]] && declare -rx RUN_script_source="$BASH_SOURCE"
 
-if [[ -z "${run_pack_script_source_path}" ]]; then
-  temp_one="$(dirname ${run_pack_script_source})"
+if [[ -z "${RUN_script_source_path}" ]]; then
+  temp_one="$(dirname ${RUN_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx run_pack_script_source_path="$(pwd)"
+    declare -rx RUN_script_source_path="$(pwd)"
   else
-    declare -rx run_pack_script_source_path="${temp_one}"
+    declare -rx RUN_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,7 +51,7 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_run_pack() {
+function install_RUN() {
 
   . "${main_project_path}/system/preparation/diasble-tracker"
   . "${main_project_path}/system/preparation/disable-evolution"
@@ -65,12 +65,12 @@ function install_run_pack() {
   . "${main_project_path}/system/preparation/zram-swap"
 }
 
-function main_run_pack_script_source() {
+function main_RUN_script_source() {
 
-  # printf "Initialise main function of run-pack script source\n";
+  # printf "Initialise main function of RUN script source\n";
 
-  install_run_pack "$@"
+  install_RUN "$@"
 
 }
 
-main_run_pack_script_source "$@"
+main_RUN_script_source "$@"
