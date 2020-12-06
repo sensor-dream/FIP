@@ -53,19 +53,71 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
 function install_zram_swap() {
 
+  #
+  # /etc/systemd/zram-generator.conf
+  #
   # Допустимые значения zram-fraction:
   #         0.5 – выделение под пул 50% (выбор по умолчанию) от оперативной памяти;
   #         0.25 – 25%;
   #         0.1 – 10%;
   #         1.0 – 100% соответственно (не рекомендуется).
-  # В max-zram-size указывается максимально допустимый объём для пула в мегабайтах.
-
   local zram_fraction=0.25
+  # В max-zram-size указывается максимально допустимый объём для пула в мегабайтах.
   local max_zram_size=2048
 
+  #
+  # /etc/sysctl.conf
+  #
+  # vm.vfs_cache_pressure=500 увеличивает давление на кэш, что увеличивает склонность ядра к рекультивации памяти, используемой для кэширования объектов каталогов и индексов. Вы будете использовать меньше памяти в течение более длительного периода времени. Резкое падение производительности сводится на нет за счёт более раннего свопинга.
+  local vm_vfs_cache_pressure=500
+  # vm.swappiness=100 увеличивает параметр, насколько агрессивно ядро будет свопить страницы памяти, так как мы сначала используем ZRAM.
+  local vm_swappiness=100
+  # vm.dirty_background_ratio=1 &
+  # vm.dirty_ratio=50 — фоновые процессы начнут запись сразу по достижении лимита 1%, но система не будет принудительно выполнять синхронный ввод-вывод, пока не достигнет dirty_ratio в 50%.
+  local vm_dirty_background_ratio=1
+  local vm_dirty_ratio=50
+
   local install_pkg=(
+    # Имя          : zram
+    # Репозиторий  : fedora
+    # Краткое опис : ZRAM for swap config and services for Fedora
+    # Лицензия     : GPLv2+
+    # Описание     : ZRAM is a Linux block device that can be used for compressed swap in memory.
+    # : It's useful in memory constrained devices. This provides a service to setup
+    # : ZRAM as a swap device based on criteria such as available memory.
+    'zram'
+    #
+    # Имя          : zram-generator
+    # Репозиторий  : @System
+    # Из репозитор : anaconda
+    # Краткое опис : Systemd unit generator for zram swap devices
+    # URL          : https://crates.io/crates/zram-generator
+    # Лицензия     : MIT
+    # Описание     : This is a systemd unit generator that enables swap on zram.
+    # : (With zram, there is no physical swap device. Part of the avaialable RAM
+    # : is used to store compressed pages, essentially trading CPU cycles for memory.)
+    # :
+    # : To activate, install zram-generator-defaults subpackage
     'zram-generator'
+    #
+    # Имя          : zram-generator-defaults
+    # Репозиторий  : @System
+    # Из репозитор : anaconda
+    # Краткое опис : Default configuration for zram-generator
+    # URL          : https://crates.io/crates/zram-generator
+    # Лицензия     : MIT
+    # Описание     : Default configuration for zram-generator.
     'zram-generator-defaults'
+    #
+    # Имя          : udisks2-zram
+    # Репозиторий  : @System
+    # Из репозитор : fedora
+    # Краткое опис : Module for ZRAM
+    # URL          : https://github.com/storaged-project/udisks
+    # Лицензия     : LGPLv2+
+    # Описание     : This package contains module for ZRAM configuration.
+    'udisks2-zram'
+    #
   )
 
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/zram-swap.txt"
@@ -83,6 +135,30 @@ function install_zram_swap() {
     echo -e "# ${max_zram_size} максимально допустимый объём для пула в мегабайтах\nmax-zram-size = ${max_zram_size}" | sudo tee -a '/etc/systemd/zram-generator.conf' >/dev/null
   else
     sudo sed -i 's/max-zram-size.*$/max-zram-size = '"${max_zram_size}"'/' '/etc/systemd/zram-generator.conf'
+  fi
+
+  if ! grep -q "vm.vfs_cache_pressure" '/etc/sysctl.conf'; then
+    echo "vm.vfs_cache_pressure = ${vm_vfs_cache_pressure}" | sudo tee -a '/etc/sysctl.conf' >/dev/null
+  else
+    sudo sed -i 's/vm.vfs_cache_pressure.*$/vm.vfs_cache_pressure = '"${vm_vfs_cache_pressure}"'/' '/etc/sysctl.conf'
+  fi
+
+  if ! grep -q "vm.swappiness" '/etc/sysctl.conf'; then
+    echo "vm.swappiness = ${vm_swappiness}" | sudo tee -a '/etc/sysctl.conf' >/dev/null
+  else
+    sudo sed -i 's/vm.swappiness.*$/vm.swappinesse = '"${vm_swappiness}"'/' '/etc/sysctl.conf'
+  fi
+
+  if ! grep -q "vm.dirty_background_ratio" '/etc/sysctl.conf'; then
+    echo "vm.dirty_background_ratio = ${vm_dirty_background_ratio}" | sudo tee -a '/etc/sysctl.conf' >/dev/null
+  else
+    sudo sed -i 's/vm.dirty_background_ratio.*$/vm.dirty_background_ratio = '"${vm_dirty_background_ratio}"'/' '/etc/sysctl.conf'
+  fi
+
+  if ! grep -q "vm.dirty_ratio" '/etc/sysctl.conf'; then
+    echo "vm.dirty_ratio = ${vm_dirty_ratio}" | sudo tee -a '/etc/sysctl.conf' >/dev/null
+  else
+    sudo sed -i 's/vm.dirty_ratio.*$/vm.dirty_ratio = '"${vm_dirty_ratio}"'/' '/etc/sysctl.conf'
   fi
 
 }
