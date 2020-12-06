@@ -1,0 +1,98 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: zram-swap
+## @Creation date file: 06.12.2020, 16:58:56
+
+[[ -z "${zram_swap_script_source}" ]] && declare -rx zram_swap_script_source="$BASH_SOURCE"
+
+if [[ -z "${zram_swap_script_source_path}" ]]; then
+  temp_one="$(dirname ${zram_swap_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx zram_swap_script_source_path="$(pwd)"
+  else
+    declare -rx zram_swap_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_zram_swap() {
+
+  # Допустимые значения zram-fraction:
+  #         0.5 – выделение под пул 50% (выбор по умолчанию) от оперативной памяти;
+  #         0.25 – 25%;
+  #         0.1 – 10%;
+  #         1.0 – 100% соответственно (не рекомендуется).
+  # В max-zram-size указывается максимально допустимый объём для пула в мегабайтах.
+
+  local zram_fraction=0.25
+  local max_zram_size=2048
+
+  local install_pkg=(
+    'zram-generator'
+    'zram-generator-defaults'
+  )
+
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/zram-swap.txt"
+  pm "$@" -- "${install_pkg[@]}"
+
+  [[ -f '/etc/systemd/zram-generator.conf' ]] || sudo touch '/etc/systemd/zram-generator.conf'
+
+  if ! grep -q "zram-fraction" '/etc/systemd/zram-generator.conf'; then
+    echo -e "# выделение под пул ${zram_fraction}% от оперативной памяти (по умолчанию 50%)\nzram-fraction = ${zram_fraction}" | sudo tee -a '/etc/systemd/zram-generator.conf' >/dev/null
+  else
+    sudo sed -i 's/zram-fraction.*$/zram-fraction = '"${zram_fraction}"'/' '/etc/systemd/zram-generator.conf'
+  fi
+
+  if ! grep -q "max-zram-size" '/etc/systemd/zram-generator.conf'; then
+    echo -e "# ${max_zram_size} максимально допустимый объём для пула в мегабайтах\nmax-zram-size = ${max_zram_size}" | sudo tee -a '/etc/systemd/zram-generator.conf' >/dev/null
+  else
+    sudo sed -i 's/max-zram-size.*$/max-zram-size = '"${max_zram_size}"'/' '/etc/systemd/zram-generator.conf'
+  fi
+
+}
+
+function main_zram_swap_script_source() {
+
+  # printf "Initialise main function of zram-swap script source\n";
+
+  install_zram_swap "$@"
+
+}
+
+main_zram_swap_script_source "$@"

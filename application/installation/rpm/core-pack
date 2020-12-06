@@ -298,6 +298,7 @@ function install_core_pack() {
     xmlsec1-openssl
     xosview
     zlib-devel
+    zram-generator
     zram-generator-defaults
     zstd
   )
