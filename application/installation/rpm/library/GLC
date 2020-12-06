@@ -63,7 +63,6 @@ function install_GLC() {
     'GLC_lib-devel'
   )
 
-  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/GLC.txt"
   pm "$@" -- "${install_pkg[@]}"
 

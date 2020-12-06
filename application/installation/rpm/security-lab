@@ -57,7 +57,6 @@ function install_security_lab() {
     'security-lab'
   )
 
-  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/security-lab.g.txt"
   pm -g "$@" -- "${install_pkg[@]}"
 

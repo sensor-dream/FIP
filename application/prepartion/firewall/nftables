@@ -23,47 +23,46 @@ if [[ -z "${nftables_script_source_path}" ]]; then
 fi
 
 if [[ -z "${main_run_script_path}" ]]; then
-  declare -rx main_run_script_path="$(pwd)";
-  printf "Script runs from path: %s\n" "${main_run_script_path}";
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
 fi
 
 if [[ -z "${main_cfg_script_source}" ]]; then
-  check=1;
+  check=1
   while [[ "${check}" -eq 1 ]]; do
     if [[ ! -f 'main.cfg' ]]; then
       if [[ "$(pwd)" != "/" ]]; then
-        cd ../;
+        cd ../
       else
-        cd ${main_run_script_path};
-        check=0;
-        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m";
-        tput sgr0;
-        exit 1;
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
       fi
     else
-      check=0;
-      declare -rx main_project_path="$(pwd)";
-      . "${main_project_path}/main.cfg" "$@";
-      cd "${main_run_script_path}";
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
     fi
   done
 fi
 
-printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})";
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_nftables(){
+function install_nftables() {
 
-  local install_pkg=(\
+  local install_pkg=(
 
-);
+  )
 
-  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/nftables.preparatopn.txt"
-  pm  "$@" -- "${install_pkg[@]}"
+  pm "$@" -- "${install_pkg[@]}"
 
 }
 
-function main_nftables_script_source(){
+function main_nftables_script_source() {
 
   # prinf "Initialise main function of nftables script source\n";
 
@@ -71,4 +70,4 @@ function main_nftables_script_source(){
 
 }
 
-main_nftables_script_source "$@";
+main_nftables_script_source "$@"

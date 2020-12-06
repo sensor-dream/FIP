@@ -87,7 +87,6 @@ function install_mesa() {
     'mesa-vulkan-devel'
   )
 
-  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/mesa.txt"
   pm "$@" -- "${install_pkg[@]}"
 

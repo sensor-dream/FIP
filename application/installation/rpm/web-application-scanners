@@ -57,7 +57,6 @@ function install_web_application_scanners() {
     'wapiti'
   )
 
-  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/web-application-scanners.txt"
   pm "$@" -- "${install_pkg[@]}"
 

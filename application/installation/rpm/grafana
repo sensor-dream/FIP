@@ -61,7 +61,6 @@ function install_grafana() {
     'ceph-grafana-dashboards'
   )
 
-  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/grafana.txt"
   pm "$@" -- "${install_pkg[@]}"
 

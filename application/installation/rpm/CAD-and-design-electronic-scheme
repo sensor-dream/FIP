@@ -85,7 +85,7 @@ function install_CAD_and_design_electronic_scheme() {
     'polyclipping-devel'
     'pkgconf-pkg-config'
   )
-  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
+
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/CAD-and-design-electronic-scheme.txt"
   pm "$@" -- "${install_pkg[@]}"
 

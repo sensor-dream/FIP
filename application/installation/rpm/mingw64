@@ -475,8 +475,6 @@ function install_mingw64() {
     mingw64-zlib-static
   )
 
-
-  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/mingw64.txt"
   pm "$@" -- "${install_pkg[@]}"
 

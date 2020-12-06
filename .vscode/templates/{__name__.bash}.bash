@@ -57,7 +57,7 @@ function install_{__name__}(){
 
 );
 
-  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
+
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/{__name__}.txt"
   pm  "$@" -- "${install_pkg[@]}"
 

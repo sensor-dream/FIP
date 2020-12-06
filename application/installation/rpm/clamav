@@ -61,8 +61,6 @@ function install_clamav() {
     'development-tools'
   )
 
-
-  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/clamav.g.txt"
   pm -g "$@" -- "${install_pkg[@]}"
 
@@ -98,7 +96,6 @@ function install_clamav() {
     'clamav-devel'
   )
 
-  [[ -d "${main_project_path}/package-list" ]] || mkdir -p "${main_project_path}/package-list"
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/clamav.txt"
   pm "$@" -- "${install_pkg[@]}"
 
