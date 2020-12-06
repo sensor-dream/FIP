@@ -248,3 +248,23 @@ function insert_or_replace_substring_in_string_data() {
     temp_one="$(sed 's/'$1'/'$2'/' <<<${temp_one})"
   fi
 }
+
+function insert_or_replace_var_value_in_conf_file() {
+
+  local data=("$1")
+  local file="$2"
+  # [[ -f "${file}" ]] || sudo touch "${file}"
+  # [[ -f "${file}.back" ]] || sudo cp "${file}" "${file}.back"
+  local data_file="$(cat ${file})"
+
+  for i in "${data[@]}"; do
+    echo $'\n'"${data[${i}]}"
+    if ! grep -q "${i}" <<<"${data_file}"; then
+      data_file+=$'\n'${i} = "${data[${i}]}"
+    else
+      data_file="$(sed 's/'${i}'.*$/'${data[${i}]}' = '$2'/' <<<${data_file})"
+    fi
+    printf '%s\n' "${data_file}"
+  done
+
+}

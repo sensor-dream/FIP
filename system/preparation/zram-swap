@@ -56,32 +56,9 @@ function install_zram_swap() {
   echo
   echo "Remove /etc/systemd/zram-generator.conf for run default parameters zram"
   echo "Remove all string in /etc/systemd/zram-generator.conf file for not running zram drive"
-
-  #
-  # /etc/systemd/zram-generator.conf
-  #
-  local zram_generator_conf='/etc/systemd/zram-generator.conf'
-  # Допустимые значения zram-fraction:
-  #         0.5 – выделение под пул 50% (выбор по умолчанию) от оперативной памяти;
-  #         0.25 – 25%;
-  #         0.1 – 10%;
-  #         1.0 – 100% соответственно (не рекомендуется).
-  local zram_fraction=0.25
-  # В max-zram-size указывается максимально допустимый объём для пула в мегабайтах.
-  local max_zram_size=2048
-
-  #
-  # /etc/sysctl.conf
-  #
-  local sysctl_conf_file='/etc/sysctl.conf'
-  # vm.vfs_cache_pressure=500 увеличивает давление на кэш, что увеличивает склонность ядра к рекультивации памяти, используемой для кэширования объектов каталогов и индексов. Вы будете использовать меньше памяти в течение более длительного периода времени. Резкое падение производительности сводится на нет за счёт более раннего свопинга.
-  local vm_vfs_cache_pressure=500
-  # vm.swappiness=100 увеличивает параметр, насколько агрессивно ядро будет свопить страницы памяти, так как мы сначала используем ZRAM.
-  local vm_swappiness=100
-  # vm.dirty_background_ratio=1 &
-  # vm.dirty_ratio=50 — фоновые процессы начнут запись сразу по достижении лимита 1%, но система не будет принудительно выполнять синхронный ввод-вывод, пока не достигнет dirty_ratio в 50%.
-  local vm_dirty_background_ratio=1
-  local vm_dirty_ratio=50
+  echo
+  echo 'Please readme https://fedoraproject.org/wiki/Changes/SwapOnZRAM'
+  echo
 
   local install_pkg=(
     # Имя          : zram
@@ -130,8 +107,14 @@ function install_zram_swap() {
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/zram-swap.txt"
   pm "$@" -- "${install_pkg[@]}"
 
-  echo 'Please readme https://fedoraproject.org/wiki/Changes/SwapOnZRAM'
-  echo
+  #
+  # /etc/systemd/zram-generator.conf
+  #
+  local zram_generator_conf='/etc/systemd/zram-generator.conf'
+  #
+  # /etc/sysctl.conf
+  #
+  local sysctl_conf_file='/etc/sysctl.conf'
 
   if [[ ! -f "${zram_generator_conf}" ]]; then
     if [[ -f '/lib/systemd/zram-generator.conf' ]]; then
@@ -152,19 +135,28 @@ function install_zram_swap() {
 
   temp_one="$(cat ${zram_generator_conf})"
 
-  insert_or_replace_var_value_in_string_data "zram-fraction" "${zram_fraction}"
-  insert_or_replace_var_value_in_string_data "max-zram-size" "${max_zram_size}"
+  # Допустимые значения zram-fraction:
+  #         0.5 – выделение под пул 50% (выбор по умолчанию) от оперативной памяти;
+  #         0.25 – 25%;
+  #         0.1 – 10%;
+  #         1.0 – 100% соответственно (не рекомендуется).
+  insert_or_replace_var_value_in_string_data "zram-fraction" 0.25
+  # В max-zram-size указывается максимально допустимый объём для пула в мегабайтах.
+  insert_or_replace_var_value_in_string_data "max-zram-size" 2048
 
   echo "${temp_one}" | sudo tee "${zram_generator_conf}" >/dev/null
 
   [[ -f "${sysctl_conf_file}.back" ]] || sudo cp "${sysctl_conf_file}" "${sysctl_conf_file}.back"
 
   temp_one="$(cat ${sysctl_conf_file})"
-
-  insert_or_replace_var_value_in_string_data "vm.vfs_cache_pressure" "${vm_vfs_cache_pressure}"
-  insert_or_replace_var_value_in_string_data "vm.swappiness" "${vm_swappiness}"
-  insert_or_replace_var_value_in_string_data "vm.dirty_background_ratio" "${vm_dirty_background_ratio}"
-  insert_or_replace_var_value_in_string_data "vm.dirty_ratio" "${vm_dirty_ratio}"
+  # vm.vfs_cache_pressure=500 увеличивает давление на кэш, что увеличивает склонность ядра к рекультивации памяти, используемой для кэширования объектов каталогов и индексов. Вы будете использовать меньше памяти в течение более длительного периода времени. Резкое падение производительности сводится на нет за счёт более раннего свопинга.
+  insert_or_replace_var_value_in_string_data "vm.vfs_cache_pressure" 500
+  # vm.swappiness=100 увеличивает параметр, насколько агрессивно ядро будет свопить страницы памяти, так как мы сначала используем ZRAM.
+  insert_or_replace_var_value_in_string_data "vm.swappiness" 100
+  # vm.dirty_background_ratio=1 &
+  # vm.dirty_ratio=50 — фоновые процессы начнут запись сразу по достижении лимита 1%, но система не будет принудительно выполнять синхронный ввод-вывод, пока не достигнет dirty_ratio в 50%.
+  insert_or_replace_var_value_in_string_data "vm.dirty_background_ratio" 1
+  insert_or_replace_var_value_in_string_data "vm.dirty_ratio" 50
 
   echo "${temp_one}" | sudo tee "${sysctl_conf_file}" >/dev/null
 
