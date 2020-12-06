@@ -53,23 +53,63 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
 function preparate_sysctl_conf() {
 
+  local net_ipv4_neigh_default_gc_thresh1=1024
+  local net_ipv4_neigh_default_gc_thresh2=2048
+  local net_ipv4_neigh_default_gc_thresh3=4096
+  local kernel_sysrq=1
+  local vm_admin_reserve_kbytes=60192
+
   # gc_thresh1 — the minimum number of entries that should be in the ARP cache.
   # If the number of entries is less than this value, the garbage collector will not clear the ARP cache.
   # (def. 128)
-  sudo sysctl -w net.ipv4.neigh.default.gc_thresh1=1024
+  # sudo sysctl -w net.ipv4.neigh.default.gc_thresh1=1024
+  if ! grep -q "net.ipv4.neigh.default.gc_thresh1" '/etc/sysctl.conf'; then
+    echo "net.ipv4.neigh.default.gc_thresh1 = ${net_ipv4_neigh_default_gc_thresh1}" | sudo tee -a '/etc/sysctl.conf' >/dev/null
+  else
+    sudo sed -i 's/net.ipv4.neigh.default.gc_thresh1.*$/net.ipv4.neigh.default.gc_thresh1 = '"${net_ipv4_neigh_default_gc_thresh1}"'/' '/etc/sysctl.conf'
+  fi
 
   # gc_thresh2 - soft limit on the number of entries in the ARP cache.
   # If the number of entries reaches this value, the garbage collector starts within 5 seconds.
   # (def. 512)
-  sudo sysctl -w net.ipv4.neigh.default.gc_thresh2=2048
+  # sudo sysctl -w net.ipv4.neigh.default.gc_thresh2=2048
+  if ! grep -q "net.ipv4.neigh.default.gc_thresh2" '/etc/sysctl.conf'; then
+    echo "net.ipv4.neigh.default.gc_thresh2 = ${net_ipv4_neigh_default_gc_thresh2}" | sudo tee -a '/etc/sysctl.conf' >/dev/null
+  else
+    sudo sed -i 's/net.ipv4.neigh.default.gc_thresh2.*$/net.ipv4.neigh.default.gc_thresh2 = '"${net_ipv4_neigh_default_gc_thresh2}"'/' '/etc/sysctl.conf'
+  fi
 
   # gc_thresh3 - hard limit on the number of entries in the ARP cache.
   # If the number of records reaches this value, the garbage collector starts immediately.
   # (def. 1024)
-  sudo sysctl -w net.ipv4.neigh.default.gc_thresh3=4096
+  # sudo sysctl -w net.ipv4.neigh.default.gc_thresh3=4096
+  if ! grep -q "net.ipv4.neigh.default.gc_thresh3" '/etc/sysctl.conf'; then
+    echo "net.ipv4.neigh.default.gc_thresh3 = ${net_ipv4_neigh_default_gc_thresh3}" | sudo tee -a '/etc/sysctl.conf' >/dev/null
+  else
+    sudo sed -i 's/net.ipv4.neigh.default.gc_thresh3.*$/net.ipv4.neigh.default.gc_thresh3 = '"${net_ipv4_neigh_default_gc_thresh3}"'/' '/etc/sysctl.conf'
+  fi
+
+  # включить все комбинации Alt+SysRq, в т.ч. Alt+SysRq+F для принудительного вызова OOM Killer
+  # sudo sysctl -w kernel.sysrq = 1
+  if ! grep -q "kernel.sysrq" '/etc/sysctl.conf'; then
+    echo "kernel.sysrq = ${kernel_sysrq}" | sudo tee -a '/etc/sysctl.conf' >/dev/null
+  else
+    sudo sed -i 's/kernel.sysrq.*$/kernel.sysrq = '"${kernel_sysrq}"'/' '/etc/sysctl.conf'
+  fi
+
+  # с 8 МБ увеличим размер памяти, который будет гарантированно не занят в системе, чтобы у нас могли работать SSH и пр.
+  # sudo sysctl -w vm.admin_reserve_kbytes = 60192
+  if ! grep -q "vm.admin_reserve_kbytes" '/etc/sysctl.conf'; then
+    echo "vm.admin_reserve_kbytes = ${vm_admin_reserve_kbytes}" | sudo tee -a '/etc/sysctl.conf' >/dev/null
+  else
+    sudo sed -i 's/vm.admin_reserve_kbytes.*$/vm.admin_reserve_kbytes = '"${vm_admin_reserve_kbytes}"'/' '/etc/sysctl.conf'
+  fi
 
   # Return the values of variables to the state saved in files and delete your changes.
   # sudo sysctl --system
+
+  # read values from file
+  sudo sysctl -p
 
 }
 

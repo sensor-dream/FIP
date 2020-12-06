@@ -85,7 +85,8 @@ function install_zram_swap() {
     # Описание     : ZRAM is a Linux block device that can be used for compressed swap in memory.
     # : It's useful in memory constrained devices. This provides a service to setup
     # : ZRAM as a swap device based on criteria such as available memory.
-    'zram'
+    # Included in cernel module Fedora 33
+    # 'zram'
     #
     # Имя          : zram-generator
     # Репозиторий  : @System
@@ -123,7 +124,23 @@ function install_zram_swap() {
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/zram-swap.txt"
   pm "$@" -- "${install_pkg[@]}"
 
-  [[ -f '/etc/systemd/zram-generator.conf' ]] || sudo touch '/etc/systemd/zram-generator.conf'
+  echo 'Please readme https://fedoraproject.org/wiki/Changes/SwapOnZRAM'
+  echo
+
+  if [[ ! -f '/etc/systemd/zram-generator.conf' ]]; then
+    if [[ -f '/lib/systemd/zram-generator.conf' ]]; then
+      sudo cp '/lib/systemd/zram-generator.conf' '/etc/systemd/zram-generator.conf'
+    else
+      echo '# This config file enables a /dev/zram0 device with the default settings:
+# — size — half of available RAM or 4GB, whichever is less
+# — compression — most likely lzo-rle
+# \
+# To disable, uninstall zram-generator-defaults or create empty
+# /etc/systemd/zram-generator.conf file.
+[zram0]' |
+        sudo tee -a '/etc/systemd/zram-generator.conf' >/dev/null
+    fi
+  fi
 
   if ! grep -q "zram-fraction" '/etc/systemd/zram-generator.conf'; then
     echo -e "# выделение под пул ${zram_fraction}% от оперативной памяти (по умолчанию 50%)\nzram-fraction = ${zram_fraction}" | sudo tee -a '/etc/systemd/zram-generator.conf' >/dev/null
