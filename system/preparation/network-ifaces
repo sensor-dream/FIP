@@ -69,7 +69,7 @@ function main_network_ifaces_script_source() {
   echo -e "\nСписок сетевых утилит и приложений:\n"
   echo -e "\tNetworkManager 	Стандартный networking daemon\n"
   echo -e "\tnmtui 	Простой текстовый интерфейс (TUI) для NetworkManager\n"
-  echo -e "\tnmcli 	Утилита, работающая в командной строке, которая позволяет пользователям и скриптам взаимодействовать с NetworkManager\n"
+  echo -e "\tnmcli 	Утилита, работающая в командной строке, которая позволяет пользователям и скриптам взаимодействовать с NetworkManager\n\tPlease read:\n\t\thttps://developer.gnome.org/NetworkManager/stable/nmcli.html\n\t\thttps://developer.gnome.org/NetworkManager/stable/\n"
   echo -e "\tcontrol-center 	Утилита с графическим интерфейсом оболочки GNONE\n"
   echo -e "\tnm-connection-editor\n"
 

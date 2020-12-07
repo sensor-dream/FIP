@@ -98,6 +98,8 @@ function main_systemd_resolved_script_source() {
       sudo systemctl start systemd-resolved
     fi
 
+    printf '\n%s\n' 'Please read https://developer.gnome.org/NetworkManager/stable/'
+
     nmcli device disconnect "${cfg_local_interface_name}"
     nmcli c mod "${cfg_local_connection_name}" ipv4.ignore-auto-dns no ipv4.dns '127.0.0.53'
     nmcli device connect "${cfg_local_interface_name}"
