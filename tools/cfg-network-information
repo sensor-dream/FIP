@@ -51,57 +51,88 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function main_cfg_network_information_script_source() {
+# prinf "Initialise main function of cfg-network-information script source\n";
 
-  # prinf "Initialise main function of cfg-network-information script source\n";
+if [[ -f "${main_project_path}/hidden/cfg-network-information" ]]; then
+
+  . "${main_project_path}/hidden/cfg-network-information"
+
+else
 
   echo
-  echo -n "Enter local IP addres network interface (eg. 192.168.0.1-192.168.0.254): "
+  echo -n "Enter local IP addres network interface (eg. 192.168.0.1-192.168.0.254, def. 192.168.0.100): "
   read cfg_local_ip
   if [[ -z "${cfg_local_ip}" ]]; then
-    echo "cfg_local_ip is nul, exit"
-    exit
+    echo "cfg_local_ip is nul, set default 192.168.0.100"
+    cfg_local_ip='192.168.0.100'
+    # exit
   fi
   echo
-  echo -n "Enter local IP range mask (eg. 24 or 255.255.255.0): "
+  echo -n "Enter local IP range mask (eg. 24 or 255.255.255.0, def. 24): "
   read cfg_local_ip_mask
   if [[ -z "${cfg_local_ip_mask}" ]]; then
-    echo "cfg_local_ip_mask is null, exit"
-    exit
+    echo "cfg_local_ip_mask is null, set default 24"
+    cfg_local_ip_mask='24'
+    # exit
   fi
   echo
-  echo -n "Enter local gateway IP (eg. 192.168.0.1): "
+  echo -n "Enter local gateway IP (eg. 192.168.0.1, def 192.168.0.1): "
   read cfg_local_ip_gateway
   if [[ -z "${cfg_local_ip_gateway}" ]]; then
-    echo "cfg_local_ip_gateway is null, exit"
-    exit
+    echo "cfg_local_ip_gateway is null, set default 192.168.0.1"
+    cfg_local_ip_gateway='192.168.0.1'
+    # exit
   fi
   echo
-  echo -e '\e[1;31m'"$(ifconfig)"'\e[0m\'
-  echo
-  echo -n "Enter interface name(eg. eth0): "
-  read cfg_local_iface_name
-  if [[ -z "${cfg_local_iface_name}" ]]; then
-    echo "cfg_local_iface_name is null, exit"
-    exit
+  echo -n "Enter link local (eg. 192.168.0.0, def 192.168.0.0): "
+  read cfg_link_local
+  if [[ -z "${cfg_link_local}" ]]; then
+    echo "cfg_local_ip is nul, set default 192.168.0.0"
+    cfg_link_local='192.168.0.0'
+    # exit
   fi
   echo
-  echo -n "Enter mac address interface (eg. 00:00:...): "
+  echo -e '\e[1;31m'"$(nmcli -p c show)"'\e[0m'
+  echo
+  temp_one=("$(nmcli -t c show | awk -F: '/ethernet/ {  print $4 }')")
+  echo -n "Enter local interface name (eg. eth0,... def. ${temp_one[0]}): "
+  read cfg_local_interface_name
+  if [[ -z "${cfg_local_interface_name}" ]]; then
+    echo "cfg_local_interface_name is null, set default ${temp_one[0]}"
+    cfg_local_interface_name="${temp_one[0]}"
+    # exit
+  fi
+  echo
+  temp_one="$(nmcli -g GENERAL.CONNECTION dev show ${cfg_local_interface_name})"
+  echo -n "Enter connection name from interface (eg. eth0,... def. ${temp_one[0]}): "
+  read cfg_local_connection_name
+  if [[ -z "${cfg_local_connection_name}" ]]; then
+    echo "cfg_local_connection_name is null, set default ${temp_one}"
+    cfg_local_connection_name="${temp_one}"
+    # exit
+  fi
+  temp_one="$(nmcli -g GENERAL.HWADDR dev show ${cfg_local_interface_name})"
+  temp_one=${temp_one//\\/}
+  echo
+  echo -n "Enter mac address interface (def. hw-address from ${cfg_local_interface_name}: ${temp_one}): "
   read cfg_local_interface_mac_addr
   if [[ -z "${cfg_local_interface_mac_addr}" ]]; then
-    echo "cfg_local_interface_mac_addr is null, exit"
-    exit
+    echo "cfg_local_interface_mac_addr is null, set default hw-address from ${cfg_local_interface_name}: ${temp_one}"
+    cfg_local_interface_mac_addr="${temp_one}"
+    # exit
   fi
   cat <<EOF >"${main_project_path}/hidden/cfg-network-information"
 declare -rx cfg_local_ip="${cfg_local_ip}";
 declare -rx cfg_local_ip_mask="${cfg_local_ip_mask}";
 declare -rx cfg_local_ip_gateway="${cfg_local_ip_gateway}"
-declare -rx cfg_local_iface_name="${cfg_local_iface_name}"
+declare -rx cfg_link_local="${cfg_link_local}";
+declare -rx cfg_local_interface_name="${cfg_local_interface_name}"
+declare -rx cfg_local_connection_name="${cfg_local_connection_name}"
 declare -rx cfg_local_interface_mac_addr="${cfg_local_interface_mac_addr}"
 EOF
 
   chmod 0600 "${main_project_path}/hidden/cfg-network-information"
 
-}
+fi
 
-main_cfg_network_information_script_source "$@"
+[[ -z "${cfg_ip_dns_1}" ]] && . "${main_project_path}/tools/cfg-dns-information"

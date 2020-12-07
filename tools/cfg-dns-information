@@ -1,0 +1,78 @@
+#!/bin/bash
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+#
+#(primary slave)
+#
+# DNS от Cloudflare
+declare -rx cfg_dns_Cloudflare=(1.1.1.1 1.0.0.1)
+# DNS от DNS.Watch
+declare -rx cfg_dns_DNS_Watch=(84.200.69.80 84.200.70.40)
+# DNS от VersingPublic master
+declare -rx cfg_dns_VersingPublic=(64.6.64.6 64.6.65.6)
+# dns.quad9.net https://www.quad9.net/doh-quad9-dns-servers/
+declare -rx cfg_dns_quad9_net=(9.9.9.9 149.112.112.112)
+# DNS от tunnelbrocker.net
+declare -rx cfg_dns_tunnelbrocker_net=(74.82.42.42)
+# DNS от Google
+declare -rx cfg_dns_Google=(8.8.8.8 8.8.4.4)
+# DNS от Yandex
+declare -rx cfg_dns_Yandex=(77.88.8.8 77.88.8.1)
+# DNS от OpenNIC https://servers.opennicproject.org/
+declare -rx cfg_dns_OpenNIC=(185.121.177.177 169.239.202.202)
+
+#
+# TLS port 853
+#
+# Cloudflare
+declare -rx cfg_dns_tls_Cloudflare=(1.1.1.1 1.0.0.1)
+# quad9.net
+declare -rx cfg_dns_tls_quad9=(9.9.9.9@853 149.112.112.112@853)
+# dnsovertls.sinodun.com US # dnsovertls1.sinodun.com US
+declare -rx cfg_dns_tls_sinodun_com_us=(145.100.185.15@853 145.100.185.16@853)
+# tls-dns-u.odvr.dns-oarc.net US
+declare -rx cfg_dns_tls_dns_oarc_net=(184.105.193.78@853)
+# getdnsapi.net US
+declare -rx cfg_dns_tls_getdnsapi_net=(185.49.141.37@853)
+# dns.cmrg.net US
+declare -rx cfg_dns_tls_cmrg_net=(199.58.81.218@853)
+# securedns.eu Europe
+declare -rx cfg_dns_tls_securedns_eu=(146.185.167.43@853)
+# unicast.censurfridns.dk Europe
+declare -rx cfg_dns_tls_unicast_censurfridns_dk=(89.233.43.71@853)
+
+declare -rx cfg_ip_dns_1="${cfg_dns_Cloudflare[0]}"
+declare -rx cfg_ip_dns_2="${cfg_dns_Yandex[0]}"
+declare -rx cfg_ip_dns_3="${cfg_dns_Google[0]}"
+declare -rx cfg_ip_dns_4="${cfg_dns_DNS_Watch[0]}"
+declare -rx cfg_ip_dns_5="${cfg_dns_Cloudflare[1]}"
+declare -rx cfg_ip_dns_6="${cfg_dns_Yandex[1]}"
+declare -rx cfg_ip_dns_7="${cfg_dns_Google[1]}"
+declare -rx cfg_ip_dns_8="${cfg_dns_DNS_Watch[1]}"
+
+# DNS от Cloudflare (primary slave)
+declare -rx cfg_dns_ipv6_Cloudflare=(2606:4700:4700::1111 2606:4700:4700::1001)
+# DNS от DNS.Watch (primary slave)
+declare -rx cfg_dns_ipv6_DNS_Watch=(2001:1608:10:25::1c04:b12f 2001:1608:10:25::9249:d69b)
+# DNS от Versing public master
+declare -rx cfg_dns_ipv6_VersingPublic=(2620:74:1b::1:1 2620:74:1c::2:2)
+# dns.quad9.net
+declare -rx cfg_dns_ipv6_quad9_net=(2620:fe::fe 2620:fe::fe:9)
+# DNS от tunnelbrocker.nat
+declare -rx cfg_dns_ipv6_tunnelbrocker_net=(2001:470:20::2)
+# DNS от Google (primary slave)
+declare -rx cfg_dns_ipv6_Google=(2001:4860:4860::8888 2001:4860:4860::8844)
+# DNS от Yandex (primary slave)
+declare -rx cfg_dns_ipv6_Yandex=(2a02:6b8::feed:0ff 2a02:6b8:0:1::feed:0ff)
+# DNS от OpenNIC (primary slave) https://servers.opennicproject.org/
+declare -rx cfg_dns_ipv6_OpenNIC=(2001:67c:13e4:1::37 2001:470:1f06:10b::2)
+
+declare -rx cfg_ipv6_dns_1="${cfg_dns_ipv6_Cloudflare[0]}"
+declare -rx cfg_ipv6_dns_2="${cfg_dns_ipv6_Yandex[0]}"
+declare -rx cfg_ipv6_dns_3="${cfg_dns_ipv6_Google[0]}"
+declare -rx cfg_ipv6_dns_4="${cfg_dns_ipv6_DNS_Watch[0]}"
+declare -rx cfg_ipv6_dns_5="${cfg_dns_ipv6_Cloudflare[1]}"
+declare -rx cfg_ipv6_dns_6="${cfg_dns_ipv6_Yandex[1]}"
+declare -rx cfg_ipv6_dns_7="${cfg_dns_ipv6_Google[1]}"
+declare -rx cfg_ipv6_dns_8="${cfg_dns_ipv6_DNS_Watch[1]}"

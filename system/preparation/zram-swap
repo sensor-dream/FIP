@@ -102,6 +102,19 @@ function install_zram_swap() {
     # Описание     : This package contains module for ZRAM configuration.
     'udisks2-zram'
     #
+    # Имя          : systemd-swap
+    # Репозиторий  : fedora
+    # Краткое опис : Creating hybrid swap space from zram swaps, swap files and swap partitions
+    # URL          : https://github.com/Nefelim4ag/systemd-swap
+    # Лицензия     : GPLv3+
+    # Описание     : Manage swap on:
+    # :     zswap - Enable/Configure
+    # :     zram - Autoconfigurating
+    # :     files - (sparse files for saving space, support btrfs)
+    # :     block devices - auto find and do swapon
+    # : It is configurable in /etc/systemd/swap.conf
+    # 'systemd-swap'
+    #
   )
 
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/zram-swap.txt"

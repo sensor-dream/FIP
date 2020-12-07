@@ -234,17 +234,37 @@ function unset_dupes_in_array() {
 }
 
 function insert_or_replace_var_value_in_string_data() {
-  if ! grep -q "$1" <<<"${temp_one}"; then
-    temp_one+=$'\n'"$1 = $2"
+  local delim=' = '
+  OPTIND=1
+  while getopts "s" OPT; do
+    case $OPT in
+    s) delim='=' ;;
+    *) ;;
+    esac
+  done
+  shift $(($OPTIND - 1))
+  [ "${1:-}" = "--" ] && shift
+  local search="$1"
+  shift
+  local insert="$@"
+  if ! grep -qE "${search}" <<<"${temp_one}"; then
+    echo "Insert: ${search}${delim}${insert}"
+    temp_one+=$'\n'"${search}${delim}${insert}"
   else
-    temp_one="$(sed 's/'$1'.*$/'$1' = '$2'/' <<<${temp_one})"
+    echo "Replace: ${search}${delim}.*$ to ${search}${delim}${insert}"
+    temp_one="$(sed -E 's/'"$search"'.*$/'"$search$delim$insert"'/' <<<${temp_one})"
   fi
 }
 
 function insert_or_replace_substring_in_string_data() {
-  if ! grep -q "$1" <<<"${temp_one}"; then
-    temp_one+=$'\n'"$2"
+  local search="$1"
+  shift
+  local insert="$@"
+  if ! grep -qE "$search" <<<"${temp_one}"; then
+    echo "Insert: ${insert}"
+    temp_one+=$'\n'"${insert}"
   else
-    temp_one="$(sed 's/'$1'/'$2'/' <<<${temp_one})"
+    echo "Replace: ${search} to ${insert}"
+    temp_one="$(sed -E 's/'"$search"'/'"$insert"'/' <<<${temp_one})"
   fi
 }

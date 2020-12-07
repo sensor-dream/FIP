@@ -51,25 +51,29 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_RUN() {
-
-  . "${main_project_path}/system/preparation/diasble-tracker"
-  . "${main_project_path}/system/preparation/disable-evolution"
-  . "${main_project_path}/system/preparation/disable-selinux"
-  . "${main_project_path}/system/preparation/improved-font-display-X11"
-  . "${main_project_path}/system/preparation/journald"
-  . "${main_project_path}/system/preparation/keyboard-conf"
-  . "${main_project_path}/system/preparation/sshd"
-  . "${main_project_path}/system/preparation/sysctl-conf"
-  . "${main_project_path}/system/preparation/vconsole-rus-lang"
-  . "${main_project_path}/system/preparation/zram-swap"
-}
-
 function main_RUN_script_source() {
 
   # printf "Initialise main function of RUN script source\n";
 
-  install_RUN "$@"
+  . "${main_project_path}/system/preparation/clear-cache"
+  . "${main_project_path}/system/preparation/diasble-tracker"
+  . "${main_project_path}/system/preparation/disable-evolution"
+  # . "${main_project_path}/system/preparation/disable-gnome-software-service"
+  # . "${main_project_path}/system/preparation/disable-packagekit-update"
+  . "${main_project_path}/system/preparation/disable-selinux"
+  # . "${main_project_path}/system/preparation/enable-ksm"
+  . "${main_project_path}/system/preparation/host-conf"
+  . "${main_project_path}/system/preparation/host-name"
+  . "${main_project_path}/system/preparation/improved-font-display-X11"
+  . "${main_project_path}/system/preparation/journald"
+  . "${main_project_path}/system/preparation/keyboard-conf"
+  . "${main_project_path}/system/preparation/network-ifaces"
+  . "${main_project_path}/system/preparation/networks"
+  . "${main_project_path}/system/preparation/sshd"
+  . "${main_project_path}/system/preparation/sysctl-conf"
+  . "${main_project_path}/system/preparation/systemd-resolved"
+  . "${main_project_path}/system/preparation/vconsole-rus-lang"
+  . "${main_project_path}/system/preparation/zram-swap"
 
 }
 

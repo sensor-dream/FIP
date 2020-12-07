@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: clear-cache
-## @Creation date file: 06.12.2020, 20:36:57
+## @File: host-conf
+## @Creation date file: 07.12.2020, 18:20:41
 
-[[ -z "${clear_cache_script_source}" ]] && declare -rx clear_cache_script_source="$BASH_SOURCE"
+[[ -z "${host_conf_script_source}" ]] && declare -rx host_conf_script_source="$BASH_SOURCE"
 
-if [[ -z "${clear_cache_script_source_path}" ]]; then
-  temp_one="$(dirname ${clear_cache_script_source})"
+if [[ -z "${host_conf_script_source_path}" ]]; then
+  temp_one="$(dirname ${host_conf_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx clear_cache_script_source_path="$(pwd)"
+    declare -rx host_conf_script_source_path="$(pwd)"
   else
-    declare -rx clear_cache_script_source_path="${temp_one}"
+    declare -rx host_conf_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,22 +51,12 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_clear_cache() {
+function main_host_conf_script_source() {
 
-  sudo dnf clean all
-  # sudo pkcon refresh force
-  # sudo pkcon refresh
+  # printf "Initialise main function of host-conf script source\n";
 
-  rm -v -f ~/.cache/thumbnails/*/*.png ~/.thumbnails/*/*.png
-  rm -v -f ~/.cache/thumbnails/*/*/*.png ~/.thumbnails/*/*/*.png
-}
-
-function main_clear_cache_script_source() {
-
-  # printf "Initialise main function of clear-cache script source\n";
-
-  install_clear_cache "$@"
+  echo -e "order hosts,bind\nmulti on" | sudo tee '/etc/host.conf' >/dev/null
 
 }
 
-main_clear_cache_script_source "$@"
+main_host_conf_script_source "$@"

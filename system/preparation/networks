@@ -8,17 +8,17 @@
 ## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
 ## @License: http://www.apache.org/licenses/LICENSE-2.0
 ## @Site: https://sensor-dream.ru
-## @File: clear-cache
-## @Creation date file: 06.12.2020, 20:36:57
+## @File: networks
+## @Creation date file: 07.12.2020, 05:08:01
 
-[[ -z "${clear_cache_script_source}" ]] && declare -rx clear_cache_script_source="$BASH_SOURCE"
+[[ -z "${networks_script_source}" ]] && declare -rx networks_script_source="$BASH_SOURCE"
 
-if [[ -z "${clear_cache_script_source_path}" ]]; then
-  temp_one="$(dirname ${clear_cache_script_source})"
+if [[ -z "${networks_script_source_path}" ]]; then
+  temp_one="$(dirname ${networks_script_source})"
   if [[ "${temp_one}" == '.' ]]; then
-    declare -rx clear_cache_script_source_path="$(pwd)"
+    declare -rx networks_script_source_path="$(pwd)"
   else
-    declare -rx clear_cache_script_source_path="${temp_one}"
+    declare -rx networks_script_source_path="${temp_one}"
   fi
 fi
 
@@ -51,22 +51,6 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
-function install_clear_cache() {
-
-  sudo dnf clean all
-  # sudo pkcon refresh force
-  # sudo pkcon refresh
-
-  rm -v -f ~/.cache/thumbnails/*/*.png ~/.thumbnails/*/*.png
-  rm -v -f ~/.cache/thumbnails/*/*/*.png ~/.thumbnails/*/*/*.png
-}
-
-function main_clear_cache_script_source() {
-
-  # printf "Initialise main function of clear-cache script source\n";
-
-  install_clear_cache "$@"
-
-}
-
-main_clear_cache_script_source "$@"
+# printf "Initialise main function of networks script source\n";
+[[ -z "${cfg_local_ip}" ]] && . "${main_project_path}/tools/cfg-network-information"
+sudo sed -i 's/link-local.*$/link-local '"${cfg_link_local}"'/' '/etc/networks'

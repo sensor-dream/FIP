@@ -42,63 +42,69 @@ fi
 
 printf "Loading: %s\n" "$(readlink -m ${cfg_personal_information_script_source})"
 
-echo
-echo -n "Введите Ваше полное  ( def. Fedora User ): "
-read cfg_full_name
-[[ -z "${cfg_full_name}" ]] && cfg_full_name="Fedora User"
-echo
-echo -n "Введите имя вашего пользователя в системе ( def. ${session_user} ): "
-read cfg_user
-[[ -z "${cfg_user}" ]] && cfg_user="${session_user}"
-echo
-stty -echo # скрыть отображение символов ввода
-echo -n "Введите ваш пароль пользователя: "
-read cfg_password
-stty echo # включить отображение символов ввода
-echo -e "\n"
-echo -n "Введите название вашего остовного домена ( def. ${cfg_user}.ru ): "
-read cfg_docfg
-[[ -z "${cfg_docfg}" ]] && cfg_docfg="${cfg_user}.ru"
-echo
-echo -n "Введите ваш персональный email ( def.set email ${cfg_user}@${cfg_docfg} ): "
-read cfg_email
-[[ -z "${cfg_email}" ]] && cfg_email="${cfg_user}@${cfg_docfg}"
-echo
-stty -echo # скрыть отображение символов ввода
-echo -n "Введите ваш пароль пользователя email: "
-read cfg_email_password
-stty echo # включить отображение символов ввода
-echo -e "\n"
-echo
-echo -n "Введите аббревиатуру вашей организации ( def. set name SDBS ): "
-read cfg_org
-[[ -z "${cfg_org}" ]] && cfg_org="SDBS"
-echo
-echo -n "Введите полное название вашей организации ( def. set full name Sensor-Dream Boxed System ): "
-read cfg_full_org
-[[ -z "${cfg_full_org}" ]] && cfg_full_org="Sensor-Dream Boxed System"
-echo
-echo -n "Введите название вашего домена в локальной группе: ( def. home and set full name local group home.${cfg_docfg} )"
-read cfg_local_group_docfg
-if [[ -z "${cfg_local_group_docfg}" ]]; then
-  cfg_local_group_docfg="home.${cfg_docfg}"
+if [[ -f "${main_project_path}/hidden/cfg-personal-information" ]]; then
+
+  . "${main_project_path}/hidden/cfg-personal-information"
+
 else
-  cfg_local_group_docfg="cfg_local_group_docfg.${cfg_docfg}"
-fi
-echo
-echo -n "Введите имя вашего хоста ( def. 4 and set full name 4.home.${cfg_docfg} ): "
-read cfg_hostname
-if [[ -z "${cfg_hostname}" ]]; then
-  cfg_hostname="4.${cfg_local_group_docfg}"
-else
-  cfg_hostname="${cfg_hostname}.${cfg_local_group_docfg}"
-fi
-echo
-echo -n "Введите времменную зону ( def. sety local time zone 'Asia/Novosibirsk' ): "
-read cfg_local_zone
-[[ -z "${cfg_local_zone}" ]] && cfg_local_zone="Asia/Novosibirsk"
-echo
-cat <<EOF >"${main_project_path}/hidden/cfg-personal-information"
+
+  echo
+  echo -n "Введите Ваше полное  ( def. Fedora User ): "
+  read cfg_full_name
+  [[ -z "${cfg_full_name}" ]] && cfg_full_name="Fedora User"
+  echo
+  echo -n "Введите имя вашего пользователя в системе ( def. ${session_user} ): "
+  read cfg_user
+  [[ -z "${cfg_user}" ]] && cfg_user="${session_user}"
+  echo
+  stty -echo # скрыть отображение символов ввода
+  echo -n "Введите ваш пароль пользователя: "
+  read cfg_password
+  stty echo # включить отображение символов ввода
+  echo -e "\n"
+  echo -n "Введите название вашего остовного домена ( def. ${cfg_user}.ru ): "
+  read cfg_docfg
+  [[ -z "${cfg_docfg}" ]] && cfg_docfg="${cfg_user}.ru"
+  echo
+  echo -n "Введите ваш персональный email ( def.set email ${cfg_user}@${cfg_docfg} ): "
+  read cfg_email
+  [[ -z "${cfg_email}" ]] && cfg_email="${cfg_user}@${cfg_docfg}"
+  echo
+  stty -echo # скрыть отображение символов ввода
+  echo -n "Введите ваш пароль пользователя email: "
+  read cfg_email_password
+  stty echo # включить отображение символов ввода
+  echo -e "\n"
+  echo
+  echo -n "Введите аббревиатуру вашей организации ( def. set name SDBS ): "
+  read cfg_org
+  [[ -z "${cfg_org}" ]] && cfg_org="SDBS"
+  echo
+  echo -n "Введите полное название вашей организации ( def. set full name Sensor-Dream Boxed System ): "
+  read cfg_full_org
+  [[ -z "${cfg_full_org}" ]] && cfg_full_org="Sensor-Dream Boxed System"
+  echo
+  echo -n "Введите название вашего домена в локальной группе: ( def. home and set full name local group home.${cfg_docfg} )"
+  read cfg_local_group_docfg
+  if [[ -z "${cfg_local_group_docfg}" ]]; then
+    cfg_local_group_docfg="home.${cfg_docfg}"
+  else
+    cfg_local_group_docfg="cfg_local_group_docfg.${cfg_docfg}"
+  fi
+  echo
+  echo -n "Введите имя вашего хоста ( def. 4 and set full name 4.home.${cfg_docfg} ): "
+  read cfg_hostname
+  if [[ -z "${cfg_hostname}" ]]; then
+    cfg_hostname="4.${cfg_local_group_docfg}"
+  else
+    cfg_hostname="${cfg_hostname}.${cfg_local_group_docfg}"
+  fi
+  echo
+  echo -n "Введите времменную зону ( def. sety local time zone 'Asia/Novosibirsk' ): "
+  read cfg_local_zone
+  [[ -z "${cfg_local_zone}" ]] && cfg_local_zone="Asia/Novosibirsk"
+  echo
+  cat <<EOF >"${main_project_path}/hidden/cfg-personal-information"
 declare -rx cfg_full_name="${cfg_full_name}";
 declare -rx cfg_user="${cfg_user}";
 declare -rx cfg_password="${cfg_password}";
@@ -111,5 +117,7 @@ declare -rx cfg_local_group_docfg="${cfg_local_group_docfg}";
 declare -rx cfg_hostname="${cfg_hostname}";
 declare -rx cfg_local_zone="${cfg_local_zone}";
 EOF
-chown ${session_user}.${session_user} "${main_project_path}/hidden/cfg-personal-information"
-chmod 0600 "${main_project_path}/hidden/cfg-personal-information"
+  chown ${session_user}.${session_user} "${main_project_path}/hidden/cfg-personal-information"
+  chmod 0600 "${main_project_path}/hidden/cfg-personal-information"
+
+fi

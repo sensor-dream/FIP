@@ -215,6 +215,9 @@ function install_core_pack() {
     nethogs
     netsniff-ng
     net-snmp
+    NetworkManager
+    NetworkManager-tui
+    nm-connection-editor
     nfacct
     ngrep
     nload
