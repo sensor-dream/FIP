@@ -67,11 +67,11 @@ function main_network_ifaces_script_source() {
   # printf "Initialise main function of network-ifaces script source\n";
 
   echo -e "\nСписок сетевых утилит и приложений:\n"
-  echo -e "\tNetworkManager 	Стандартный networking daemon\n"
+  echo -e "\tNetworkManager	Стандартный networking daemon\n"
   echo -e "\tnmtui 	Простой текстовый интерфейс (TUI) для NetworkManager\n"
   echo -e "\tnmcli 	Утилита, работающая в командной строке, которая позволяет пользователям и скриптам взаимодействовать с NetworkManager\n\tPlease read:\n\t\thttps://developer.gnome.org/NetworkManager/stable/nmcli.html\n\t\thttps://developer.gnome.org/NetworkManager/stable/\n"
-  echo -e "\tcontrol-center 	Утилита с графическим интерфейсом оболочки GNONE\n"
-  echo -e "\tnm-connection-editor\n"
+  echo -e "\tcontrol-center Утилита с графическим интерфейсом оболочки GNONE\n"
+  echo -e "\tnm-connection-editor\ Этот пакет содержит редактор конфигурации сети и утилиту Bluetooth-модема для использования с NetworkManager.n"
 
   # install_network_ifaces "$@"
 
