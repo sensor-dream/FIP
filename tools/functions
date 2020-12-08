@@ -139,12 +139,13 @@ function pm() {
 
   OPTIND=1
 
-  while getopts "frRgan:x" OPT; do
+  while getopts "flrRgan:x" OPT; do
     case $OPT in
     f)
       options="${options} --allowerasing --best"
       force=1
       ;;
+    l) action="local${action}" ;;
     r) action='remove' ;;
     R) action='reinstall' ;;
     g)

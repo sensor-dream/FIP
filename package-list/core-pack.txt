@@ -108,7 +108,6 @@ isl
 jemalloc
 jnettop
 joe
-kernelshark
 kmodtool
 libasan
 libcurl-devel
@@ -216,6 +215,7 @@ tcpdump
 tcputils
 thinkfan
 tmpwatch
+trace-cmd
 traceroute
 udisks
 udisks2

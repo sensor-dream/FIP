@@ -110,7 +110,7 @@ function install_core_pack() {
     flent
     fping
     gcc
-    gcc-c++
+    'gcc-c++'
     gcc-gdb-plugin
     gconf-editor
     gettext
@@ -164,7 +164,6 @@ function install_core_pack() {
     jemalloc
     jnettop
     joe
-    kernelshark
     kmodtool
     libasan
     libcurl-devel
@@ -207,7 +206,7 @@ function install_core_pack() {
     nanomsg-devel
     nanomsg-doc
     ncurses
-    ncurses-c++-libs
+    'ncurses-c++-libs'
     ncurses-devel
     ncurses-libs
     ncurses-static
@@ -273,6 +272,7 @@ function install_core_pack() {
     thinkfan
     tmpwatch
     traceroute
+    trace-cmd
     udisks
     udisks2
     udisks2-bcache
@@ -306,7 +306,7 @@ function install_core_pack() {
     zstd
   )
 
-  # trace-cmd'
+  # kernelshark'
   # 'cpu-x'
   # 'saidar'
   # 'i-nex'

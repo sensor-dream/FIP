@@ -1,0 +1,13 @@
+gnome-packagekit
+gnome-packagekit-common
+gnome-packagekit-installer
+gnome-packagekit-updater
+PackageKit
+PackageKit-command-not-found
+PackageKit-cron
+PackageKit-glib
+PackageKit-glib-devel
+PackageKit-gstreamer-plugin
+PackageKit-gtk3-module
+PackageKit-Qt5
+PackageKit-Qt5-devel

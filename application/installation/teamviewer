@@ -1,0 +1,102 @@
+#!/bin/env bash
+# -*- coding: utf-8 -*-
+#
+## @Author: sensor-dream
+## @Email: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © sensor-dream. All rights reserved. Contacts: sensor-dream@sensor-dream.ru
+## @Copyright © Sensor-Dream Boxed System (SDBS). Contacts: sensor-dream@sensor-dream.ru
+## @License: http://www.apache.org/licenses/LICENSE-2.0
+## @Site: https://sensor-dream.ru
+## @File: teamviewer
+## @Creation date file: 08.12.2020, 03:34:23
+
+[[ -z "${teamviewer_script_source}" ]] && declare -rx teamviewer_script_source="$BASH_SOURCE"
+
+if [[ -z "${teamviewer_script_source_path}" ]]; then
+  temp_one="$(dirname ${teamviewer_script_source})"
+  if [[ "${temp_one}" == '.' ]]; then
+    declare -rx teamviewer_script_source_path="$(pwd)"
+  else
+    declare -rx teamviewer_script_source_path="${temp_one}"
+  fi
+fi
+
+if [[ -z "${main_run_script_path}" ]]; then
+  declare -rx main_run_script_path="$(pwd)"
+  printf "Script runs from path: %s\n" "${main_run_script_path}"
+fi
+
+if [[ -z "${main_cfg_script_source}" ]]; then
+  check=1
+  while [[ "${check}" -eq 1 ]]; do
+    if [[ ! -f 'main.cfg' ]]; then
+      if [[ "$(pwd)" != "/" ]]; then
+        cd ../
+      else
+        cd ${main_run_script_path}
+        check=0
+        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+        tput sgr0
+        exit 1
+      fi
+    else
+      check=0
+      declare -rx main_project_path="$(pwd)"
+      . "${main_project_path}/main.cfg" "$@"
+      cd "${main_run_script_path}"
+    fi
+  done
+fi
+
+printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
+
+function install_teamviewer() {
+
+  [[ -d "${main_project_path}/application/installation/src/TeamViewer" ]] || mkdir -p "${main_project_path}/application/installation/src/TeamViewer"
+
+  if [[ ! -f "${main_project_path}/application/installation/src/TeamViewer/TeamViewer2017.asc" ]]; then
+    echo "Download public key TeamViewer2017.asc in ${main_project_path}/application/installation/src/TeamViewer directory"
+    wget -O "${main_project_path}/application/installation/src/TeamViewer/TeamViewer2017.asc" "https://download.teamviewer.com/download/linux/signature/TeamViewer2017.asc"
+  else
+    echo "Public key TeamViewer2017.asc already downloaded in ${main_project_path}/application/installation/src/TeamViewer directory"
+  fi
+
+  if [[ -z "$(rpm -qi gpg-pubkey-* | grep Packager | grep TeamViewer)" ]]; then
+    echo "Import public key TeamViewer2017.asc of the ${main_project_path}/application/installation/src/TeamViewer directory"
+    sudo rpm --import "${main_project_path}/application/installation/src/TeamViewer/TeamViewer2017.asc"
+  else
+    echo "Public key TeamViewer2017.asc already imported in ${main_project_path}/application/installation/src/TeamViewer directory"
+  fi
+
+  local name='teamviewer'
+  # local name 'teamviewer-host' # conflickt vhitch teamviewer
+
+  if [[ ! -f "${main_project_path}/application/installation/src/TeamViewer/${name}.x86_64.rpm" ]]; then
+    echo "Download package ${name}.x86_64.rpm in ${main_project_path}/application/installation/src/TeamViewer directory"
+    wget -O "${main_project_path}/application/installation/src/TeamViewer/${name}.x86_64.rpm" "https://download.teamviewer.com/download/linux/${name}.x86_64.rpm"
+  else
+    echo "Package ${name}.x86_64.rpm already downloaded in ${main_project_path}/application/installation/src/TeamViewer directory"
+  fi
+
+  cd "${main_project_path}/application/installation/src/TeamViewer/"
+
+  if [[ "$(dnf repoquery --installed --qf '%{name}' ${name})" == "${name}" ]]; then
+    echo -en "\nPackage(s) already used:\n\n${name}\n\n"
+  else
+    sudo dnf localinstall --enablerepo "${name}.x86_64.rpm"
+  fi
+
+  cd "${main_run_script_path}"
+
+}
+
+function main_teamviewer_script_source() {
+
+  # printf "Initialise main function of teamviewer script source\n";
+
+  install_teamviewer "$@"
+
+}
+
+main_teamviewer_script_source "$@"
