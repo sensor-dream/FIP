@@ -56,7 +56,6 @@ function install_linux_perf_gui() {
   echo -e "https://github.com/KDAB/hotspot#on-fedora\n"
 
   . "${main_project_path}/application/installation/rpm/kernel"
-  . "${main_project_path}/application/installation/rpm/qt5"
 
   local install_pkg=(
     'cmake'

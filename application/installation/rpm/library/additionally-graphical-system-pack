@@ -59,18 +59,21 @@ function install_additionally_graphical_system_pack() {
     # Лицензия : MIT
     # Описание : Wayland egl library
     'libwayland-egl'
+    #
     # Краткое опис : The GL Vendor-Neutral Dispatch library
     # URL          : https://github.com/NVIDIA/libglvnd
     # Лицензия     : MIT
     # Описание     : libglvnd is an implementation of the vendor-neutral dispatch layer for
     # : arbitrating OpenGL API calls between multiple vendors on a per-screen basis.
     'libglvnd'
+    #
     # Краткое опис : Development files for libglvnd
     # URL          : https://github.com/NVIDIA/libglvnd
     # Лицензия     : MIT
     # Описание     : The libglvnd-devel package contains libraries and header files for
     # : developing applications that use libglvnd.
-    'libglvnd-devel'
+    # 'libglvnd-devel'
+    #
     # Краткое опис : Core development files for libglvnd
     # URL          : https://github.com/NVIDIA/libglvnd
     # Лицензия     : MIT
@@ -79,36 +82,43 @@ function install_additionally_graphical_system_pack() {
     # : its libraries (and, initially, has file conflicts with them). If you are
     # : not Mesa you almost certainly want libglvnd-devel instead.
     'libglvnd-core-devel'
+    #
     # Краткое опис : GLX support for libglvnd
     # URL          : https://github.com/NVIDIA/libglvnd
     # Лицензия     : MIT
     # Описание     : libGL and libGLX are the common dispatch interface for the GLX API.
     'libglvnd-glx'
+    #
     # Краткое опис : OpenGL support for libglvnd
     # URL          : https://github.com/NVIDIA/libglvnd
     # Лицензия     : MIT
     # Описание     : libOpenGL is the common dispatch interface for the workstation OpenGL API.
     'libglvnd-opengl'
+    #
     # Краткое опис : EGL support for libglvnd
     # URL          : https://github.com/NVIDIA/libglvnd
     # Лицензия     : MIT
     # Описание     : libEGL are the common dispatch interface for the EGL API
     'libglvnd-egl'
+    #
     # Краткое опис : GLES support for libglvnd
     # URL          : https://github.com/NVIDIA/libglvnd
     # Лицензия     : MIT
     # Описание     : libGLESv[12] are the common dispatch interface for the GLES API.
     'libglvnd-gles'
+    #
     # Краткое опис : Tool to query the capabilities of a VDPAU implementation
     # URL          : https://gitlab.freedesktop.org/vdpau/vdpauinfo
     # Лицензия     : MIT
     # Описание     : Tool to query the capabilities of a VDPAU implementation.
     'vdpauinfo'
+    #
     # Краткое опис : HW video decode support for VDPAU platforms
     # URL          : http://cgit.freedesktop.org/vaapi/vdpau-driver
     # Лицензия     : GPLv2+
     # Описание     : VDPAU Backend for Video Acceleration (VA) API.
     'libva-vdpau-driver'
+    #
     # Краткое опис : Tools for VAAPI (including vainfo)
     # URL          : https://github.com/intel/libva-utils
     # Лицензия     : MIT and BSD
@@ -116,18 +126,21 @@ function install_additionally_graphical_system_pack() {
     # : of libva, including the vainfo tool for determining what (if any)
     # : libva support is available on a system.
     'libva-utils'
+    #
     # Краткое опис : EGL utilities
     # URL          : http://www.mesa3d.org
     # Лицензия     : MIT
     # Описание     : The egl-utils package provides the eglinfo and es2_info utilities.
     'egl-utils'
+    #
     # Краткое опис : Wayland EGL External Platform library
     # URL          : https://github.com/NVIDIA/egl-wayland
     # Лицензия     : MIT
     # Описание     : Wayland EGL External Platform library
     'egl-wayland'
-    'egl-wayland-devel'
-    'eglexternalplatform-devel'
+    # 'egl-wayland-devel'
+    # 'eglexternalplatform-devel'
+    #
     # Краткое опис : A Tubing and Extrusion Library for OpenGL
     # URL          : http://www.linas.org/gle/
     # Лицензия     : GPLv2 or (Artistic clarified and MIT)
@@ -138,13 +151,15 @@ function install_additionally_graphical_system_pack() {
     # : OpenGL programming API to perform the actual drawing of the tubing
     # : and extrusions.
     'libgle'
-    'libgle-devel'
+    # 'libgle-devel'
+    #
     # Краткое опис : Toolkit for loading PNG images as OpenGL textures
     #URL          : https://admin.fedoraproject.org/pkgdb/packages/name/libglpng
     # Лицензия     : MIT
     # Описание     : glpng is a small toolkit to make loading PNG image files as an OpenGL
     # : texture as easy as possible.
     'libglpng'
+    #
     # Краткое опис : A freely licensed alternative to the GLUT library
     # URL          : http://freeglut.sourceforge.net
     # Лицензия     : MIT
@@ -158,23 +173,27 @@ function install_additionally_graphical_system_pack() {
     # : contexts on a wide range of platforms and also read the mouse, keyboard and
     # : joystick functions.
     'freeglut'
-    'freeglut-devel'
+    # 'freeglut-devel'
+    #
     # Краткое опис : libGLEW
     # URL          : http://glew.sourceforge.net
     # Лицензия     : BSD and MIT
     # Описание     : libGLEW
     'glew'
-    'glew-devel'
+    # 'glew-devel'
+    #
     # Краткое опис : libGLEW
     # URL          : http://glew.sourceforge.net
     # Лицензия     : BSD and MIT
     # Описание     : libGLEW
     'libGLEW'
+    #
     # Краткое опис : GLX utilities
     # URL          : http://www.mesa3d.org
     # Лицензия     : MIT
     # Описание     : The glx-utils package provides the glxinfo and glxgears utilities.
     'glx-utils'
+    #
   )
 
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/additionally-graphical-system-pack.txt"

@@ -1,0 +1,17 @@
+cmake
+elfutils-devel
+extra-cmake-modules
+gcc
+gcc-c++
+glibc-static
+hotspot
+kf5-kconfigwidgets-devel
+kf5-ki18n-devel
+kf5-kio-devel
+kf5-kitemmodels-devel
+kf5-kitemviews-devel
+kf5-kwindowsystem-devel
+kf5-solid-devel
+kf5-threadweaver-devel
+libstdc++-static
+perf

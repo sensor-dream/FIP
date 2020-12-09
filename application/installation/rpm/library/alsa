@@ -55,7 +55,7 @@ function install_alsa() {
 
   local install_pkg=(
     'alsa-lib'
-    'alsa-lib-devel'
+    # 'alsa-lib-devel'
     'alsa-plugins-pulseaudio'
     'alsa-sof-firmware'
     'alsa-ucm'

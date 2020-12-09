@@ -60,7 +60,7 @@ function install_GLC() {
     # : application based on Qt 4. Some GLC_lib features : Camera orbiting, Obj
     # : textured file support, 3D Primitive... And more.
     'GLC_lib'
-    'GLC_lib-devel'
+    # 'GLC_lib-devel'
   )
 
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/GLC.txt"

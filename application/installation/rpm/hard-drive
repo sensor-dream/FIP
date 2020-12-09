@@ -55,7 +55,7 @@ function install_hard_drive() {
 
   local install_pkg=(
     'gparted'
-    'hddtemp'
+    # 'hddtemp'
     'baobab'
     'gnome-disk-utility'
     # NVMe management command line interface

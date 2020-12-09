@@ -1,0 +1,5 @@
+baobab
+gnome-disk-utility
+gparted
+nvme-cli
+nvmetcli

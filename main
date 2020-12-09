@@ -44,7 +44,19 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
 function main_main_script_source() {
 
-  # prinf "Initialise main function of main script source\n";
+  prinf "Initialise main function of main script source\n";
+
+echo 'FIP (Fedora Instalation and Preparation)'
+
+echo -e "\nManually installed packages are also added when the system is cleanly installed.\nIt also specifies which scripts were run and in what order.\nThis file will be used for accelerated installation and configuration of the system from scratch, to get started.\n"
+
+printf '\n%s\n%s\n\t%s\n%s\n\t%s\n%s\n\t%s' 'Find one packages list:'
+    'cat now-main-install.txt | awk -F': ' '/Имя(\s+)?:(\s+)?/ { print $2 }' | sort -udi'
+'Install one packages list:'
+    'sudo dnf install $(cat now-main-install.txt | awk -F': ' '/Имя(\s+)?:(\s+)?/ { print $2 }' | sort -udi)'
+'Adding a package description to a file:'
+    'sudo dnf info $1 | grep 'Имя Репозиторий Из репо Краткое URL Лицензия Описание'
+
 
   . "${main_project_path}/system/preparation/RUN"
 

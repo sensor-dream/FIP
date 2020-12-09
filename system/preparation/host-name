@@ -54,7 +54,8 @@ function main_host_name_script_source() {
   # printf "Initialise main function of host-name script source\n";
 
   if [[ "$(hostname)" != "${cfg_hostname}" ]]; then
-    echo "${cfg_hostname}" | sudo tee '/etc/hostname'
+    # echo "${cfg_hostname}" | sudo tee '/etc/hostname'
+    sudo hostnamectl set-hostname "${cfg_hostname}"
     [[ -f '/etc/machine-info' ]] && sudo sed -i 's/PRETTY_HOSTNAME.*$/PRETTY_HOSTNAME='"${cfg_hostname}"'/' '/etc/machine-info'
   fi
 

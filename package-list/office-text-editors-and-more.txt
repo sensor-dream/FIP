@@ -1,0 +1,9 @@
+apostrophe
+calibre
+focuswriter
+foliate
+glabels
+notes-up
+pdfarranger
+texstudio
+texworks

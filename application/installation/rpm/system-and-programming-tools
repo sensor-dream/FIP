@@ -73,7 +73,7 @@ function install_system_and_programming_tools() {
     # : packet capture program), aireplay-ng (an 802.11 packet injection program),
     # : aircrack (static WEP and WPA-PSK cracking), airdecap-ng (decrypts WEP/WPA
     # : capture files), and some tools to handle capture files (merge, convert, etc.).
-    'aircrack-ng'
+    # -> 'aircrack-ng'
     #
     # : The Amanda-client package should be installed on any machine that will
     # : be backed up by AMANDA (including the server if it also needs to be
@@ -125,16 +125,6 @@ function install_system_and_programming_tools() {
     # : * apt-key as an interface to manage authentication keys
     'apt'
     #
-    # : Arc file archiver and compressor. Long since superseded by zip/unzip
-    # : but useful if you have old .arc files you need to unpack.
-    'arc'
-    #
-    # : This package is an open source version of the arj archiver. It has
-    # : been created with the intent to preserve maximum compatibility and
-    # : retain the feature set of original ARJ archiver as provided by ARJ
-    # : Software, Inc
-    'arj'
-    #
     # : The arpwatch package contains arpwatch and arpsnmp.  Arpwatch and
     # : arpsnmp are both network monitoring tools. Both utilities monitor
     # : Ethernet or FDDI network traffic and build databases of Ethernet/IP
@@ -158,23 +148,6 @@ function install_system_and_programming_tools() {
     # : Windows '95, Minix 2.0, and other OS's, all on your workstation.
     'bochs'
     #
-    # Краткое опис : A file compression utility
-    #     # :          : http://www.bzip.org/
-    # Описание     : Bzip2 is a freely available, patent-free, high quality data compressor.
-    # : Bzip2 compresses files to within 10 to 15 percent of the capabilities
-    # : of the best techniques available.  However, bzip2 has the added benefit
-    # : of being approximately two times faster at compression and six times
-    # : faster at decompression than those techniques.  Bzip2 is not the
-    # : fastest compression utility, but it does strike a balance between speed
-    # : and compression capability.
-    # :
-    # : Install bzip2 if you need a compression utility.
-    'bzip2'
-    #
-    # : cabextract is a program which can extract files from cabinet (.cab)
-    # : archives.
-    'cabextract'
-    #
     # Catfish is a handy file searching tool. The interface is
     # : intentionally lightweight and simple, using only GTK+3.
     # : You can configure it to your needs by using several command line
@@ -197,7 +170,7 @@ function install_system_and_programming_tools() {
     # :     broadcast (W/O) modes of console access
     # :   - allowing clients to join or steal console "write" privileges
     # :   - executing Expect scripts across multiple consoles in parallel
-    'conman'
+    # -> 'conman'
     #
     # : connect-proxy is the simple relaying command to make network connection via
     # : SOCKS and https proxy. It is mainly intended to be used as proxy command
@@ -361,7 +334,7 @@ function install_system_and_programming_tools() {
     # : This is a meta-package that will install the default configuration.  Other
     # : sub-packages are available to install support for other actions and
     # : configurations.
-    'fail2ban'
+    # -> 'fail2ban'
     #
     # : Fatsort is a utility written in C to sort FAT16 and FAT32 filesystems. It is
     # : needed to sort files on cheap mp3 players that display files not sorted by
@@ -394,16 +367,6 @@ function install_system_and_programming_tools() {
     # : xfreerdp & wlfreerdp can connect to RDP servers such as Microsoft Windows
     # : machines, xrdp and VirtualBox.
     # -> 'freerdp'
-    #
-    # : Freeze is an old file compressor and decompressor that is not in
-    # : common use anymore, but can be useful if the need ever arises to
-    # : dearchive files compressed with it.
-    'freeze'
-    #
-    # : With FUSE it is possible to implement a fully functional filesystem in a
-    # : userspace program. This package contains the FUSE v2 userspace tools to
-    # : mount a FUSE filesystem.
-    'fuse'
     #
     # : fwknop implements an authorization scheme known as Single Packet
     # : Authorization (SPA) that requires only a single encrypted packet to
@@ -441,11 +404,6 @@ function install_system_and_programming_tools() {
     # : simple as possible, while the secondary goal is to ensure that no application
     # : can access location information without explicit permission from user.
     'geoclue2'
-    #
-    # : ghasher can easily show the MD5 sum (or md2, md4, sha1, sha, ripemd160, dss1)
-    # : of a file. Motivation for this utility was that users shouldn't need to open a
-    # : command line for checking the MD5 sum of files they download.
-    'ghasher'
     #
     # : GHex can load raw data from binary files and display them for editing in the
     # : traditional hex editor view. The display is split in two columns, with
@@ -520,21 +478,6 @@ function install_system_and_programming_tools() {
     # : GUPnP API is intended to be easy to use, efficient and flexible.
     # -> 'gssdp'
     #
-    # Краткое опис : GTK+ utility for computing message digests or checksums
-    #     # :          : https://github.com/tristanheaven/gtkhash
-    # Описание     : GtkHash is a GTK+ utility for computing message digests or checksums. Currently
-    # : supported hash functions include
-    # : * MD2, MD4 and MD5
-    # : * SHA1, SHA224, SHA256, SHA384 and SHA512,
-    # : * RIPEMD128, RIPEMD160, RIPEMD256 and RIPEMD320
-    # : * TIGER128, TIGER160 and TIGER192
-    # : * HAVAL128-3, HAVAL160-3, HAVAL192-3, HAVAL224-3 and HAVAL256-3
-    # : * SNEFRU128 and SNEFRU256
-    # : * ADLER32, CRC32, GOST and WHIRLPOOL
-    # :
-    # : This package contains the GTK+3 version of the program.
-    'gtkhash'
-    #
     # Краткое опис : Serial port terminal
     #     # :          : https://github.com/Jeija/gtkterm
     # Описание     : Simple GUI terminal used to communicate with the serial port.
@@ -598,7 +541,7 @@ function install_system_and_programming_tools() {
     # : If you run a web site, it is useful as your own search engine
     # : for pages in your site. Also, it is useful as search utilities
     # : of mail boxes and file servers.
-    'hyperestraier'
+    # -> 'hyperestraier'
     #
     # Краткое опис : Interactive bandwidth monitor
     #     # :          : http://ibmonitor.sourceforge.net/
@@ -689,11 +632,6 @@ function install_system_and_programming_tools() {
     # : local machine is rebooted.
     'keychain'
     #
-    # Краткое опис : Archiving and compression utility for LHarc/lha/lzh archives
-    #     # :          : https://github.com/jca02266/lha
-    # Описание     : LHA is an archiving and compression utility for LHarc/lha/lzh format archives.
-    'lha'
-    #
     # Краткое опис : Compatibility package installing all lirc packages
     #     # :          : http://www.lirc.org/
     # Описание     : Part of the LIRC package suite which handles IR remotes. See
@@ -701,17 +639,7 @@ function install_system_and_programming_tools() {
     # :
     # : Installing this package will install most lirc sub-packages, roughly
     # : the same as installing previous versions of the lirc package.
-    'lirc-compat'
-    #
-    # Краткое опис : Real-time file compressor
-    #     # :          : https://www.lzop.org/
-    # Описание     : lzop is a compression utility which is designed to be a companion to gzip.
-    # : It is based on the LZO data compression library and its main advantages over
-    # : gzip are much higher compression and decompression speed at the cost of some
-    # : compression ratio. The lzop compression utility was designed with the goals
-    # : of reliability, speed, portability and with reasonable drop-in compatibility
-    # : to gzip.
-    'lzop'
+    # -> 'lirc-compat'
     #
     # Краткое опис : An utility for viewing/manipulating the MAC address of network interfaces
     #     # :          : https://github.com/alobbs/macchanger
@@ -855,15 +783,7 @@ function install_system_and_programming_tools() {
     # : N.B. You need to run
     # :         %# noip2 -C
     # : before starting the service.
-    'noip'
-    #
-    # Краткое опис : GPLed Arc de-archiver
-    #     # :          : http://www.svgalib.org/rus/nomarch.html
-    # Описание     : nomarch lists/extracts/tests `.arc' archives. (It also handles `.ark'
-    # : files, they're exactly the same.) This is a *very* outdated file
-    # : format which should never be used for anything new, but unfortunately,
-    # : you can still run into it every so often.
-    'nomarch'
+    # -> 'noip'
     #
     # Краткое опис : Convert Nero Burning Rom image files into ISO
     #     # :          : http://gregory.kokanosky.free.fr/v4/linux/nrg2iso.en.html
@@ -901,7 +821,7 @@ function install_system_and_programming_tools() {
     # : ports of some kind that allow some form of state checking. This
     # : capability has been harnessed where possible to allow for safe shutdowns,
     # : live status tracking on web pages, and more.
-    'nut'
+    # -> 'nut'
     #
     # Краткое опис : A D-Bus service which runs odd jobs on behalf of client applications
     #     # :          : https://pagure.io/oddjob
@@ -923,18 +843,6 @@ function install_system_and_programming_tools() {
     # : masquerading and firewall presence, the distance to the remote system and its
     # : uptime, other guy's network hookup (DSL, OC3, avian carriers) and his ISP.
     'p0f'
-    #
-    # Краткое опис : Very high compression ratio file archiver
-    #     # :          : http://p7zip.sourceforge.net/
-    # Описание     : p7zip is a port of 7za.exe for Unix. 7-Zip is a file archiver with a very high
-    # : compression ratio. The original version can be found at http://www.7-zip.org/.
-    'p7zip'
-    #
-    # Краткое опис : Additional plugins for p7zip
-    #     # :          : http://p7zip.sourceforge.net/
-    # Описание     : Additional plugins that can be used with 7z to extend its abilities.
-    # : This package contains also a virtual file system for Midnight Commander.
-    'p7zip-plugins'
     #
     # Краткое опис : PAR 2.0 compatible file verification and repair tool
     #     # :          : https://github.com/Parchive/par2cmdline/

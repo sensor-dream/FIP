@@ -1,0 +1,9 @@
+ghasher
+gtkhash
+md5deep
+rhash
+sha
+sha2
+sha2-devel
+sha3sum
+sha-devel

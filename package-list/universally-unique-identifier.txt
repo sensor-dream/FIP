@@ -1,0 +1,3 @@
+uudeview
+uuid
+uuid-devel

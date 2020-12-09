@@ -65,7 +65,7 @@ function install_terminal_pack() {
     # Краткое опис : KDE Terminal emulator
     # URL          : http://www.kde.org/applications/system/konsole/
     # Описание     : KDE Terminal emulator.
-    'konsole5'
+    # 'konsole5'
     # <- !!!
     #
     # Краткое опис : Terminal emulator mimicking a CRT display

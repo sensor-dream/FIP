@@ -167,6 +167,18 @@ function install_cups() {
     'gutenprint-cups'
     'python-cups-doc'
     'python3-cups'
+    #
+    # Имя          : splix
+# Репозиторий  : @System
+# Из репозитор : fedora
+# Краткое опис : Driver for QPDL/SPL2 printers (Samsung and several Xerox printers)
+# URL          : http://splix.sourceforge.net/
+# Лицензия     : GPLv2
+# Описание     : This driver is usable by all printer devices which understand the QPDL
+#              : (Quick Page Description Language) also known as SPL2 (Samsung Printer Language)
+#              : language. It covers several Samsung, Xerox and Dell printers.
+#              : Splix doesn't support old SPL(1) printers.
+    'splix'
   )
 
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/cups.txt"

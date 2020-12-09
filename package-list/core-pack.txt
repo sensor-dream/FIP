@@ -206,6 +206,7 @@ screenfetch
 ShellCheck
 smartmontools
 smokeping
+splix
 strace
 swatch
 sysfsutils

@@ -53,31 +53,7 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
 function install_clamav() {
 
-  #
-  # Please read https://www.clamav.net/documents/installation-on-redhat-and-centos-linux-distributions
-  #
-
   local install_pkg=(
-    'development-tools'
-  )
-
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/clamav.g.txt"
-  pm -g "$@" -- "${install_pkg[@]}"
-
-  install_pkg=(
-    'openssl'
-    'openssl-devel'
-    'libcurl-devel'
-    'zlib-devel'
-    'libpng-devel'
-    'libxml2-devel'
-    'json-c-devel'
-    'bzip2-devel'
-    'pcre2-devel'
-    'ncurses-devel'
-    'valgrind'
-    'check'
-    'check-devel'
     # : Clam AntiVirus is an anti-virus toolkit for UNIX. The main purpose of this
     # : software is the integration with mail servers (attachment scanning). The
     # : package provides a flexible and scalable multi-threaded daemon, a command

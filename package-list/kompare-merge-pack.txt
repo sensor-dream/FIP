@@ -1,0 +1,8 @@
+diffmark
+diff-pdf
+diffpdf
+diffstat
+diffutils
+kdiff3
+kompare
+kompare-libs

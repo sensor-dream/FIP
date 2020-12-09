@@ -1,0 +1,6 @@
+mingw32-openal-soft
+mingw64-openal-soft
+openal-soft
+openal-soft-devel
+openal-soft-examples
+openal-soft-qt

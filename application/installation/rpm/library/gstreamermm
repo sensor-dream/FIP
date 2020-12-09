@@ -60,7 +60,7 @@ function install_gstreamermm() {
     # : GStreamer (http://gstreamer.freedesktop.org).  It is designed to allow
     # : C++ development of applications that work with multi-media.
     'gstreamermm'
-    'gstreamermm-devel'
+    # 'gstreamermm-devel'
     'gstreamermm-doc'
   )
 

@@ -1,0 +1,8 @@
+gcc-gdb-plugin
+gdb
+gdb-doc
+gdb-exploitable
+gdb-gdbserver
+gdb-headless
+gdb-heap
+gdb-minimal

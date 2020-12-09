@@ -1,0 +1,7 @@
+libssh2-devel
+openssh
+openssh-clients
+openssh-server
+ssh-contact
+sshexport
+sshrc

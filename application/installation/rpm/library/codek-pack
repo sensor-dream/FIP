@@ -61,6 +61,7 @@ function install_codek_pack() {
     # : streams. It is released under the terms of the GPL license.
     'libmpeg2'
     'libmpeg2-devel'
+    #
     # Summary      : Decoder of various derivatives of MPEG standards
     # URL          : http://heroinewarrior.com/libmpeg3.php3
     # Лицензия     : GPLv2+
@@ -75,8 +76,9 @@ function install_codek_pack() {
     # :  - IFO files
     # :  - VOB files
     'libmpeg3'
-    'libmpeg3-devel'
+    # 'libmpeg3-devel'
     'libmpeg3-utils'
+    #
     # Summary      : Libraries for the mp3Splt project
     # URL          : http://mp3splt.sourceforge.net/
     # Лицензия     : GPLv2
@@ -95,7 +97,8 @@ function install_codek_pack() {
     # : The mp3splt project is divided in 3 parts:
     # : libmp3splt, mp3splt and mp3splt-gtk.
     'libmp3splt'
-    'libmp3splt-devel'
+    # 'libmp3splt-devel'
+    #
     # Summary      : Library for working with files using the mp4 container format
     # URL          : http://code.google.com/p/mp4v2
     # Лицензия     : MPLv1.1
@@ -103,7 +106,8 @@ function install_codek_pack() {
     # : using the mp4 container format. This library is developed by mpeg4ip project
     # : and is an exact copy of the library distributed in the mpeg4ip package.
     'libmp4v2'
-    'libmp4v2-devel'
+    # 'libmp4v2-devel'
+    #
     # Summary      : Musepack audio decoding library
     # URL          : http://www.musepack.net/
     # Лицензия     : BSD
@@ -115,7 +119,8 @@ function install_codek_pack() {
     # : and vastly improved and is now at an advanced stage in which it contains
     # : heavily optimized and patentless code.
     'libmpcdec'
-    'libmpcdec-devel'
+    # 'libmpcdec-devel'
+    #
   )
 
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/codek-pack.txt"

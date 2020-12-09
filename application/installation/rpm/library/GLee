@@ -60,7 +60,7 @@ function install_GLee() {
     # : library for OpenGL. It provides seamless support for OpenGL functions up
     # : to version 3.0 and 399 extensions.
     'GLee'
-    'GLee-devel'
+    # 'GLee-devel'
   )
 
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/GLee.txt"

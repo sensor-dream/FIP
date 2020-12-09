@@ -1,0 +1,5 @@
+libQGLViewer
+libQGLViewer-devel
+libQGLViewer-doc
+libQGLViewer-qt5
+libQGLViewer-qt5-devel

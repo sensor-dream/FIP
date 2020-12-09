@@ -64,7 +64,8 @@ function install_graphical_pack() {
     # : and JPEG are two of the formats accepted for inline images by most
     # : browsers. Note that gd is not a paint program.
     'gd'
-    'gd-devel'
+    # 'gd-devel'
+    #
     # Краткое опис : The graphical toolkit for the Tcl scripting language
     # URL          : http://tcl.sourceforge.net
     # Лицензия     : TCL
@@ -76,7 +77,8 @@ function install_graphical_pack() {
     # Лицензия     : IJG
     # Описание     : The turbojpeg package contains the TurboJPEG shared library.
     'turbojpeg'
-    'turbojpeg-devel'
+    # 'turbojpeg-devel'
+    #
   )
 
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/graphical-pack.txt"

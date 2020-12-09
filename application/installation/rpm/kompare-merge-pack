@@ -65,13 +65,15 @@ function install_kompare_merge_pack() {
     # : Install diffstat if you need a program which provides a summary of the
     # : diff command's output.
     'diffutils'
+    #
     # Краткое опис : XML diff and merge
     # URL          : http://www.mangrove.cz/diffmark/
     # Лицензия     : diffmark and (GPL+ or Artistic)
     # Описание     : This is an XML diff and merge package. It consists of a shared library and
     # : two utilities: dm and dm-merge.
     'diffmark'
-    'diffmark-devel'
+    # 'diffmark-devel'
+    #
     # Краткое опис : In-depth comparison of files, archives, and directories
     # URL          : https://diffoscope.org/
     # Лицензия     : GPLv3+
@@ -83,7 +85,8 @@ function install_kompare_merge_pack() {
     # :
     # : diffoscope is developed as part of the "reproducible builds" Debian project and
     # : was formerly known as "debbindiff".
-    'diffoscope'
+    # 'diffoscope'
+    #
     # Краткое опис : PDF files comparator
     # URL          : http://www.qtrac.eu/diffpdf.html
     #Лицензия     : GPLv2+
@@ -93,6 +96,7 @@ function install_kompare_merge_pack() {
     # : reformatted). It is also possible to compare particular pages or page
     # : ranges.
     'diffpdf'
+    #
     # Краткое опис : A simple tool for visually comparing two PDF files
     # URL          : http://vslavik.github.io/diff-pdf/
     # Лицензия     : GPLv2+ and LGPLv2+
@@ -109,6 +113,7 @@ function install_kompare_merge_pack() {
     # : Install diffstat if you need a program which provides a summary of the
     # : diff command's output.
     'diffstat'
+    #
     # Краткое опис : Compare + merge 2 or 3 files or directories
     # URL          : https://github.com/KDE/kdiff3
     # Лицензия     : GPLv2
@@ -120,13 +125,14 @@ function install_kompare_merge_pack() {
     # : - has support for KDE-KIO (ftp, sftp, http, fish, smb)
     # : - and has an intuitive graphical user interface.
     'kdiff3'
+    #
     # Краткое опис : Diff tool
     # URL          : https://cgit.kde.org/kompare.git
     # Лицензия     : GPLv2+ and GFDL
     # Описание     : Tool to visualize changes between two versions of a file
     'kompare'
     'kompare-libs'
-    'kompare-devel'
+    # 'kompare-devel'
   )
 
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/kompare-merge-pack.txt"

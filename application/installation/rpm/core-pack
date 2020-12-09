@@ -304,6 +304,7 @@ function install_core_pack() {
     zram-generator
     zram-generator-defaults
     zstd
+    splix
   )
 
   # kernelshark'

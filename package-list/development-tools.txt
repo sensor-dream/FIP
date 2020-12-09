@@ -1,0 +1,13 @@
+bzip2-devel
+check
+check-devel
+json-c-devel
+libcurl-devel
+libpng-devel
+libxml2-devel
+ncurses-devel
+openssl
+openssl-devel
+pcre2-devel
+valgrind
+zlib-devel
