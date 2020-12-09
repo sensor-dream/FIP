@@ -73,19 +73,73 @@ function main_main_script_source() {
     cat ${main_txt_file} | sed '/^$/d' | sort -uid -o "${main_txt_file}"
   fi
 
-  . "${main_project_path}/application/installation/rpm/library/additionally-graphical-system-pack"
-  . "${main_project_path}/application/installation/rpm/library/alsa"
-  . "${main_project_path}/application/installation/rpm/library/codek-pack"
-  . "${main_project_path}/application/installation/rpm/library/GLC"
-  . "${main_project_path}/application/installation/rpm/library/GLee"
-  . "${main_project_path}/application/installation/rpm/library/graphical-pack"
-  . "${main_project_path}/application/installation/rpm/library/gstreamer1"
-  . "${main_project_path}/application/installation/rpm/library/gstreamermm"
-  . "${main_project_path}/application/installation/rpm/library/libQGLViewer"
-  . "${main_project_path}/application/installation/rpm/library/mesa"
-  . "${main_project_path}/application/installation/rpm/library/openal-soft"
-  . "${main_project_path}/application/installation/rpm/library/SDL"
-  . "${main_project_path}/application/installation/rpm/library/wxGTK"
+  . "${main_project_path}/repository/adobe" -a
+  # . "${main_project_path}/repository/arangodb" -a
+  . "${main_project_path}/repository/rpmfusion" -a
+  # . "${main_project_path}/repository/rpmsphere" -a
+  # . "${main_project_path}/repository/unitedrpms" -a
+  . "${main_project_path}/repository/vscode" -a
+
+  . "${main_project_path}/application/installation/rpm/kernel-pack" -a
+  . "${main_project_path}/application/installation/rpm/core-pack" -a
+
+  . "${main_project_path}/application/installation/rpm/library/additionally-graphical-system-pack" -a
+  . "${main_project_path}/application/installation/rpm/library/alsa" -a
+  . "${main_project_path}/application/installation/rpm/library/codek-pack" -a
+  . "${main_project_path}/application/installation/rpm/library/GLC" -a
+  . "${main_project_path}/application/installation/rpm/library/GLee" -a
+  . "${main_project_path}/application/installation/rpm/library/graphical-pack" -a
+  . "${main_project_path}/application/installation/rpm/library/gstreamer1" -a
+  . "${main_project_path}/application/installation/rpm/library/gstreamermm" -a
+  . "${main_project_path}/application/installation/rpm/library/libQGLViewer" -a
+  . "${main_project_path}/application/installation/rpm/library/mesa" -a
+  . "${main_project_path}/application/installation/rpm/library/openal-soft" -a
+  . "${main_project_path}/application/installation/rpm/library/SDL" -a
+  . "${main_project_path}/application/installation/rpm/library/wxGTK" -a
+
+  . "${main_project_path}/application/installation/rpm/archive-pack" -a
+  . "${main_project_path}/application/installation/rpm/certbot" -a
+  . "${main_project_path}/application/installation/rpm/cups" -a
+  . "${main_project_path}/application/installation/rpm/flash-player" -a
+  . "${main_project_path}/application/installation/rpm/fuse-utilities" -a
+  . "${main_project_path}/application/installation/rpm/gdb" -a
+  . "${main_project_path}/application/installation/rpm/geoip" -a
+  . "${main_project_path}/application/installation/rpm/git" -a
+  . "${main_project_path}/application/installation/rpm/gnome-shell" -a
+  . "${main_project_path}/application/installation/rpm/graphical-pack" -a
+  . "${main_project_path}/application/installation/rpm/gvfs" -a
+  . "${main_project_path}/application/installation/rpm/hard-drive" -a
+  . "${main_project_path}/application/installation/rpm/hashes-pack" -a
+  . "${main_project_path}/application/installation/rpm/kompare-merge-pack" -a
+  . "${main_project_path}/application/installation/rpm/media-pack" -a
+  . "${main_project_path}/application/installation/rpm/nginx" -a
+  . "${main_project_path}/application/installation/rpm/office-text-editors-and-more" -a
+  . "${main_project_path}/application/installation/rpm/openssh" -a
+  . "${main_project_path}/application/installation/rpm/PackageKit" -a
+  . "${main_project_path}/application/installation/rpm/pulseaudio" -a
+  . "${main_project_path}/application/installation/rpm/system-and-programming-tools" -a
+  . "${main_project_path}/application/installation/rpm/terminal-pack" -a
+  . "${main_project_path}/application/installation/rpm/universally-unique-identifier" -a
+  . "${main_project_path}/application/installation/rpm/VirtualGL" -a
+
+  . "${main_project_path}/application/programming-languages/rpm/additionally" -a
+  . "${main_project_path}/application/programming-languages/rpm/c" -a
+  . "${main_project_path}/application/programming-languages/rpm/clang" -a
+  . "${main_project_path}/application/programming-languages/rpm/ghc" -a
+  . "${main_project_path}/application/programming-languages/rpm/gmp" -a
+  . "${main_project_path}/application/programming-languages/rpm/GtkAda" -a
+  . "${main_project_path}/application/programming-languages/rpm/lua" -a
+  . "${main_project_path}/application/programming-languages/rpm/perl" -a
+  . "${main_project_path}/application/programming-languages/rpm/php" -a
+  . "${main_project_path}/application/programming-languages/rpm/python" -a
+  . "${main_project_path}/application/programming-languages/rpm/TCL" -a
+
+  . "${main_project_path}/application/installation/rpm/vscode" -a
+  . "${main_project_path}/application/installation/rpm/krusader" -a
+  . "${main_project_path}/application/installation/rpm/wallpaper" -a
+
+  . "${main_project_path}/application/prepartion/monitoring-computer-parameter" -a
+  . "${main_project_path}/application/prepartion/vscode" -a
 
   pm -a "$@" -- "$(cat ${main_txt_file})"
 

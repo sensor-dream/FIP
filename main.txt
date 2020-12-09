@@ -36,6 +36,7 @@ libX11
 libXau
 libxcb
 libXext
+lm_sensors
 make
 pkgconf-pkg-config
 splix
@@ -49,4 +50,3 @@ udisks2-qt5
 udisks2-qt5-devel
 udisks2-zram
 vdpauinfo
-lm_sensors

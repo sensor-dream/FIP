@@ -55,34 +55,34 @@ function main_monitoring_computer_parameter_script_source() {
 
   # prinf "Initialise main function of monitoring-computer-parameter script source\n";
 
-  if [[ -z "$(check_installed_packages lm_sensors hddtemp nmon collectd)" ]]; then
-    . "${main_project_path}/application/installation/rpm/tools-monitoring-computer-and-system"
-  else
-    printf "Check lm_sensors, hddtemp, nmon, collectd is OK\n"
-  fi
+  # if [[ -z "$(check_installed_packages lm_sensors hddtemp nmon collectd)" ]]; then
+  # . "${main_project_path}/application/installation/rpm/tools-monitoring-computer-and-system"
+  # else
+  # printf "Check lm_sensors, hddtemp, nmon, collectd is OK\n"
+  # fi
 
-  if [[ "$(systemctl is-active lm_sensors)" != "active" ]]; then
-    echo "Initialise and start lms_sensors ? (Y/n)"
-    read key
-    if [[ ${key} == 'y' ]]; then
+  echo "Initialise and start lms_sensors ? (N/y)"
+  read temp_one
+  if [[ ${temp_one} == 'y' ]]; then
+    if [[ "$(systemctl is-active lm_sensors)" != "active" ]]; then
       sudo systemctl enable lm_sensors
       sensors-detect
       sudo systemctl start lm_sensors
     fi
   fi
 
-#  if [[ "$(systemctl is-active hddtemp)" != "active" ]]; then
-#    echo "Initialise and start hddtemp ? (Y/n)"
-#    read key
-#    if [[ ${key} == 'y' ]]; then
-#      sudo systemctl enable hddtemp
-#      sudo systemctl start hddtemp
-#      echo "Please visit http://127.0.0.1:7634"
-#    fi
-#  fi
+  #  if [[ "$(systemctl is-active hddtemp)" != "active" ]]; then
+  #    echo "Initialise and start hddtemp ? (Y/n)"
+  #    read key
+  #    if [[ ${key} == 'y' ]]; then
+  #      sudo systemctl enable hddtemp
+  #      sudo systemctl start hddtemp
+  #      echo "Please visit http://127.0.0.1:7634"
+  #    fi
+  #  fi
 
-  echo "Please run sensors for more information"
-  echo "Please visit http://127.0.0.1:7634 for use hddtemp"
+  # echo "Please run sensors for more information"
+  # echo "Please visit http://127.0.0.1:7634 for use hddtemp"
 
 }
 

@@ -55,6 +55,9 @@ function install_hard_drive() {
 
   local install_pkg=(
     'gparted'
+    'blivet-data'
+    'blivet-gui'
+    'blivet-gui-runtime'
     # 'hddtemp'
     'baobab'
     'gnome-disk-utility'
