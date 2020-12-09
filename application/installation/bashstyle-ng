@@ -88,7 +88,7 @@ function install_bashstyle_ng() {
     'python3-pytest-shutil'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/bashstyle-ng.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/bashstyle-ng.txt"
   pm "$@" -- "${dependicies[@]}"
 
   echo "Please visit in https://nanolx.org/nanolx/bashstyle-ng"

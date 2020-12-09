@@ -77,7 +77,7 @@ function install_universally_unique_identifier() {
     'uudeview'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/universally-unique-identifier.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/universally-unique-identifier.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

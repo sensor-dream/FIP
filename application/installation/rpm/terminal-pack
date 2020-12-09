@@ -89,7 +89,7 @@ function install_terminal_pack() {
 
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/terminal-pack.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/terminal-pack.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

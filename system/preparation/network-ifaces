@@ -57,7 +57,7 @@ function install_network_ifaces() {
 
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/network-ifaces.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/network-ifaces.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

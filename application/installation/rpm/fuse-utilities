@@ -204,7 +204,7 @@ function install_fuse_utilities() {
     'fuse9p'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/fuse-utilities.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/fuse-utilities.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

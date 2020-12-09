@@ -88,7 +88,7 @@ function install_krusader() {
     'krusader'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/krusader.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/krusader.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

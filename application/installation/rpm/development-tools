@@ -61,7 +61,7 @@ function install_development_tools() {
     'development-tools'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/development-tools.g.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/development-tools.g.txt"
   pm -g "$@" -- "${install_pkg[@]}"
 
   install_pkg=(
@@ -80,7 +80,7 @@ function install_development_tools() {
     'check-devel'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/development-tools.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/development-tools.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

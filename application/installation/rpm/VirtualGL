@@ -87,7 +87,7 @@ function install_VirtualGL() {
     'VirtualGL-devel'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/VirtualGL.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/VirtualGL.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

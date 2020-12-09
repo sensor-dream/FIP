@@ -54,8 +54,8 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 function install_rpmfusion() {
 
   if [[ -z "$(check_installed_packages rpmfusion-free-release rpmfusion-nonfree-release)" ]]; then
-    sudo dnf config-manager --set-disabled rpmfusion-nonfree-nvidia-driver
-    sudo dnf config-manager --set-disabled rpmfusion-nonfree-steam
+    # #sudo dnf config-manager --set-disabled rpmfusion-nonfree-nvidia-driver
+    # sudo dnf config-manager --set-disabled rpmfusion-nonfree-steam
     sudo dnf install "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${os_version_id}.noarch.rpm" "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${os_version_id}.noarch.rpm" -y
     sudo dnf config-manager --set-enabled rpmfusion-free
     sudo dnf config-manager --set-enabled rpmfusion-free-updates

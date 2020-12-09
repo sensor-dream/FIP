@@ -57,7 +57,7 @@ function install_admin_tools() {
     'admin-tools'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/admin-tools.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/admin-tools.txt"
   pm -g "$@" -- "${install_pkg[@]}"
 
 }

@@ -44,21 +44,33 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
 function main_main_script_source() {
 
-  prinf "Initialise main function of main script source\n";
+  local main_txt_file="${main_project_path}/main.txt"
 
-echo 'FIP (Fedora Instalation and Preparation)'
+  prinf "Initialise main function of main script source\n"
 
-echo -e "\nManually installed packages are also added when the system is cleanly installed.\nIt also specifies which scripts were run and in what order.\nThis file will be used for accelerated installation and configuration of the system from scratch, to get started.\n"
+  echo 'FIP (Fedora Instalation and Preparation)'
 
-printf '\n%s\n%s\n\t%s\n%s\n\t%s\n%s\n\t%s' 'Find one packages list:'
-    'cat now-main-install.txt | awk -F': ' '/Имя(\s+)?:(\s+)?/ { print $2 }' | sort -udi'
-'Install one packages list:'
-    'sudo dnf install $(cat now-main-install.txt | awk -F': ' '/Имя(\s+)?:(\s+)?/ { print $2 }' | sort -udi)'
-'Adding a package description to a file:'
-    'sudo dnf info $1 | grep 'Имя Репозиторий Из репо Краткое URL Лицензия Описание'
+  echo -e "\nManually installed packages are also added when the system is cleanly installed.\nIt also specifies which scripts were run and in what order.\nThis file will be used for accelerated installation and configuration of the system from scratch, to get started.\n"
 
+  printf '%s\n\t%s\n\t%s\n%s\n\t%s\n%s\n\t%s\n\n' 'Find one packages list:' \
+    "cat ${main_txt_file} | sort -udi | tee ${main_txt_file}" \
+    "cat ${main_txt_file} | awk -F': ' '/Имя(\s+)?:(\s+)?/ { print $2 }' | sort -udi" \
+    'Install one packages list:' \
+    "sudo dnf install \$(cat ${main_txt_file} | awk -F': ' '/Имя(\s+)?:(\s+)?/ { print $2 }' | sort -udi)" \
+    'Adding a package description to a file:' \
+    "sudo dnf info \$1 | grep 'Имя Репозиторий Из репо Краткое URL Лицензия Описание'"
 
-  . "${main_project_path}/system/preparation/RUN"
+  echo -n 'Run first preparation system (N/y)'
+  read temp_one
+  if [[ "${temp_one}" == 'y' ]]; then
+    . "${main_project_path}/system/preparation/RUN"
+  fi
+
+  echo -n 'Sort ${main_txt_file} (N/y)'
+  read temp_one
+  if [[ "${temp_one}" == 'y' ]]; then
+    cat ${main_txt_file} | sed '/^$/d' | sort -uid -o "${main_txt_file}"
+  fi
 
 }
 

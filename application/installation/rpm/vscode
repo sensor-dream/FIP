@@ -76,7 +76,7 @@ function install_vscode() {
     'php'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/vscode.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/vscode.txt"
   pm "$@" -- "${install_pkg[@]}"
 
   fc-cache -f -v

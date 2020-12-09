@@ -86,7 +86,7 @@ function install_CAD_and_design_electronic_scheme() {
     'pkgconf-pkg-config'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/CAD-and-design-electronic-scheme.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/CAD-and-design-electronic-scheme.txt"
   pm "$@" -- "${install_pkg[@]}"
 
   [[ -z "$(check_installed_packages qt5)" ]] && . "${main_project_path}/application/installation/rpm/qt5"

@@ -21,13 +21,3 @@ libva-utils
 libva-vdpau-driver
 libvdpau
 vdpauinfo
-akmod-nvidia-340xx
-kmod-nvidia-340xx
-nvidia-query-resource-opengl
-nvidia-query-resource-opengl-lib
-xorg-x11-drv-nvidia-340xx
-xorg-x11-drv-nvidia-340xx-cuda
-xorg-x11-drv-nvidia-340xx-devel
-xorg-x11-drv-nvidia-340xx-kmodsrc
-xorg-x11-drv-nvidia-340xx-libs
-xorg-x11-drv-nvidia-340xx-libs*i686

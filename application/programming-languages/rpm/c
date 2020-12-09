@@ -57,7 +57,7 @@ function install_c() {
     'c-development'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/c.g.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/c.g.txt"
   pm -g "$@" -- "${install_pkg[@]}"
 
   install_pkg=(

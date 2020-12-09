@@ -97,7 +97,7 @@ function install_SDL() {
     # 'SDL2_ttf-devel'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/SDL.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/SDL.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

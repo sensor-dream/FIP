@@ -155,7 +155,7 @@ function install_gnome_shell() {
     # 'la-capitaine-cursor-theme'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/gnome-shell.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/gnome-shell.txt"
   pm "$@" -- "${install_pkg[@]}"
 
   echo "Run dnf search gtk | grep theme and dnf search shell-theme and dnf search icon-theme and dnf search cursor-theme"

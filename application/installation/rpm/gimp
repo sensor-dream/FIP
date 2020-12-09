@@ -90,7 +90,7 @@ function install_gimp() {
     xsane-gimp
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/gimp.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/gimp.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

@@ -74,7 +74,7 @@ function preinstall_nvidia_videocard_drv_340xx() {
     'libxcb'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/nvidia-videocard-drv-340xx.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/nvidia-videocard-drv-340xx.txt"
   pm "$@" -- "${install_pkg[@]}"
 
   install_pkg=(
@@ -87,7 +87,7 @@ function preinstall_nvidia_videocard_drv_340xx() {
     'libva-utils'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >>"${main_project_path}/package-list/nvidia-videocard-drv-340xx.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o >"${main_project_path}/package-list/nvidia-videocard-drv-340xx.txt"
   pm "$@" -- "${install_pkg[@]}"
 }
 
@@ -118,7 +118,7 @@ function install_nvidia_videocard_drv_340xx() {
     'xorg-x11-drv-nvidia-340xx-libs*i686'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >>"${main_project_path}/package-list/nvidia-videocard-drv-340xx.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o >"${main_project_path}/package-list/nvidia-videocard-drv-340xx.txt"
   pm "$@" -- "${install_pkg[@]}"
   # sudo dnf reinstall "${install_pkg[@]}"
 
@@ -186,9 +186,10 @@ function reinstall_xorg_server_mesa_libglvnd() {
 
 function uninstall_nvidia_videocard_drv_340xx() {
 
-  if [[ "$(check_installed_packages xorg-x11-drv-nvidia-340xx)" == 'xorg-x11-drv-nvidia-340xx' ]]; then
+  if [[ $(check_installed_packages xorg-x11-drv-nvidia*) == xorg-x11-drv-nvidia* ]]; then
     sudo mv /etc/X11/xorg.conf /etc/X11/xorg.conf.xorg-x11-drv-nvidia-340xx.saved
     sudo dnf remove xorg-x11-drv-nvidia\* nvidia\* -x faceroot -x akmods
+    # rd.driver.blacklist=nouveau modprobe.blacklist=nouveau nvidia-drm.modeset=1
     reinstall_xorg_server_mesa_libglvnd
   fi
 

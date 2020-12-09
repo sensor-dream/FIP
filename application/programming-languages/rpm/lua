@@ -114,7 +114,7 @@ function install_lua() {
     'luarocks'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/lua.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/lua.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

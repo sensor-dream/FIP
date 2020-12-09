@@ -61,7 +61,7 @@ function install_nginx() {
     'gd'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/nginx.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/nginx.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

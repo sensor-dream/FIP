@@ -87,7 +87,7 @@ function install_tigervnc() {
     'tigervnc-server-minimal'
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/tigervnc.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/tigervnc.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }

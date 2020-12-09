@@ -160,17 +160,17 @@ function install_archive_pack() {
     'bzip2'
     #
     # Имя          : pbzip2
-# Репозиторий  : fedora
-# Краткое опис : Parallel implementation of bzip2
-# URL          : https://launchpad.net/pbzip2
-# Лицензия     : BSD
-# Описание     : PBZIP2 is a parallel implementation of the bzip2 block-sorting file
-#              : compressor that uses pthreads and achieves near-linear speedup on SMP
-#              : machines.  The output of this version is fully compatible with bzip2
-#              : v1.0.2 or newer (ie: anything compressed with pbzip2 can be
-#              : decompressed with bzip2).
-'pbzip2'
-#
+    # Репозиторий  : fedora
+    # Краткое опис : Parallel implementation of bzip2
+    # URL          : https://launchpad.net/pbzip2
+    # Лицензия     : BSD
+    # Описание     : PBZIP2 is a parallel implementation of the bzip2 block-sorting file
+    #              : compressor that uses pthreads and achieves near-linear speedup on SMP
+    #              : machines.  The output of this version is fully compatible with bzip2
+    #              : v1.0.2 or newer (ie: anything compressed with pbzip2 can be
+    #              : decompressed with bzip2).
+    'pbzip2'
+    #
     # Краткое опис : Zip, GZip, Tar and BZip2 library
     # URL          : http://icsharpcode.github.io/SharpZipLib
     # Лицензия     : GPLv2+ with exceptions and BSD and zlib
@@ -312,43 +312,43 @@ function install_archive_pack() {
     #              : 1.50 and above.
     'unrar'
     #
-# Имя          : freeze
-# Репозиторий  : fedora
-# Краткое опис : freeze/melt/fcat compression utilities
-# Лицензия     : GPL+
-# Описание     : Freeze is an old file compressor and decompressor that is not in
-#              : common use anymore, but can be useful if the need ever arises to
-#              : dearchive files compressed with it.
-'freeze'
-#
-# Имя          : lzop
-# Репозиторий  : @System
-# Из репозитор : anaconda
-# Краткое опис : Real-time file compressor
-# URL          : https://www.lzop.org/
-# Лицензия     : GPLv2+
-# Описание     : lzop is a compression utility which is designed to be a companion to gzip.
-#              : It is based on the LZO data compression library and its main advantages over
-#              : gzip are much higher compression and decompression speed at the cost of some
-#              : compression ratio. The lzop compression utility was designed with the goals
-#              : of reliability, speed, portability and with reasonable drop-in compatibility
-#              : to gzip.
-'lzop'
-#
-# Имя          : nomarch
-# Репозиторий  : fedora
-# Краткое опис : GPLed Arc de-archiver
-# URL          : http://www.svgalib.org/rus/nomarch.html
-# Лицензия     : GPLv2+
-# Описание     : nomarch lists/extracts/tests `.arc' archives. (It also handles `.ark'
-#              : files, they're exactly the same.) This is a *very* outdated file
-#              : format which should never be used for anything new, but unfortunately,
-#              : you can still run into it every so often.
-'nomarch'
-#
+    # Имя          : freeze
+    # Репозиторий  : fedora
+    # Краткое опис : freeze/melt/fcat compression utilities
+    # Лицензия     : GPL+
+    # Описание     : Freeze is an old file compressor and decompressor that is not in
+    #              : common use anymore, but can be useful if the need ever arises to
+    #              : dearchive files compressed with it.
+    'freeze'
+    #
+    # Имя          : lzop
+    # Репозиторий  : @System
+    # Из репозитор : anaconda
+    # Краткое опис : Real-time file compressor
+    # URL          : https://www.lzop.org/
+    # Лицензия     : GPLv2+
+    # Описание     : lzop is a compression utility which is designed to be a companion to gzip.
+    #              : It is based on the LZO data compression library and its main advantages over
+    #              : gzip are much higher compression and decompression speed at the cost of some
+    #              : compression ratio. The lzop compression utility was designed with the goals
+    #              : of reliability, speed, portability and with reasonable drop-in compatibility
+    #              : to gzip.
+    'lzop'
+    #
+    # Имя          : nomarch
+    # Репозиторий  : fedora
+    # Краткое опис : GPLed Arc de-archiver
+    # URL          : http://www.svgalib.org/rus/nomarch.html
+    # Лицензия     : GPLv2+
+    # Описание     : nomarch lists/extracts/tests `.arc' archives. (It also handles `.ark'
+    #              : files, they're exactly the same.) This is a *very* outdated file
+    #              : format which should never be used for anything new, but unfortunately,
+    #              : you can still run into it every so often.
+    'nomarch'
+    #
   )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort >"${main_project_path}/package-list/archive-pack.txt"
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/archive-pack.txt"
   pm "$@" -- "${install_pkg[@]}"
 
 }
