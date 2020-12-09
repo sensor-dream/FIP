@@ -1,3 +1,8 @@
+
+
+udisks2-btrfs
+udisks2-iscsi
+
 blivet-data
 blivet-gui
 blivet-gui-runtime
@@ -11,3 +16,5 @@ udisks2-lvm2
 udisks2-qt5
 udisks2-qt5-devel
 udisks2-zram
+udisks2-btrfs
+udisks2-iscsi

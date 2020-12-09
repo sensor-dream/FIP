@@ -69,6 +69,7 @@ function main_main_script_source() {
   echo -n 'Sort ${main_txt_file} (N/y)'
   read temp_one
   if [[ "${temp_one}" == 'y' ]]; then
+    # cat ${main_txt_file} | xargs | sort -uid -o "${main_txt_file}"
     cat ${main_txt_file} | sed '/^$/d' | sort -uid -o "${main_txt_file}"
   fi
 
