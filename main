@@ -73,6 +73,22 @@ function main_main_script_source() {
     cat ${main_txt_file} | sed '/^$/d' | sort -uid -o "${main_txt_file}"
   fi
 
+  . "${main_project_path}/application/installation/rpm/library/additionally-graphical-system-pack"
+  . "${main_project_path}/application/installation/rpm/library/alsa"
+  . "${main_project_path}/application/installation/rpm/library/codek-pack"
+  . "${main_project_path}/application/installation/rpm/library/GLC"
+  . "${main_project_path}/application/installation/rpm/library/GLee"
+  . "${main_project_path}/application/installation/rpm/library/graphical-pack"
+  . "${main_project_path}/application/installation/rpm/library/gstreamer1"
+  . "${main_project_path}/application/installation/rpm/library/gstreamermm"
+  . "${main_project_path}/application/installation/rpm/library/libQGLViewer"
+  . "${main_project_path}/application/installation/rpm/library/mesa"
+  . "${main_project_path}/application/installation/rpm/library/openal-soft"
+  . "${main_project_path}/application/installation/rpm/library/SDL"
+  . "${main_project_path}/application/installation/rpm/library/wxGTK"
+
+  pm -a "$@" -- "$(cat ${main_txt_file})"
+
 }
 
 main_main_script_source "$@"

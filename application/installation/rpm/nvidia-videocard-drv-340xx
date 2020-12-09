@@ -165,8 +165,7 @@ function install_nvidia_videocard_drv_340xx_source() {
   if [[ "$(systemctl get-default)" == 'multi-user.target' ]]; then
 
     cd "${main_project_path}/application/installation/src/NVIDIA"
-    sudo ./NVIDIA-Linux-x86_64-340.108-patched-kernel-5.9.run -a
-
+    sudo NVIDIA-Linux-x86_64-340.108-patched-kernel-5.9.run -a
     echo
     echo 'Reboot in graphical mode ? (Y/n)'
     read key
