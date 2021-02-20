@@ -65,7 +65,6 @@ function install_btrfs() {
     'libbytesize-tools'
     'libbytesize-devel'
     'libbtrfsutil'
-    \
     'libblockdev'
     'libblockdev-btrfs'
     'libblockdev-btrfs-devel'
@@ -98,7 +97,6 @@ function install_btrfs() {
     'libblockdev-part-devel'
     'libblockdev-swap-devel'
     'libblockdev-tools'
-    \
     'device-mapper'
     'device-mapper-devel'
     'device-mapper-event'
@@ -109,11 +107,10 @@ function install_btrfs() {
     'device-mapper-multipath-devel'
     'device-mapper-multipath-libs'
     'device-mapper-persistent-data'
-    \
-    \
     'udisks2-btrfs'
     'lvm2-dbusd'
     # 'golang-github-containerd-btrfs-devel'
+    'libblockdev-plugins-all'
     'python-btrfs-doc'
     'python3-btrfs'
     'python3-btrfsutil'
@@ -121,29 +118,26 @@ function install_btrfs() {
     'python3-bytesize'
     'python3-pyparted'
     'parted'
+    # 'libselinux-python3'
     'python3-libselinux'
     'python3-blivet'
-    # 'timeshift'
+    'timeshift'
     'tmpwatch'
   )
 
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/btrfs.txt"
   pm "$@" -- "${install_pkg[@]}"
 
-  echo -e "\n$(check_installed_packages blivet-gui)\n"
+  # echo -e "\n$(check_installed_packages blivet-gui-runtime blivet-gui)\n"
 
-  if [[ "$(check_installed_packages blivet-gui)" == "blivet-gui" ]]; then
-    printf "Check blivet-gui is OK \n"
-  else
-    install_pkg=(
-      'blivet-data'
-      'blivet-gui'
-      'blivet-gui-runtime'
-    )
+  install_pkg=(
+    'blivet-data'
+    'blivet-gui'
+    'blivet-gui-runtime'
+  )
 
-    printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/blivet-gui.txt"
-    pm "$@" -- "${install_pkg[@]}"
-  fi
+  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/blivet-gui.txt"
+  pm "$@" -- "${install_pkg[@]}"
 
 }
 

@@ -61,5 +61,6 @@ python3-bytesize
 python3-libselinux
 python3-pyparted
 python-btrfs-doc
+timeshift
 tmpwatch
 udisks2-btrfs
