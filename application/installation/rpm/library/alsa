@@ -70,7 +70,7 @@ function install_alsa() {
     'alsa-plugins-upmix'
     'alsa-plugins-usbstream'
     'alsa-plugins-vdownmix'
-    'alsa-sof-firmware-debug'
+    # 'alsa-sof-firmware-debug'
     'alsa-tools'
     'alsa-tools-firmware'
     'alsa-topology'

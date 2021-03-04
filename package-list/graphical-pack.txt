@@ -1,6 +1,4 @@
-freeimage
-freeimage-devel
-gd
-tk
-turbojpeg
-webp-pixbuf-loader
+mypaint
+mypaint2-brushes
+mypaint-brushes
+mypaint-data

@@ -103,7 +103,7 @@ function install_git() {
     # 'git-octopus'
     # 'git-publish'
     # git-pull-request conflict git-extras
-    'git-pull-request'
+    # 'git-pull-request'
     # 'git-remote-gcrypt'
     # 'git-remote-hg'
     'git-repair'

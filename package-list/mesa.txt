@@ -9,7 +9,6 @@ mesa-libgbm
 mesa-libgbm-devel
 mesa-libGL
 mesa-libglapi
-mesa-libGL-devel
 mesa-libGLU
 mesa-libGLU-devel
 mesa-libGLw

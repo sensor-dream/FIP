@@ -200,7 +200,7 @@ function reinstall_xorg_server_mesa_libglvnd() {
 
 function uninstall_nvidia_videocard_drv_340xx() {
 
-  if [[ $(check_installed_packages xorg-x11-drv-nvidia*) == xorg-x11-drv-nvidia* ]]; then
+  if [[ -n  $(check_installed_packages xorg-x11-drv-nvidia*) ]]; then
     sudo mv /etc/X11/xorg.conf /etc/X11/xorg.conf.xorg-x11-drv-nvidia-340xx.saved
     sudo dnf remove xorg-x11-drv-nvidia\* nvidia\* -x faceroot -x akmods
     # rd.driver.blacklist=nouveau modprobe.blacklist=nouveau nvidia-drm.modeset=1

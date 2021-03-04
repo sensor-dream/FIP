@@ -2,4 +2,4 @@ git
 inkscape
 python37
 python3-pip
-xcursorgen
+xorg-x11-apps

@@ -64,7 +64,7 @@ function install_mesa() {
     'mesa-libEGL'
     'mesa-libEGL-devel'
     'mesa-libGL'
-    'mesa-libGL-devel'
+    # 'mesa-libGL-devel'
     'mesa-libGLU'
     'mesa-libGLU-devel'
     'mesa-libgbm'

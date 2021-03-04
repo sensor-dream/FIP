@@ -10,7 +10,6 @@ git-filter-repo
 git-lab-porcelain
 git-lfs
 git-merge-changelog
-git-pull-request
 git-repair
 git-review
 git-revise

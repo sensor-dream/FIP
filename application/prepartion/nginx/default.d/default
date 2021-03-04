@@ -116,7 +116,8 @@ ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
 ssl_stapling on;
 ssl_stapling_verify on;
 # replace with the IP address of your resolver
-resolver ${cfg_ip_dns_1} ${cfg_ip_dns_2} ${cfg_ip_dns_3} ${cfg_ip_dns_4} ${cfg_ip_dns_5} ${cfg_ip_dns_6} ${cfg_ip_dns_7} ${cfg_ip_dns_8} valid=60s;
+# resolver ${cfg_ip_dns_1} ${cfg_ip_dns_2} ${cfg_ip_dns_3} ${cfg_ip_dns_4} ${cfg_ip_dns_5} ${cfg_ip_dns_6} ${cfg_ip_dns_7} ${cfg_ip_dns_8} valid=60s;
+resolver 127.0.0.53 valid=60s;
 resolver_timeout 2s;
 ssl_session_cache shared:SSL:20m; # a 1mb cache can hold about 4000 sessions, so we can hold 40000 sessions
 ssl_session_timeout 24h;

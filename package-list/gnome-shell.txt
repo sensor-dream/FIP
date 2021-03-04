@@ -1,3 +1,5 @@
+flat-remix-gtk3-theme
+flat-remix-theme
 gawk
 git
 glib2-devel
@@ -10,6 +12,8 @@ gnome-shell-extension-drive-menu
 gnome-shell-extension-freon
 gnome-shell-extension-openweather
 gnome-shell-extension-user-theme
+gnome-shell-theme-flat-remix
+gnome-shell-theme-yaru
 gnome-themes-extra
 gnome-tweaks
 GraphicsMagick
@@ -29,3 +33,5 @@ python3.7
 python3-pip
 xorg-x11-apps
 xorg-x11-utils
+yaru-gtk3-theme
+yaru-icon-theme

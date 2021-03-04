@@ -62,7 +62,7 @@ function install_development_tools() {
   )
 
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/development-tools.g.txt"
-  pm -g "$@" -- "${install_pkg[@]}"
+  # pm -g "$@" -- "${install_pkg[@]}"
 
   install_pkg=(
     'openssl'

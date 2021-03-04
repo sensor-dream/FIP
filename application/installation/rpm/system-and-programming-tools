@@ -57,7 +57,7 @@ function install_system_and_programming_tools() {
     'system-tools'
   )
 
-  pm -g "$@" -- "${install_pkg[@]}"
+  # pm -g "$@" -- "${install_pkg[@]}"
 
   echo -e "\e[1;31m Run command: dnf groupinfo system-tools --hidden and used Optional packages list \e[0m"
 
