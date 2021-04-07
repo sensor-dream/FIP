@@ -14,458 +14,459 @@
 [[ -z "${gnome_shell_script_source}" ]] && declare -rx gnome_shell_script_source="$BASH_SOURCE"
 
 if [[ -z "${gnome_shell_script_source_path}" ]]; then
-  temp_one="$(dirname ${gnome_shell_script_source})"
-  if [[ "${temp_one}" == '.' ]]; then
-    declare -rx gnome_shell_script_source_path="$(pwd)"
-  else
-    declare -rx gnome_shell_script_source_path="${temp_one}"
-  fi
+    temp_one="$(dirname ${gnome_shell_script_source})"
+    if [[ "${temp_one}" == '.' ]]; then
+        declare -rx gnome_shell_script_source_path="$(pwd)"
+    else
+        declare -rx gnome_shell_script_source_path="${temp_one}"
+    fi
 fi
 
 if [[ -z "${main_run_script_path}" ]]; then
-  declare -rx main_run_script_path="$(pwd)"
-  printf "Script runs from path: %s\n" "${main_run_script_path}"
+    declare -rx main_run_script_path="$(pwd)"
+    printf "Script runs from path: %s\n" "${main_run_script_path}"
 fi
 
 if [[ -z "${main_cfg_script_source}" ]]; then
-  check=1
-  while [[ "${check}" -eq 1 ]]; do
-    if [[ ! -f 'main.cfg' ]]; then
-      if [[ "$(pwd)" != "/" ]]; then
-        cd ../
-      else
-        cd ${main_run_script_path}
-        check=0
-        echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
-        tput sgr0
-        exit 1
-      fi
-    else
-      check=0
-      declare -rx main_project_path="$(pwd)"
-      . "${main_project_path}/main.cfg" "$@"
-      cd "${main_run_script_path}"
-    fi
-  done
+    check=1
+    while [[ "${check}" -eq 1 ]]; do
+        if [[ ! -f 'main.cfg' ]]; then
+            if [[ "$(pwd)" != "/" ]]; then
+                cd ../
+            else
+                cd ${main_run_script_path}
+                check=0
+                echo -e '\e[31m'"!!! Not found configuration shared file !!!\033[0m"
+                tput sgr0
+                exit 1
+            fi
+        else
+            check=0
+            declare -rx main_project_path="$(pwd)"
+            . "${main_project_path}/main.cfg" "$@"
+            cd "${main_run_script_path}"
+        fi
+    done
 fi
 
 printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 
 function install_gnome_shell() {
 
-  local install_pkg=(
-    'gawk'
-    'git'
-    'glib2-devel'
-    'gnome-extensions-app'
-    'gnome-menus'
-    'gnome-themes-extra'
-    'gnome-tweaks'
-    'GraphicsMagick'
-    'gtk2-engines'
-    'gtk-murrine-engine'
-    'gtk-update-icon-cache'
-    'ImageMagick'
-    'inkscape'
-    'libgnome-devel'
-    'libgnomekbd-devel'
-    'libgnome-keyring-devel'
-    'libgnomeui-devel'
-    'libpng-devel'
-    'libX11-devel'
-    'libXcursor-devel'
-    'python3.7'
-    'python3-pip'
-    'xorg-x11-apps'
-    'xorg-x11-utils'
-    # 'translate-shell'
-    #
-    # Gnome shell extensions
-    #
-    # 'gnome-shell-extension-activities-configurator'      # Configure the top bar and Activities button in GNOME Shell
-    # 'gnome-shell-extension-appindicator' # AppIndicator/KStatusNotifierItem support for GNOME Shell
-    # 'gnome-shell-extension-apps-menu'    # Application menu for GNOME Shell
-    # 'gnome-shell-extension-argos'                        # Create GNOME Shell extensions in seconds
-    # 'gnome-shell-extension-auto-move-windows'            # Assign specific workspaces to applications in GNOME Shell
-    'gnome-shell-extension-background-logo' # Background logo extension for GNOME Shell
-    # 'gnome-shell-extension-bubblemail'                   # GNOME Shell indicator for new and unread mail using Bubblemail
-    # 'gnome-shell-extension-caffeine'                     # Disable the screen saver and auto suspend in gnome shell
-    'gnome-shell-extension-common'       # Files common to GNOME Shell Extensions
-    'gnome-shell-extension-dash-to-dock' # Dock for the Gnome Shell by micxgx@gmail.com
-    # 'gnome-shell-extension-desktop-icons'                # GNOME Shell extension for providing desktop icons
-    # 'gnome-shell-extension-disconnect-wifi'              # GNOME Shell Extension Disconnect Wifi by kgshank
-    # 'gnome-shell-extension-do-not-disturb-button'        # Hide desktop notifications until you're ready to look at them
-    'gnome-shell-extension-drive-menu' # Drive status menu for GNOME Shell
-    # 'gnome-shell-extension-emoji-selector'               # GNOME Shell extension for copying emojis to the clipboard
-    'gnome-shell-extension-freon' # GNOME Shell extension to display system temperature, voltage, and fan speed
-    # 'gnome-shell-extension-gamemode'                     # GameMode integration for GNOME Shell
-    # 'gnome-shell-extension-gpaste'                       # GNOME Shell extension for GPaste
-    # 'gnome-shell-extension-gsconnect'                    # KDE Connect implementation for GNOME Shell
-    # 'gnome-shell-extension-historymanager-prefix-search' # Use PageUp and PageDown to search for previous GNOME Shell commands
-    # 'gnome-shell-extension-horizontal-workspaces'        # Arrange workspaces in GNOME Shell in a single row
-    # 'gnome-shell-extension-ibus-font'                    # A GNOME Shell extension for ibus-setup custom font settings
-    # 'gnome-shell-extension-launch-new-instance'          # Always launch a new application instance for GNOME Shell
-    # 'gnome-shell-extension-material-shell' # Modern desktop interface for Linux
-    # 'gnome-shell-extension-media-player-indicator'       # Control MPRIS2 capable media players: Rhythmbox, Banshee, Clementine and more
-    # 'gnome-shell-extension-native-window-placement'      # Native window placement for GNOME Shell
-    # 'gnome-shell-extension-netspeed'                     # A gnome-shell extension to show speed of the internet
-    'gnome-shell-extension-openweather' # Display weather information from many locations in the world
-    # 'gnome-shell-extension-pidgin'                       # Make Pidgin IM conversations appear in the Gnome Shell message tray
-    # 'gnome-shell-extension-places-menu'                  # Places status menu for GNOME Shell
-    # 'gnome-shell-extension-pomodoro'                     # A time management utility for GNOME
-    # 'gnome-shell-extension-pop-shell'                    # GNOME Shell extension for advanced tiling window management
-    # 'gnome-shell-extension-pop-shell-shortcut-overrides' # Shortcut overrides for gnome-shell-extension-pop-shell
-    # 'gnome-shell-extension-refresh-wifi'                 # GNOME Shell Extension Refresh Wifi Connections by kgshank
-    # 'gnome-shell-extension-remove-bluetooth-icon'        # A gnome-shell extension for removing the bluetooth icon
-    # 'gnome-shell-extension-remove-volume-icon'           # A gnome-shell extension for removing the volume icon
-    # 'gnome-shell-extension-screenshot-window-sizer'      # Screenshot window sizer for GNOME Shell
-    # 'gnome-shell-extension-suspend-button'        # GNOME Shell Extension Suspend-Button by laserb
-    # 'gnome-shell-extension-system-monitor-applet' # A Gnome shell system monitor extension
-    # 'gnome-shell-extension-topicons-plus'         # Move all legacy tray icons to the top panel
-    # 'gnome-shell-extension-unite'                 # GNOME Shell Extension Unite by hardpixel
-    'gnome-shell-extension-user-theme' # Support for custom themes in GNOME Shell
-    # 'gnome-shell-extension-window-list'                  # Display a window list at the bottom of the screen in GNOME Shell
-    # 'gnome-shell-extension-windowoverlay-icons'          # Show app icons on top of the windows thumbnails in Activities Overview
-    # 'gnome-shell-extension-windowsNavigator'             # Support for keyboard selection of windows and workspaces in GNOME Shell
-    # 'gnome-shell-extension-workspace-indicator'          # Workspace indicator for GNOME Shell
-    #
-    #
-    # GNOME Desktop theme optimized for small displays
-    # 'clearlooks-compact-gnome-theme'
-    ## theme of Xenlism Wildfire
-    # 'xenlism-wildfire'
-    # 'xenlism-wildfire-day'
-    # 'xenlism-wildfire-friday'
-    # 'xenlism-wildfire-midnight'
-    # 'xenlism-wildfire-monday'
-    # 'xenlism-wildfire-night'
-    # 'xenlism-wildfire-saturday'
-    # 'xenlism-wildfire-sunday'
-    # 'xenlism-wildfire-thursday'
-    # 'xenlism-wildfire-tuesday'
-    # 'xenlism-wildfire-wednesday'
-    # 'gnome-shell-theme-selene'
-    #
-    # GTK and other theme
-    #
-    # 'numix-gtk-theme'
-    'flat-remix-gtk3-theme' # Flat Remix GTK theme is a pretty simple GTK window theme inspired on material design following a modern design using "flat" colors with high contrasts and sharp borders.
-    'flat-remix-theme'      # Flat Remix GTK theme is a pretty simple GTK window theme inspired on material design following a modern design using "flat" colors with high contrasts and sharp borders.
-    # 'arc-theme'
-    # 'arc-theme-plank'
-    # Chromium OS GTK Theme
-    # 'cros-adapta'
-    #
-    # Shell theme
-    #
-    'gnome-shell-theme-flat-remix'
-    #
-    # Icon theme
-    #
-    # 'candy-icon-theme'
-    # 'hicolor-icon-theme'
-    # 'adwaita-icon-theme'
-    # 'breeze-icon-theme'
-    # 'breeze-icon-theme-rcc'
-    # 'numix-icon-theme'
-    # 'numix-icon-theme-circle'
-    # 'numix-icon-theme-square'
-    # 'paper-icon-theme'
-    # 'papirus-icon-theme'
-    # 'libreoffice-icon-theme-papirus'
-    # 'suru-icon-theme'
-    # 'elementary-icon-theme-gimp-palette'
-    # 'flat-remix-icon-theme'
-    # 'monochrome-icon-theme'
-    # 'echo-artist'
-    # 'echo-icon-theme'
-    # 'gnome-colors-icon-theme'
-    # 'gnome-icon-theme'
-    # 'gnome-icon-theme-devel'
-    # 'gnome-icon-theme-legacy'
-    # 'We10X-icon-theme'
-    #
-    # Cursor theme
-    #
-    # 'adwaita-cursor-theme'
-    # 'bluecurve-cursor-theme'
-    # 'breeze-cursor-theme'
-    # 'dmz-cursor-themes'
-    # 'la-capitaine-cursor-theme'
-    # 'oxygen-cursor-themes'
-    #
-    # Yaru theme gtk3. kursor and icon !!!
-    'yaru-icon-theme'
-    'gnome-shell-theme-yaru'
-    'yaru-gtk3-theme'
-    # or Yaru-Colors from  https://www.opendesktop.org/p/1299514/
-  )
+    local install_pkg=(
+        'gawk'
+        'git'
+        'glib2-devel'
+        'gnome-extensions-app'
+        'gnome-menus'
+        'gnome-themes-extra'
+        'gnome-tweaks'
+        'GraphicsMagick'
+        'gtk2-engines'
+        'gtk-murrine-engine'
+        'gtk-update-icon-cache'
+        'ImageMagick'
+        'inkscape'
+        'libgnome-devel'
+        'libgnomekbd-devel'
+        'libgnome-keyring-devel'
+        'libgnomeui-devel'
+        'libpng-devel'
+        'libX11-devel'
+        'libXcursor-devel'
+        'python3.7'
+        'python3-pip'
+        'xorg-x11-apps'
+        'xorg-x11-utils'
+        # 'translate-shell'
+        #
+        # Gnome shell extensions
+        #
+        # 'gnome-shell-extension-activities-configurator'      # Configure the top bar and Activities button in GNOME Shell
+        # 'gnome-shell-extension-appindicator' # AppIndicator/KStatusNotifierItem support for GNOME Shell
+        # 'gnome-shell-extension-apps-menu'    # Application menu for GNOME Shell
+        # 'gnome-shell-extension-argos'                        # Create GNOME Shell extensions in seconds
+        # 'gnome-shell-extension-auto-move-windows'            # Assign specific workspaces to applications in GNOME Shell
+        'gnome-shell-extension-background-logo' # Background logo extension for GNOME Shell
+        # 'gnome-shell-extension-bubblemail'                   # GNOME Shell indicator for new and unread mail using Bubblemail
+        # 'gnome-shell-extension-caffeine'                     # Disable the screen saver and auto suspend in gnome shell
+        'gnome-shell-extension-common'       # Files common to GNOME Shell Extensions
+        'gnome-shell-extension-dash-to-dock' # Dock for the Gnome Shell by micxgx@gmail.com
+        # 'gnome-shell-extension-desktop-icons'                # GNOME Shell extension for providing desktop icons
+        # 'gnome-shell-extension-disconnect-wifi'              # GNOME Shell Extension Disconnect Wifi by kgshank
+        # 'gnome-shell-extension-do-not-disturb-button'        # Hide desktop notifications until you're ready to look at them
+        'gnome-shell-extension-drive-menu' # Drive status menu for GNOME Shell
+        # 'gnome-shell-extension-emoji-selector'               # GNOME Shell extension for copying emojis to the clipboard
+        'gnome-shell-extension-freon' # GNOME Shell extension to display system temperature, voltage, and fan speed
+        # 'gnome-shell-extension-gamemode'                     # GameMode integration for GNOME Shell
+        # 'gnome-shell-extension-gpaste'                       # GNOME Shell extension for GPaste
+        # 'gnome-shell-extension-gsconnect'                    # KDE Connect implementation for GNOME Shell
+        # 'gnome-shell-extension-historymanager-prefix-search' # Use PageUp and PageDown to search for previous GNOME Shell commands
+        # 'gnome-shell-extension-horizontal-workspaces'        # Arrange workspaces in GNOME Shell in a single row
+        # 'gnome-shell-extension-ibus-font'                    # A GNOME Shell extension for ibus-setup custom font settings
+        # 'gnome-shell-extension-launch-new-instance'          # Always launch a new application instance for GNOME Shell
+        # 'gnome-shell-extension-material-shell' # Modern desktop interface for Linux
+        # 'gnome-shell-extension-media-player-indicator'       # Control MPRIS2 capable media players: Rhythmbox, Banshee, Clementine and more
+        # 'gnome-shell-extension-native-window-placement'      # Native window placement for GNOME Shell
+        # 'gnome-shell-extension-netspeed'                     # A gnome-shell extension to show speed of the internet
+        'gnome-shell-extension-openweather' # Display weather information from many locations in the world
+        # 'gnome-shell-extension-pidgin'                       # Make Pidgin IM conversations appear in the Gnome Shell message tray
+        # 'gnome-shell-extension-places-menu'                  # Places status menu for GNOME Shell
+        # 'gnome-shell-extension-pomodoro'                     # A time management utility for GNOME
+        # 'gnome-shell-extension-pop-shell'                    # GNOME Shell extension for advanced tiling window management
+        # 'gnome-shell-extension-pop-shell-shortcut-overrides' # Shortcut overrides for gnome-shell-extension-pop-shell
+        # 'gnome-shell-extension-refresh-wifi'                 # GNOME Shell Extension Refresh Wifi Connections by kgshank
+        # 'gnome-shell-extension-remove-bluetooth-icon'        # A gnome-shell extension for removing the bluetooth icon
+        # 'gnome-shell-extension-remove-volume-icon'           # A gnome-shell extension for removing the volume icon
+        # 'gnome-shell-extension-screenshot-window-sizer'      # Screenshot window sizer for GNOME Shell
+        # 'gnome-shell-extension-suspend-button'        # GNOME Shell Extension Suspend-Button by laserb
+        # 'gnome-shell-extension-system-monitor-applet' # A Gnome shell system monitor extension
+        # 'gnome-shell-extension-topicons-plus'         # Move all legacy tray icons to the top panel
+        # 'gnome-shell-extension-unite'                 # GNOME Shell Extension Unite by hardpixel
+        'gnome-shell-extension-user-theme' # Support for custom themes in GNOME Shell
+        # 'gnome-shell-extension-window-list'                  # Display a window list at the bottom of the screen in GNOME Shell
+        # 'gnome-shell-extension-windowoverlay-icons'          # Show app icons on top of the windows thumbnails in Activities Overview
+        # 'gnome-shell-extension-windowsNavigator'             # Support for keyboard selection of windows and workspaces in GNOME Shell
+        # 'gnome-shell-extension-workspace-indicator'          # Workspace indicator for GNOME Shell
+        #
+        #
+        # GNOME Desktop theme optimized for small displays
+        # 'clearlooks-compact-gnome-theme'
+        ## theme of Xenlism Wildfire
+        # 'xenlism-wildfire'
+        # 'xenlism-wildfire-day'
+        # 'xenlism-wildfire-friday'
+        # 'xenlism-wildfire-midnight'
+        # 'xenlism-wildfire-monday'
+        # 'xenlism-wildfire-night'
+        # 'xenlism-wildfire-saturday'
+        # 'xenlism-wildfire-sunday'
+        # 'xenlism-wildfire-thursday'
+        # 'xenlism-wildfire-tuesday'
+        # 'xenlism-wildfire-wednesday'
+        # 'gnome-shell-theme-selene'
+        #
+        # GTK and other theme
+        #
+        # 'numix-gtk-theme'
+        'flat-remix-gtk3-theme' # Flat Remix GTK theme is a pretty simple GTK window theme inspired on material design following a modern design using "flat" colors with high contrasts and sharp borders.
+        'flat-remix-theme'      # Flat Remix GTK theme is a pretty simple GTK window theme inspired on material design following a modern design using "flat" colors with high contrasts and sharp borders.
+        # 'arc-theme'
+        # 'arc-theme-plank'
+        # Chromium OS GTK Theme
+        # 'cros-adapta'
+        #
+        # Shell theme
+        #
+        'gnome-shell-theme-flat-remix'
+        #
+        # Icon theme
+        #
+        # 'candy-icon-theme'
+        # 'hicolor-icon-theme'
+        # 'adwaita-icon-theme'
+        # 'breeze-icon-theme'
+        # 'breeze-icon-theme-rcc'
+        # 'numix-icon-theme'
+        # 'numix-icon-theme-circle'
+        # 'numix-icon-theme-square'
+        # 'paper-icon-theme'
+        # 'papirus-icon-theme'
+        # 'libreoffice-icon-theme-papirus'
+        # 'suru-icon-theme'
+        # 'elementary-icon-theme-gimp-palette'
+        # 'flat-remix-icon-theme'
+        # 'monochrome-icon-theme'
+        # 'echo-artist'
+        # 'echo-icon-theme'
+        # 'gnome-colors-icon-theme'
+        # 'gnome-icon-theme'
+        # 'gnome-icon-theme-devel'
+        # 'gnome-icon-theme-legacy'
+        # 'We10X-icon-theme'
+        #
+        # Cursor theme
+        #
+        # 'adwaita-cursor-theme'
+        # 'bluecurve-cursor-theme'
+        # 'breeze-cursor-theme'
+        # 'dmz-cursor-themes'
+        # 'la-capitaine-cursor-theme'
+        # 'oxygen-cursor-themes'
+        #
+        # Yaru theme gtk3. kursor and icon !!!
+        'yaru-icon-theme'
+        'gnome-shell-theme-yaru'
+        'yaru-gtk3-theme'
+        # or Yaru-Colors from  https://www.opendesktop.org/p/1299514/
+    )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/gnome-shell.txt"
-  pm "$@" -- "${install_pkg[@]}"
+    printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/gnome-shell.txt"
+    pm "$@" -- "${install_pkg[@]}"
 
-  gsettings get org.gnome.shell enabled-extensions
+    gsettings get org.gnome.shell enabled-extensions
 
-  echo "Run dnf search gtk | grep theme and dnf search shell-theme and dnf search icon-theme and dnf search cursor-theme"
-  echo "Please read https://www.gnome-look.org for theme and ..."
-  echo
-  echo "Global share themes path: /usr/share/themes"
-  echo "Local share themes path: ~/.local/share/themes"
-  echo "Local share icons path: ~/.local/share/icons"
-  echo
-  echo "Themes, icons and rursors"
-  echo
-  echo -e "\tPlease read Adapta-gtk-theme-colorpack https://www.gnome-look.org/p/1190851 and https://github.com/adapta-project/adapta-gtk-theme\n"
-  echo -e "\tPlease read Prof-Gnome-theme https://www.opendesktop.org/p/1334194\n"
-  echo -e "\tPlease read Vimix-Gtk-Theme https://www.opendesktop.org/p/1013698\n"
-  echo -e "\tPlease read Ultimate Maia https://www.opendesktop.org/p/1193879\n"
-  echo -e "\tPlease read Midnight https://www.gnome-look.org/p/1273208\n"
-  echo
-  echo -e "\tPlease read Sweet themes https://www.gnome-look.org/p/1253385\nExtract the zip file to the themes directory i.e. ~/.themes/ or /usr/share/themes\ngsettings set org.gnome.desktop.interface gtk-theme Sweet\ngsettings set org.gnome.desktop.wm.preferences theme Sweet\n"
-  echo -e "\tPlease read Sweet folders https://www.opendesktop.org/p/1284047 and Candy icons was moved https://www.pling.com/p/1305251\n"
-  echo
-  echo "Extensions for gnome"
-  echo
-  echo "My preferences:"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/97/coverflow-alt-tab"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/307/dash-to-dock"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/1160/dash-to-panel"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/1583/worksets/"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/3518/transparent-shell/"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/3843/just-perfection/"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/3488/big-avatar"
-  echo
-  echo "Other:"
-  echo
-  echo -e "\tPlease read https://extensions.gnome.org/extension/2284/binaryclock/"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/1683/draw-on-you-screen/"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/2542/floating-dock"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/3628/arcmenu"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/1183/utcclock"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/898/mmod-panel"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/2950/compiz-alike-windows-effect"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/3740/compiz-alike-magic-lamp-effect"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/593/text-translator"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/355/status-area-horizontal-spacing"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/708/panel-osd/"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/949/bottompanel"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/3193/blur-my-shell"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/1680/animation-tweaks"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/1011/dynamic-panel-transparency"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/723/pixel-saver"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/28/gtile/"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/1149/activity-app-launcher"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/988/harddisk-led"
-  echo -e "\tPlease read https://extensions.gnome.org/extension/805/hide-dash"
-  # guake terminal лучше
-  echo -e "\n# guake terminal forever\n\tPlease read:\n\t\thttps://extensions.gnome.org/extension/3780/ddterm/\n"
-  # from cairo-dock
-  echo -e "\n# from cairo-dock:\n\tPlease read:\n\t\thttps://extensions.gnome.org/extension/3718/hide-dash-forked\n\t\thttps://extensions.gnome.org/extension/545/hide-top-bar"
+    echo "Run dnf search gtk | grep theme and dnf search shell-theme and dnf search icon-theme and dnf search cursor-theme"
+    echo "Please read https://www.gnome-look.org for theme and ..."
+    echo
+    echo "Global share themes path: /usr/share/themes"
+    echo "Local share themes path: ~/.local/share/themes"
+    echo "Local share icons path: ~/.local/share/icons"
+    echo
+    echo "Themes, icons and rursors"
+    echo
+    echo -e "\tPlease read Adapta-gtk-theme-colorpack https://www.gnome-look.org/p/1190851 and https://github.com/adapta-project/adapta-gtk-theme\n"
+    echo -e "\tPlease read Prof-Gnome-theme https://www.opendesktop.org/p/1334194\n"
+    echo -e "\tPlease read Vimix-Gtk-Theme https://www.opendesktop.org/p/1013698\n"
+    echo -e "\tPlease read Ultimate Maia https://www.opendesktop.org/p/1193879\n"
+    echo -e "\tPlease read Midnight https://www.gnome-look.org/p/1273208\n"
+    echo
+    echo -e "\tPlease read Sweet themes https://www.gnome-look.org/p/1253385\nExtract the zip file to the themes directory i.e. ~/.themes/ or /usr/share/themes\ngsettings set org.gnome.desktop.interface gtk-theme Sweet\ngsettings set org.gnome.desktop.wm.preferences theme Sweet\n"
+    echo -e "\tPlease read Sweet folders https://www.opendesktop.org/p/1284047 and Candy icons was moved https://www.pling.com/p/1305251\n"
+    echo
+    echo "Extensions for gnome"
+    echo
+    echo "My preferences:"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/97/coverflow-alt-tab"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/307/dash-to-dock"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/1160/dash-to-panel"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/1583/worksets/"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/3518/transparent-shell/"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/3843/just-perfection/"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/3488/big-avatar"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/3019/user-themes-x"
+    echo
+    echo "Other:"
+    echo
+    echo -e "\tPlease read https://extensions.gnome.org/extension/2284/binaryclock/"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/1683/draw-on-you-screen/"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/2542/floating-dock"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/3628/arcmenu"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/1183/utcclock"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/898/mmod-panel"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/2950/compiz-alike-windows-effect"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/3740/compiz-alike-magic-lamp-effect"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/593/text-translator"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/355/status-area-horizontal-spacing"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/708/panel-osd/"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/949/bottompanel"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/3193/blur-my-shell"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/1680/animation-tweaks"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/1011/dynamic-panel-transparency"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/723/pixel-saver"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/28/gtile/"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/1149/activity-app-launcher"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/988/harddisk-led"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/805/hide-dash"
+    # guake terminal лучше
+    echo -e "\n# guake terminal forever\n\tPlease read:\n\t\thttps://extensions.gnome.org/extension/3780/ddterm/\n"
+    # from cairo-dock
+    echo -e "\n# from cairo-dock:\n\tPlease read:\n\t\thttps://extensions.gnome.org/extension/3718/hide-dash-forked\n\t\thttps://extensions.gnome.org/extension/545/hide-top-bar"
 }
 
 function install_gnome_shell_Vertex_Theme() {
 
-  local install_pkg=(
-    'git'
-    'make'
-    'autoconf'
-    'automake'
-    'pkgconf-pkg-config'
-    'gnome-themes-extra'
-    'gtk-murrine-engine'
-    'gtk3-devel'
-  )
+    local install_pkg=(
+        'git'
+        'make'
+        'autoconf'
+        'automake'
+        'pkgconf-pkg-config'
+        'gnome-themes-extra'
+        'gtk-murrine-engine'
+        'gtk3-devel'
+    )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/install-gnome-shell-vertex-theme.txt"
-  pm "$@" -- "${install_pkg[@]}"
+    printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/install-gnome-shell-vertex-theme.txt"
+    pm "$@" -- "${install_pkg[@]}"
 
-  if [[ ! -d "${main_project_path}/application/installation/src/gnome-shell-vertex-theme" ]]; then
-    git clone 'https://github.com/horst3180/vertex-theme' --depth 1 "${main_project_path}/application/installation/src/gnome-shell-vertex-theme"
-  fi
-  cd "${main_project_path}/application/installation/src/gnome-shell-vertex-theme"
+    if [[ ! -d "${main_project_path}/application/installation/src/gnome-shell-vertex-theme" ]]; then
+        git clone 'https://github.com/horst3180/vertex-theme' --depth 1 "${main_project_path}/application/installation/src/gnome-shell-vertex-theme"
+    fi
+    cd "${main_project_path}/application/installation/src/gnome-shell-vertex-theme"
 
-  # If you want to install the latest stable release, run
-  # git fetch --tags
-  # git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
+    # If you want to install the latest stable release, run
+    # git fetch --tags
+    # git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
 
-  chmod +x autogen.sh
+    chmod +x autogen.sh
 
-  sudo rm -rf /usr/share/themes/{Vertex,Vertex-Dark,Vertex-Light,Vertex-Gnome-Shell,Vertex-Gnome-Shell-3.16,Vertex-Cinnamon}
-  rm -rf ~/.local/share/themes/{Vertex,Vertex-Dark,Vertex-Light,Vertex-Gnome-Shell,Vertex-Gnome-Shell-3.16,Vertex-Cinnamon}
-  rm -rf ~/.themes/{Vertex,Vertex-Dark,Vertex-Light,Vertex-Gnome-Shell,Vertex-Gnome-Shell-3.16,Vertex-Cinnamon}
+    sudo rm -rf /usr/share/themes/{Vertex,Vertex-Dark,Vertex-Light,Vertex-Gnome-Shell,Vertex-Gnome-Shell-3.16,Vertex-Cinnamon}
+    rm -rf ~/.local/share/themes/{Vertex,Vertex-Dark,Vertex-Light,Vertex-Gnome-Shell,Vertex-Gnome-Shell-3.16,Vertex-Cinnamon}
+    rm -rf ~/.themes/{Vertex,Vertex-Dark,Vertex-Light,Vertex-Gnome-Shell,Vertex-Gnome-Shell-3.16,Vertex-Cinnamon}
 
-  # Other options to pass to autogen.sh are
-  # --disable-cinnamon         disable Cinnamon support
-  # --disable-dark             disable Vertex Dark support
-  # --disable-gnome-shell      disable GNOME Shell support
-  # --disable-gtk2             disable GTK2 support
-  # --disable-gtk3             disable GTK3 support
-  # --disable-light            disable Vertex Light support
-  # --disable-metacity         disable Metacity support
-  # --disable-unity            disable Unity support
-  # --disable-xfwm             disable XFWM support
-  # --with-gnome=<version>     build the theme for a specific Gnome version (3.10, 3.12, 3.14, 3.16, 3.18, 3.20)
-  #                            Note: Normally the correct version is detected automatically and this
-  #                            option should not be needed.
+    # Other options to pass to autogen.sh are
+    # --disable-cinnamon         disable Cinnamon support
+    # --disable-dark             disable Vertex Dark support
+    # --disable-gnome-shell      disable GNOME Shell support
+    # --disable-gtk2             disable GTK2 support
+    # --disable-gtk3             disable GTK3 support
+    # --disable-light            disable Vertex Light support
+    # --disable-metacity         disable Metacity support
+    # --disable-unity            disable Unity support
+    # --disable-xfwm             disable XFWM support
+    # --with-gnome=<version>     build the theme for a specific Gnome version (3.10, 3.12, 3.14, 3.16, 3.18, 3.20)
+    #                            Note: Normally the correct version is detected automatically and this
+    #                            option should not be needed.
 
-  ./autogen.sh --prefix=/usr
+    ./autogen.sh --prefix=/usr
 
-  sudo make install
-  cd "${main_run_script_path}"
+    sudo make install
+    cd "${main_run_script_path}"
 
 }
 
 function install_Arc_Firefox_Theme() {
 
-  local install_pkg=(
-    'git'
-    'make'
-    'autoconf'
-    'automake'
-  )
+    local install_pkg=(
+        'git'
+        'make'
+        'autoconf'
+        'automake'
+    )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/install-arc-firefox-theme.txt"
-  pm "$@" -- "${install_pkg[@]}"
+    printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/install-arc-firefox-theme.txt"
+    pm "$@" -- "${install_pkg[@]}"
 
-  if [[ ! -d "${main_project_path}/application/installation/src/Arc-Firefox-Theme" ]]; then
-    git clone 'https://github.com/horst3180/arc-firefox-theme' "${main_project_path}/application/installation/src/Arc-Firefox-Theme"
-  fi
-  cd "${main_project_path}/application/installation/src/Arc-Firefox-Theme"
-  chmod +x autogen.sh
-  # Other build options to append to autogen.sh are
-  # --disable-light disable Arc Light Firefox support
-  # --disable-darker disable Arc Darker Firefox support
-  # --disable-dark disable Arc Dark Firefox support
-  ./autogen.sh --prefix=/usr
+    if [[ ! -d "${main_project_path}/application/installation/src/Arc-Firefox-Theme" ]]; then
+        git clone 'https://github.com/horst3180/arc-firefox-theme' "${main_project_path}/application/installation/src/Arc-Firefox-Theme"
+    fi
+    cd "${main_project_path}/application/installation/src/Arc-Firefox-Theme"
+    chmod +x autogen.sh
+    # Other build options to append to autogen.sh are
+    # --disable-light disable Arc Light Firefox support
+    # --disable-darker disable Arc Darker Firefox support
+    # --disable-dark disable Arc Dark Firefox support
+    ./autogen.sh --prefix=/usr
 
-  # Generate the .xpi files (drag and drop these into your Firefox window)
-  # make mkxpi
-  # or alternative
-  sudo make install
-  cd "${main_run_script_path}"
+    # Generate the .xpi files (drag and drop these into your Firefox window)
+    # make mkxpi
+    # or alternative
+    sudo make install
+    cd "${main_run_script_path}"
 
 }
 
 function install_Volantes_Cursors() {
 
-  local install_pkg=(
-    'git'
-    'make'
-    'inkscape'
-    'xorg-x11-apps'
-  )
+    local install_pkg=(
+        'git'
+        'make'
+        'inkscape'
+        'xorg-x11-apps'
+    )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/install-volantes-cursors.txt"
-  pm "$@" -- "${install_pkg[@]}"
+    printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/install-volantes-cursors.txt"
+    pm "$@" -- "${install_pkg[@]}"
 
-  if [[ ! -d "${main_project_path}/application/installation/src/Volantes-Cursors" ]]; then
-    git clone 'https://github.com/varlesh/volantes-cursors.git' "${main_project_path}/application/installation/src/Volantes-Cursors"
-  fi
-  cd "${main_project_path}/application/installation/src/Volantes-Cursors"
-  make build
-  sudo make install
-  cd "${main_run_script_path}"
+    if [[ ! -d "${main_project_path}/application/installation/src/Volantes-Cursors" ]]; then
+        git clone 'https://github.com/varlesh/volantes-cursors.git' "${main_project_path}/application/installation/src/Volantes-Cursors"
+    fi
+    cd "${main_project_path}/application/installation/src/Volantes-Cursors"
+    make build
+    sudo make install
+    cd "${main_run_script_path}"
 
 }
 
 function install_Bibata_Cursors() {
 
-  sudo dnf copr enable peterwu/rendezvous
+    sudo dnf copr enable peterwu/rendezvous
 
-  local install_pkg=(
-    'libX11-devel'
-    'libXcursor-devel'
-    'libpng-devel'
-    'bibata-cursor-themes'
-  )
+    local install_pkg=(
+        'libX11-devel'
+        'libXcursor-devel'
+        'libpng-devel'
+        'bibata-cursor-themes'
+    )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/install-bibata-cursors.txt"
-  pm "$@" -- "${install_pkg[@]}"
+    printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/install-bibata-cursors.txt"
+    pm "$@" -- "${install_pkg[@]}"
 
 }
 
 function install_Bibata_Extra_Cursors() {
 
-  local install_pkg=(
-    'git'
-    'python37'
-    'python3-pip'
-    'inkscape'
-    'xorg-x11-apps'
-  )
+    local install_pkg=(
+        'git'
+        'python37'
+        'python3-pip'
+        'inkscape'
+        'xorg-x11-apps'
+    )
 
-  printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/install-bibata-extra-cursors.txt"
-  pm "$@" -- "${install_pkg[@]}"
+    printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/install-bibata-extra-cursors.txt"
+    pm "$@" -- "${install_pkg[@]}"
 
-  if [[ ! -d "${main_project_path}/application/installation/src/Bibata-Extra-Cursor" ]]; then
-    git clone 'https://github.com/ful1e5/Bibata_Extra_Cursor.git' "${main_project_path}/application/installation/src/Bibata-Extra-Cursor"
-  fi
-  cd "${main_project_path}/application/installation/src/Bibata-Extra-Cursor"
-  chmod +x build.sh
-  ./build.sh
-  chmod +x ./install.sh
-  sudo ./install.sh
-  cd "${main_run_script_path}"
+    if [[ ! -d "${main_project_path}/application/installation/src/Bibata-Extra-Cursor" ]]; then
+        git clone 'https://github.com/ful1e5/Bibata_Extra_Cursor.git' "${main_project_path}/application/installation/src/Bibata-Extra-Cursor"
+    fi
+    cd "${main_project_path}/application/installation/src/Bibata-Extra-Cursor"
+    chmod +x build.sh
+    ./build.sh
+    chmod +x ./install.sh
+    sudo ./install.sh
+    cd "${main_run_script_path}"
 
 }
 
 function main_gnome_shell_script_source() {
 
-  # printf "Initialise main function of gnome-shell script source\n";
+    # printf "Initialise main function of gnome-shell script source\n";
 
-  install_gnome_shell "$@"
+    install_gnome_shell "$@"
 
-  echo -n "Install Gnome shell Vertex Theme ? (N/y)"
-  read temp_one
-  if [[ "${temp_one}" == 'y' ]]; then
-    echo -n "Install Prebuilt packages Vertex Theme ? (N/y)"
+    echo -n "Install Gnome shell Vertex Theme ? (N/y)"
     read temp_one
     if [[ "${temp_one}" == 'y' ]]; then
-      sudo dnf config-manager --add-repo https://download.opensuse.org/repositories/home:Horst3180/Fedora_24/home:Horst3180.repo
-      sudo dnf install vertex-theme
+        echo -n "Install Prebuilt packages Vertex Theme ? (N/y)"
+        read temp_one
+        if [[ "${temp_one}" == 'y' ]]; then
+            sudo dnf config-manager --add-repo https://download.opensuse.org/repositories/home:Horst3180/Fedora_24/home:Horst3180.repo
+            sudo dnf install vertex-theme
+        fi
+        echo -n "Install Prebuilt packages Vertex Theme ? (N/y)"
+        read temp_one
+        if [[ "${temp_one}" == 'y' ]]; then
+            install_gnome_shell_Vertex_Theme "$@"
+        fi
     fi
-    echo -n "Install Prebuilt packages Vertex Theme ? (N/y)"
+
+    echo -e "\nInstall from addons Arc Firefox Theme\n\thttps://addons.mozilla.org/en-US/firefox/addon/arc-dark-theme-we\n\thttps://addons.mozilla.org/en-US/firefox/addon/arc-darker-theme-we\n\thttps://addons.mozilla.org/en-US/firefox/addon/arc-theme-we\n"
+    echo -n "Install from github Arc Firefox Theme ? (N/y)"
     read temp_one
     if [[ "${temp_one}" == 'y' ]]; then
-      install_gnome_shell_Vertex_Theme "$@"
+        install_Arc_Firefox_Theme "$@"
+        echo
+        echo "If you get artifacts like black or invisible backgrounds under Unity, disable overlay scrollbars with"
+        echo "gsettings set com.canonical.desktop.interface scrollbar-mode normal"
+        echo
     fi
-  fi
 
-  echo -e "\nInstall from addons Arc Firefox Theme\n\thttps://addons.mozilla.org/en-US/firefox/addon/arc-dark-theme-we\n\thttps://addons.mozilla.org/en-US/firefox/addon/arc-darker-theme-we\n\thttps://addons.mozilla.org/en-US/firefox/addon/arc-theme-we\n"
-  echo -n "Install from github Arc Firefox Theme ? (N/y)"
-  read temp_one
-  if [[ "${temp_one}" == 'y' ]]; then
-    install_Arc_Firefox_Theme "$@"
-    echo
-    echo "If you get artifacts like black or invisible backgrounds under Unity, disable overlay scrollbars with"
-    echo "gsettings set com.canonical.desktop.interface scrollbar-mode normal"
-    echo
-  fi
+    echo -n "Install Volantes Cursors ? (N/y)"
+    read temp_one
+    if [[ "${temp_one}" == 'y' ]]; then
+        install_Volantes_Cursors "$@"
+        gsettings set org.gnome.desktop.interface cursor-theme 'Volantes Cursors'
+    fi
 
-  echo -n "Install Volantes Cursors ? (N/y)"
-  read temp_one
-  if [[ "${temp_one}" == 'y' ]]; then
-    install_Volantes_Cursors "$@"
-    gsettings set org.gnome.desktop.interface cursor-theme 'Volantes Cursors'
-  fi
+    echo -n "Install Bibata Cursors ? (N/y)"
+    read temp_one
+    if [[ "${temp_one}" == 'y' ]]; then
+        install_Bibata_Cursors "$@"
+        gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Classic'
+    fi
 
-  echo -n "Install Bibata Cursors ? (N/y)"
-  read temp_one
-  if [[ "${temp_one}" == 'y' ]]; then
-    install_Bibata_Cursors "$@"
-    gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Classic'
-  fi
+    echo -n "Install Bibata Extra Cursors ? (N/y)"
+    read temp_one
+    if [[ "${temp_one}" == 'y' ]]; then
+        install_Bibata_Extra_Cursors "$@"
+        gsettings set org.gnome.desktop.interface cursor-theme 'Bibata Red'
+    fi
 
-  echo -n "Install Bibata Extra Cursors ? (N/y)"
-  read temp_one
-  if [[ "${temp_one}" == 'y' ]]; then
-    install_Bibata_Extra_Cursors "$@"
-    gsettings set org.gnome.desktop.interface cursor-theme 'Bibata Red'
-  fi
+    # . "${main_project_path}/system/preparation/gnome-dash-fix"
 
-  # . "${main_project_path}/system/preparation/gnome-dash-fix"
-
-  sudo update-alternatives --config x-cursor-theme
+    sudo update-alternatives --config x-cursor-theme
 
 }
 
