@@ -2,6 +2,5 @@ libmp3splt
 libmp4v2
 libmpcdec
 libmpeg2
-libmpeg2-devel
 libmpeg3
 libmpeg3-utils

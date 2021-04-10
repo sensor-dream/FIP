@@ -231,10 +231,11 @@ function install_gnome_shell() {
     echo -e "\tPlease read https://extensions.gnome.org/extension/307/dash-to-dock"
     echo -e "\tPlease read https://extensions.gnome.org/extension/1160/dash-to-panel"
     echo -e "\tPlease read https://extensions.gnome.org/extension/1583/worksets/"
-    echo -e "\tPlease read https://extensions.gnome.org/extension/3518/transparent-shell/"
-    echo -e "\tPlease read https://extensions.gnome.org/extension/3843/just-perfection/"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/3518/transparent-shell"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/3843/just-perfection"
     echo -e "\tPlease read https://extensions.gnome.org/extension/3488/big-avatar"
-    echo -e "\tPlease read https://extensions.gnome.org/extension/3019/user-themes-x"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/2236/night-theme-switcher"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/2917/bring-out-submenu-of-power-offlogout-button/"
     echo
     echo "Other:"
     echo

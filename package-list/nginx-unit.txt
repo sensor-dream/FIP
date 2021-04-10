@@ -1,0 +1,17 @@
+unit
+unit-debuginfo
+unit-devel
+unit-go
+unit-jsc11
+unit-jsc11-debuginfo
+unit-jsc8
+unit-jsc8-debuginfo
+unit-jsc-common
+unit-perl
+unit-perl-debuginfo
+unit-php
+unit-php-debuginfo
+unit-python39
+unit-python39-debuginfo
+unit-ruby
+unit-ruby-debuginfo

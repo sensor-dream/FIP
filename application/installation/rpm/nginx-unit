@@ -54,32 +54,31 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 function install_nginx_unit() {
 
   local install_pkg=(
-    'unit'
-    'unit-api'
-    'unit-api-javadoc'
-    'unit-debuginfo'
-    'unit-devel'
-    'unit-go'
-    'unit-jsc11'
-    'unit-jsc11-debuginfo'
-    'unit-perl'
-    'unit-perl-debuginfo'
-    'unit-php'
-    'unit-php-debuginfo'
-    'unit-python27'
-    'unit-python27-debuginfo'
-    'unit-python37'
-    'unit-python37-debuginfo'
-    'unit-ruby'
-    'unit-ruby-debuginfo'
-    'rubygem-rack'
-    'unit-jsc-common'
+    unit
+    unit-debuginfo
+    unit-devel
+    unit-go
+    unit-jsc-common
+    unit-jsc11
+    unit-jsc11-debuginfo
+    unit-jsc8
+    unit-jsc8-debuginfo
+    unit-perl
+    unit-perl-debuginfo
+    unit-php
+    unit-php-debuginfo
+    unit-python39
+    unit-python39-debuginfo
+    unit-ruby
+    unit-ruby-debuginfo
   )
 
   printf '%s\n' $(unset_dupes_in_array "${install_pkg[@]}") | sort -o "${main_project_path}/package-list/nginx-unit.txt"
+ 
   pm "$@" -- "${install_pkg[@]}"
 
   sudo npm install -g node-gyp
+ 
   #
   ##
   ### Control socket is located here: /var/run/unit/control.sock
@@ -92,7 +91,7 @@ function main_nginx_unit_script_source() {
 
   # printf "Initialise main function of nginx-unit script source\n";
 
-  . "${main_project_path}/repository/nginx-unit"
+#  . "${main_project_path}/repository/nginx-unit"
 
   install_nginx_unit "$@"
 
