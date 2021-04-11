@@ -113,8 +113,9 @@ ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
 
 # OCSP stapling
 # default off
-ssl_stapling on;
-ssl_stapling_verify on;
+ssl_stapling off;
+ssl_stapling_verify off;
+
 # replace with the IP address of your resolver
 # resolver ${cfg_ip_dns_1} ${cfg_ip_dns_2} ${cfg_ip_dns_3} ${cfg_ip_dns_4} ${cfg_ip_dns_5} ${cfg_ip_dns_6} ${cfg_ip_dns_7} ${cfg_ip_dns_8} valid=60s;
 resolver 127.0.0.53 valid=60s;
