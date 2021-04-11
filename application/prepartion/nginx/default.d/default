@@ -105,9 +105,9 @@ location ~* /(?:uploads|files)/.*\.php$ {
 
 # Deny all attempts to access hidden files such as setperm chmodx tools.
 # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban)
-location ~ /(setperm|chmodx|main-utilites) {
-    deny all;
-}
+# location ~ /(setperm|chmodx|main-utilites) {
+#     deny all;
+# }
 
 ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
 

@@ -117,17 +117,19 @@ function main_nginx_script_source() {
     local rev_timestamp="${timestamp}"
     echo "${rev_timestamp}" >'rev-timestamp.txt'
 
-    # local nginx_version="$(rpm -qi nginx | awk '/Version/ { print $3 }')"
+    local nginx_version="$(rpm -qi nginx | awk '/Version/ { print $3 }')"
 
     # Mainline version
     # local nginx_version='1.19.9'
 
     # Stable version
-    local nginx_version='1.18.0'
+    # local nginx_version='1.18.0'
 
     local certbot_version="$(certbot --version)"
     local path_lib_nginx_modules='/usr/lib64/nginx/modules'
     local path_cfg_nginx_modules='/usr/share/nginx/modules'
+
+    [[ -d "${path_cfg_nginx_modules}" ]] || sudo mkdir "${path_cfg_nginx_modules}"
 
     local dhparamkey=4096
     local openssl_rand=80

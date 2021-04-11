@@ -10,4 +10,3 @@ vala-doc
 valadoc
 valadoc-devel
 vim-syntastic-vala
-xfce4-vala
