@@ -236,6 +236,10 @@ function install_gnome_shell() {
     echo -e "\tPlease read https://extensions.gnome.org/extension/3488/big-avatar"
     echo -e "\tPlease read https://extensions.gnome.org/extension/2236/night-theme-switcher"
     echo -e "\tPlease read https://extensions.gnome.org/extension/2917/bring-out-submenu-of-power-offlogout-button/"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/3985/shu-zhi/"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/1476/unlock-dialog-background/"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/2890/tray-icons-reloaded/"
+    echo -e "\tPlease read https://extensions.gnome.org/extension/2986/runcat/"
     echo
     echo "Other:"
     echo
