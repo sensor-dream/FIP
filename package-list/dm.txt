@@ -1,2 +1,4 @@
 sddm
+sddm-breeze
+sddm-kcm
 sddm-themes

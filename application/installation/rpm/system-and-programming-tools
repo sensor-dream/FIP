@@ -108,7 +108,7 @@ function install_system_and_programming_tools() {
     # : APG (Automated Password Generator) is the tool set for random password
     # : generation. This standalone version generates some random words of
     # : required type and prints them to standard output.
-    'apg'
+    # -> 'apg'
     #
     # : This package provides commandline tools for searching and
     # : managing as well as querying information about packages
@@ -152,12 +152,12 @@ function install_system_and_programming_tools() {
     # : intentionally lightweight and simple, using only GTK+3.
     # : You can configure it to your needs by using several command line
     # : options.
-    'catfish'
+    # -> 'catfish'
     #
     # : chrpath allows you to modify the dynamic library load path (rpath) of
     # : compiled programs. Currently, only removing and modifying the rpath
     # : is supported.
-    'chrpath'
+    # -> 'chrpath'
     #
     # : ConMan is a serial console management program designed to support a large
     # : number of console devices and simultaneous users.  It currently supports
@@ -204,7 +204,7 @@ function install_system_and_programming_tools() {
     # : investigate either live systems, kernel core dumps created from the
     # : netdump, diskdump and kdump packages from Red Hat Linux, the mcore kernel patch
     # : offered by Mission Critical Linux, or the LKCD kernel patch.
-    'crash'
+    # -> 'crash'
     #
     # : C implementation of Createrepo.
     # : A set of utilities (createrepo_c, mergerepo_c, modifyrepo_c)
@@ -220,7 +220,7 @@ function install_system_and_programming_tools() {
     # : ssh session for example. Finally, DAR handles save and restore of hard
     # : and symbolic links.
     #
-    'dar'
+    # -> 'dar'
     #
     # Краткое опис : Package maintenance system for Debian Linux
     # URL          : https://tracker.debian.org/pkg/dpkg
@@ -261,12 +261,12 @@ function install_system_and_programming_tools() {
     #
     # : Edonkey 2000 file hash calculator
     # : A tool that outputs ed2k-links for given files.
-    'ed2k_hash'
+    # -> 'ed2k_hash'
     #
     # : Graphical editor for access control lists (ACLs) and extended attributes
     # : (xattr), either as an extension within Nautilus, or as a standalone
     # : utility.
-    'eiciel'
+    # -> 'eiciel'
     #
     # : emelFM2 is the GTK+2 port of emelFM. emelFM2 is a file manager that implements
     # : the popular two-pane design. It features a simple GTK+2 interface, a flexible
@@ -288,7 +288,7 @@ function install_system_and_programming_tools() {
     # :
     # : Install enca if you need to cope with text files of dubious origin
     # : and unknown encoding and convert them to some reasonable encoding.
-    'enca'
+    # -> 'enca'
     #
     # : The Environment Modules package provides for the dynamic modification of
     # : a user's environment via modulefiles.
@@ -319,7 +319,7 @@ function install_system_and_programming_tools() {
     # : interesting tricks. It supports active and passive dissection of many
     # : protocols (even ciphered ones) and includes many feature for network and host
     # : analysis.
-    # -> 'ettercap'
+    'ettercap'
     #
     # : Fail2Ban scans log files and bans IP addresses that makes too many password
     # : failures. It updates firewall rules to reject the IP address. These rules can
@@ -334,7 +334,7 @@ function install_system_and_programming_tools() {
     # : This is a meta-package that will install the default configuration.  Other
     # : sub-packages are available to install support for other actions and
     # : configurations.
-    # -> 'fail2ban'
+    'fail2ban'
     #
     # : Fatsort is a utility written in C to sort FAT16 and FAT32 filesystems. It is
     # : needed to sort files on cheap mp3 players that display files not sorted by
@@ -403,7 +403,7 @@ function install_system_and_programming_tools() {
     # : of the Geoclue project is to make creating location-aware applications as
     # : simple as possible, while the secondary goal is to ensure that no application
     # : can access location information without explicit permission from user.
-    'geoclue2'
+    # -> 'geoclue2'
     #
     # : GHex can load raw data from binary files and display them for editing in the
     # : traditional hex editor view. The display is split in two columns, with
@@ -559,7 +559,7 @@ function install_system_and_programming_tools() {
     #     # :          : http://ibmonitor.sourceforge.net/
     # Описание     : The program ibmonitor is an interactive linux console application which shows
     # : bandwidth consumed and total data transferred on all interfaces.
-    'ibmonitor'
+    # -> 'ibmonitor'
     #
     # Краткое опис : Command line tool that displays bandwidth usage on an interface
     #     # :          : http://www.ex-parrot.com/~pdw/iftop/
@@ -676,7 +676,7 @@ function install_system_and_programming_tools() {
     #     # :          : https://github.com/FedoraQt/MediaWriter
     # Описание     : A tool to write images of Fedora media to portable drives
     # : like flash drives or memory card
-    'mediawriter'
+    # -> 'mediawriter'
     #
     # Краткое опис : Move/copy/append/link multiple files
     #     # :          : http://packages.qa.debian.org/m/mmv.html
@@ -707,7 +707,7 @@ function install_system_and_programming_tools() {
     # :
     # : If you have a backup tape device capable of handling more than one
     # : tape at a time, you should install MTX.
-    'mtx'
+    # -> 'mtx'
     #
     # Краткое опис : Network-wide resource monitoring tool
     #     # :          : http://munin-monitoring.org/
@@ -783,7 +783,7 @@ function install_system_and_programming_tools() {
     # : network interface or on all interfaces.
     # :
     # : Install nfswatch if you need a program to monitor NFS traffic.
-    # -> 'nfswatch'
+    'nfswatch'
     #
     # Краткое опис : A dynamic DNS update client
     #     # :          : http://www.no-ip.com
@@ -854,7 +854,7 @@ function install_system_and_programming_tools() {
     # : system on machines that talk thru or near your box. p0f will also check
     # : masquerading and firewall presence, the distance to the remote system and its
     # : uptime, other guy's network hookup (DSL, OC3, avian carriers) and his ISP.
-    'p0f'
+    # -> 'p0f'
     #
     # Краткое опис : PAR 2.0 compatible file verification and repair tool
     #     # :          : https://github.com/Parchive/par2cmdline/
@@ -957,7 +957,7 @@ function install_system_and_programming_tools() {
     # : Windows 2000 & 2003 Terminal Services, capable of natively speaking
     # : Remote Desktop Protocol (RDP) in order to present the user's NT
     # : desktop. Unlike Citrix ICA, no server extensions are required.
-    'rdesktop'
+    # -> 'rdesktop'
     #
     # Краткое опис : Convenient and transparent local/remote incremental mirror/backup
     #     # :          : https://rdiff-backup.net/
@@ -1337,7 +1337,7 @@ function install_system_and_programming_tools() {
     # : HTTP, FTP, or some other method. What it does, is generates a checksum file,
     # : and then by comparing that checksum with the original file, it creates a patch
     # : file that can repair the corrupted file. Very cool, and saves re-downloading.
-    'zidrav'
+    # -> 'zidrav'
     #
     # Имя          : heaptrack
     # Репозиторий  : fedora

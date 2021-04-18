@@ -54,7 +54,7 @@ printf "Loading: %s\n" "$(readlink -m ${BASH_SOURCE})"
 function install_wallpaper() {
 
   local install_pkg=(
-    'dynamic-wallpaper-editor'
+    # 'dynamic-wallpaper-editor'
     'variety'
   )
 

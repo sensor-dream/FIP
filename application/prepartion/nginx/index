@@ -163,17 +163,15 @@ function main_index_script_source() {
       Server: <strong><span style="color: #f5bb09;">S</span><span style="color: #3ea852;">D</span><span style="color: #ea4334;">B</span><span style="color: #4285f4;">S</span></strong> - <strong>23.06.06</strong> - rev: ${rev_timestamp}<br />
       <a href="mailto: ${cfg_email}"><img class="mail-link" src="mail-link.png"></img></a><br />
       <!-- Default Statcounter code for My domain sensor-dream.ru https://sensor-dream.ru -->
-        <div id="statcounter">
-            <script type="text/javascript">
-                var sc_project=12511240;
-                var sc_invisible=0;
-                var sc_security="3a841b1e";
-                var sc_client_storage="disabled";
-                var scJsHost = "https://";
-                document.write("<sc"+"ript type='text/javascript' src='" + scJsHost+"statcounter.com/counter/counter.js'></"+"script>");
-            </script>
-            <noscript><div class="statcounter"><a title="Web Analytics" href="https://statcounter.com/" target="_blank"><img class="statcounter" src="https://c.statcounter.com/12511240/0/3a841b1e/0/" alt="Web  nalytics"></a></div></noscript>
-        </div>
+        <script type="text/javascript">
+          var sc_project=12511240; 
+          var sc_invisible=0; 
+          var sc_security="3a841b1e"; 
+          var sc_client_storage="disabled"; 
+          var scJsHost = "https://";
+          document.write("<sc"+"ript type='text/javascript' src='" + scJsHost+"statcounter.com/counter/counter.js'></" + "script>");
+        </script>
+        <noscript><div class="statcounter"><a title="Web Analytics" href="https://statcounter.com/" target="_blank"><img class="statcounter" src="https://c.statcounter.com/12511240/0/3a841b1e/0/" alt="Web Analytics"></a></div></noscript>
       <!-- End of Statcounter Code -->
       <br />
       <div id="license">

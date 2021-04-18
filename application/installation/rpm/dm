@@ -70,7 +70,7 @@ function install_dm() {
     # URL          : https://cgit.kde.org/plasma-workspace.git
     # Лицензия     : GPLv2+
     # Описание     : SDDM breeze theme.
-    # -> 'sddm-breeze'
+    'sddm-breeze'
     #
     # Имя          : sddm-themes
     # Репозиторий  : fedora
@@ -87,7 +87,7 @@ function install_dm() {
     # Лицензия     : GPLv2+
     # Описание     : This is a System Settings configuration module for configuring the
     #              : SDDM Display Manager
-    # -> 'sddm-kcm'
+    'sddm-kcm'
     #
   )
 
