@@ -280,6 +280,11 @@ EOF
     [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
     sudo cp "${nginx_script_source_path}/favicon.ico" "${temp_one}"
 
+    temp_one="$(readlink favicon.png)"
+    [[ -z "${temp_one}" ]] && temp_one='favicon.png'
+    [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"
+    sudo cp "${nginx_script_source_path}/favicon.png" "${temp_one}"
+
     temp_one="$(readlink logo.png)"
     [[ -z "${temp_one}" ]] && temp_one='logo.png'
     [[ -f "${temp_one}.back" ]] || sudo mv "${temp_one}" "${temp_one}.back"

@@ -3,7 +3,6 @@ mesa-filesystem
 mesa-libd3d
 mesa-libEGL
 mesa-libgbm
-mesa-libgbm-devel
 mesa-libGL
 mesa-libglapi
 mesa-libGLU

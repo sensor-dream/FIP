@@ -1,0 +1,7 @@
+tigervnc
+tigervnc-icons
+tigervnc-license
+tigervnc-selinux
+tigervnc-server
+tigervnc-server-minimal
+tigervnc-server-module

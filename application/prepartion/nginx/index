@@ -65,6 +65,7 @@ function main_index_script_source() {
   <meta name="keywords" content="${cfg_full_org}, Server, Contacts, License" />
   <meta name="author" content="${cfg_org}" />
   <meta name="email" content="${cfg_email}" />
+  <link rel="icon" href="https://sensor-dream.ru/favicon.png" type="image/png">
   <link rel="manifest" href="manifest.json">
   <style type="text/css">
     /*<![CDATA[*/
@@ -128,15 +129,16 @@ function main_index_script_source() {
         height: 64px;
       }
       .mail-link {
-        margin-top: 40px;
+        margin-top: 4px;
         width: 32px;
         height: 32px;
       }
       #statcounter {
         padding-top: 10px;
       }
-      a {
+      a, a:visited, a:link, a:active, a:hover {
         color: #4285F4;
+        text-decoration: none;
       }
       .zero-page {
         font-size: 1.4em;
@@ -156,12 +158,28 @@ function main_index_script_source() {
   <div class="app">
     <img class="logo" src="logo.png"></img>
     <div class="org">
-      <span class="zero-page">Zero page</span>
+      <span class="zero-page">Zero page.</span>
       <h1><span style="color: #f5bb09;">S</span>ensor-<span style="color: #3ea852;">D</span>ream <span style="color: #ea4334;">B</span>oxed <span style="color: #4285f4;">S</span>ystem</h1>
+      Lets go the <a href="https://we-docs.sensor-dream.ru">https://we-docs.sensor-dream.ru</a>
     </div>
     <div class="footer">
       Server: <strong><span style="color: #f5bb09;">S</span><span style="color: #3ea852;">D</span><span style="color: #ea4334;">B</span><span style="color: #4285f4;">S</span></strong> - <strong>23.06.06</strong> - rev: ${rev_timestamp}<br />
+      <br />Send message to <br />&#9660;<br />
       <a href="mailto: ${cfg_email}"><img class="mail-link" src="mail-link.png"></img></a><br />
+      <!-- Yandex.Metrika counter -->
+	 <script type="text/javascript" >
+	    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+	    m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+	    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+	    ym(87100723, "init", {
+	         clickmap:true,
+	         trackLinks:true,
+	         accurateTrackBounce:true
+	    });
+	 </script>
+	 <noscript><div><img src="https://mc.yandex.ru/watch/87100723" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+      <!-- /Yandex.Metrika counter -->
       <!-- Default Statcounter code for My domain sensor-dream.ru https://sensor-dream.ru -->
         <script type="text/javascript">
           var sc_project=12511240; 
