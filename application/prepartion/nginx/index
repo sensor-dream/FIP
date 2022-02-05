@@ -77,7 +77,7 @@ function main_index_script_source() {
         font-size: 1.2em;
       }
 
-      body, .app {
+      body, .app, .wgl-app {
         width: 100vw;
         height: 100vh;
       }
@@ -88,7 +88,6 @@ function main_index_script_source() {
 	      display: -webkit-box;
 	      display: -webkit-flex;
 	      display: -ms-flexbox;
-
       }
 
       .app, .org, .footer {
@@ -152,10 +151,16 @@ function main_index_script_source() {
         font-size: 0.5em;
       }
     /*]]>*/
+    .wgl-app {
+	position: absolute;
+	background-color: transparent;
+	z-index: -1;
+    }
   </style>
 </head>
 <body>
-  <div class="app">
+  <canvas id="wgl-app" class="wgl-app"></canvas>
+  <div class="app" id="app">
     <img class="logo" src="logo.png"></img>
     <div class="org">
       <span class="zero-page">Zero page.</span>
