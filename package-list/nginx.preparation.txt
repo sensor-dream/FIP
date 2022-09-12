@@ -12,5 +12,6 @@ libxslt
 libxslt-devel
 memcached
 openssl-devel
+pcre2-devel
 pcre-devel
 perl
