@@ -104,11 +104,11 @@ map \$remote_addr \$hack_name_server {
   default     'SDBS - 23.06.06 - rev: ${rev_timestamp}';
 }
 
-more_set_headers 'Server: \$hack_name_server';
+# more_set_headers 'Server: \$hack_name_server';
 
 sub_filter_last_modified on;
 sub_filter_once off;
-subs_filter_types text/css text/xml application/javascript application/x-javascript application/json;
+# subs_filter_types text/css text/xml application/javascript application/x-javascript application/json;
 subs_filter 'nginx/${nginx_version} ' '<center>\$hack_name_server</center>' gior;
 subs_filter 'nginx' '\$hack_name_server' gior;
 EOF

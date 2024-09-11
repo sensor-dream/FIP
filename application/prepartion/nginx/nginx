@@ -120,16 +120,20 @@ function main_nginx_script_source() {
 
     # local nginx_version="$(rpm -qi nginx | awk '/Version/ { print $3 }')"
 
+    # Stable version
+    local nginx_version='1.24.0'
+
     # Mainline version
-    local nginx_version='1.22.0'
+    # local nginx_version='1.23.3'
+
+
+    # Mainline version
+    # local nginx_version='1.22.0'
 
     # Mainline version
     # local nginx_version='1.19.9'
 
-    # Stable version
-    # local nginx_version='1.20.2'
-
-    local certbot_version="$(certbot --version)"
+    # local certbot_version="$(certbot --version)"
     local path_lib_nginx_modules='/usr/lib64/nginx/modules'
     local path_cfg_nginx_modules='/usr/share/nginx/modules'
 
