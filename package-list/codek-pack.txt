@@ -1,6 +1,1 @@
-libmp3splt
-libmp4v2
-libmpcdec
-libmpeg2
-libmpeg3
-libmpeg3-utils
+
