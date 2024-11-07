@@ -108,7 +108,7 @@ function generate_wildcard_certificate_for_main_domain() {
   [ "${1:-}" = "--" ] && shift
 
   if [[ ${flag_help} -eq 1 ]]; then
-    echo -e "Ключи:\n\t-d: имя домена по умолчанию ${cfg_docfg}\n\t-t: запуск с флагом --staging (тест)\n\t-w: создать wildcard сертификат\n\t-g: генерировать сертификат\n\t-s: letsencrypt rsa key size, по умолчанию 4096\n\t-h: записать в файл hosts\n\t-m: Установить опцию --must-staple\n\t-k: Установить опцию --key-type rsa"
+    echo -e "Ключи:\n\t-d: имя домена по умолчанию ${cfg_docfg}\n\t-t: запуск с флагом --staging (тест)\n\t-w: создать wildcard сертификат\n\t-g: генерировать сертификат\n\t-s: letsencrypt key size, по умолчанию 4096\n\t-h: записать в файл hosts\n\t-m: Установить опцию --must-staple\n\t-k: Установить опцию --key-type rsa"
     exit 0
   fi
 
