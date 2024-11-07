@@ -95,6 +95,10 @@ function generate_wildcard_certificate_for_main_domain() {
       flag_must_staple='--must-staple'
       flag_help=0
       ;;
+    k)
+      key_type_rsa='--key-type rsa'
+      flag_help=0
+      ;;
     *) flag_help=0 ;;
     esac
 
@@ -104,7 +108,7 @@ function generate_wildcard_certificate_for_main_domain() {
   [ "${1:-}" = "--" ] && shift
 
   if [[ ${flag_help} -eq 1 ]]; then
-    echo -e "Ключи:\n\t-d: имя домена по умолчанию ${cfg_docfg}\n\t-t: запуск с флагом --staging (тест)\n\t-w: создать wildcard сертификат\n\t-g: генерировать сертификат\n\t-s: letsencrypt rsa key size, по умолчанию 4096\n\t-h: записать в файл hosts\n\t-m: Установить опцию --must-staple"
+    echo -e "Ключи:\n\t-d: имя домена по умолчанию ${cfg_docfg}\n\t-t: запуск с флагом --staging (тест)\n\t-w: создать wildcard сертификат\n\t-g: генерировать сертификат\n\t-s: letsencrypt rsa key size, по умолчанию 4096\n\t-h: записать в файл hosts\n\t-m: Установить опцию --must-staple\n\t-k: Установить опцию --key-type rsa"
     exit 0
   fi
 
@@ -131,7 +135,7 @@ function generate_wildcard_certificate_for_main_domain() {
   if [[ ${flag_generate} -eq 1 ]]; then
     echo "GENERATE $([[ -z ${wildcard} ]] || echo 'wildcard ')ok: ${domain} ${wildcard//-d /}"
 
-    sudo certbot certonly ${test} --manual ${flag_must_staple} --preferred-challenges dns-01 --renew-by-default --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory -d ${domain} ${wildcard}
+    sudo certbot certonly ${test} --manual ${flag_must_staple} --preferred-challenges dns-01 --renew-by-default --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory -d ${domain} ${wildcard} ${key_type_rsa}
     ### Use of --manual-public-ip-logging-ok is deprecated.
 
     name=$(sudo ls -1 /etc/letsencrypt/archive | grep -E "${domain}.*[0-9]" | sort -rn | head -1)

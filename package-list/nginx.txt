@@ -1,14 +1,1 @@
-gd
-gperftools
-gperftools-devel
-libxml2
-libxml2-devel
-libxslt
-libxslt-devel
-nginx
-nginx-all-modules
-nginx-filesystem
-nginx-mimetypes
-nmap
-php
-php-fpm
+
