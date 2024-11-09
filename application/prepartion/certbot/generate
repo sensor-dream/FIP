@@ -61,10 +61,11 @@ function generate_wildcard_certificate_for_main_domain() {
   local flag_must_staple=
   local name=
   local flag_help=1
+  local key_type='ecdsa' # rsa dsa ecdsa eddsa
 
   OPTIND=1
 
-  while getopts "d:twghs:m" OPT; do
+  while getopts "d:twghsk:m" OPT; do
     case $OPT in
     d)
       domain="$OPTARG"
@@ -96,7 +97,7 @@ function generate_wildcard_certificate_for_main_domain() {
       flag_help=0
       ;;
     k)
-      key_type_rsa='--key-type rsa'
+      key_type="$OPTARG" # rsa dsa ecdsa eddsa
       flag_help=0
       ;;
     *) flag_help=0 ;;
@@ -108,7 +109,7 @@ function generate_wildcard_certificate_for_main_domain() {
   [ "${1:-}" = "--" ] && shift
 
   if [[ ${flag_help} -eq 1 ]]; then
-    echo -e "Ключи:\n\t-d: имя домена по умолчанию ${cfg_docfg}\n\t-t: запуск с флагом --staging (тест)\n\t-w: создать wildcard сертификат\n\t-g: генерировать сертификат\n\t-s: letsencrypt key size, по умолчанию 4096\n\t-h: записать в файл hosts\n\t-m: Установить опцию --must-staple\n\t-k: Установить опцию --key-type rsa"
+    echo -e "Ключи:\n\t-d: имя домена по умолчанию ${cfg_docfg}\n\t-t: запуск с флагом --staging (тест)\n\t-w: создать wildcard сертификат\n\t-g: генерировать сертификат\n\t-s: letsencrypt key size, по умолчанию 4096\n\t-h: записать в файл hosts\n\t-m: Установить опцию --must-staple\n\t-k: Установить опцию --key-type rsa, dsa, ecdsa, eddsa. Default: ecdsa"
     exit 0
   fi
 
@@ -135,7 +136,7 @@ function generate_wildcard_certificate_for_main_domain() {
   if [[ ${flag_generate} -eq 1 ]]; then
     echo "GENERATE $([[ -z ${wildcard} ]] || echo 'wildcard ')ok: ${domain} ${wildcard//-d /}"
 
-    sudo certbot certonly ${test} --manual ${flag_must_staple} --preferred-challenges dns-01 --renew-by-default --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory -d ${domain} ${wildcard} ${key_type_rsa}
+    sudo certbot certonly ${test} --manual ${flag_must_staple} --preferred-challenges dns-01 --renew-by-default --force-renewal --rsa-key-size $letsencrypt_rsa_key_size --agree-tos --eff-email --expand -m "$cfg_email" --server https://acme-v02.api.letsencrypt.org/directory ${wildcard} --key-type ${key_type} -d ${domain}
     ### Use of --manual-public-ip-logging-ok is deprecated.
 
     name=$(sudo ls -1 /etc/letsencrypt/archive | grep -E "${domain}.*[0-9]" | sort -rn | head -1)
