@@ -68,7 +68,7 @@ function generate_wildcard_certificate_for_main_domain() {
 
   OPTIND=1
 
-  while getopts "d:btwgh:s:k:e:o:m" OPT; do
+  while getopts "d:btwghms:k:e:o:" OPT; do
     case $OPT in
     d)
       domain="$OPTARG"
