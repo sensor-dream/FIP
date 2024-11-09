@@ -1,50 +1,87 @@
 Certbot supports a lot of command line options. Here’s the full list, from certbot --help all:
+Cert bot поддерживает множество опций командной строки. Вот полный список из certbot --help:
 
 usage: 
+использование:
   certbot [SUBCOMMAND] [options] [-d DOMAIN] [-d DOMAIN] ...
 
 Certbot can obtain and install HTTPS/TLS/SSL certificates.  By default,
 it will attempt to use a webserver both for obtaining and installing the
 certificate. The most common SUBCOMMANDS and flags are:
 
+Certbot может получать и устанавливать сертификаты HTTPS/TLS/SSL.  По умолчанию
+он будет пытаться использовать веб-сервер как для получения, так и для установки
+сертификата. Наиболее распространенными ПОДКОММАНДАМИ и флагами являются:
+
 obtain, install, and renew certificates:
+получение, установка и обновление сертификатов:
     (default) run   Obtain & install a certificate in your current webserver
+                    Получите и установите сертификат на вашем текущем веб-сервере
     certonly        Obtain or renew a certificate, but do not install it
+                    Получите или обновите сертификат, но не устанавливайте его
     renew           Renew all previously obtained certificates that are near expiry
+                    Обновите все ранее полученные сертификаты, срок действия которых подходит к концу
     enhance         Add security enhancements to your existing configuration
+                    Добавьте улучшения безопасности в существующую конфигурацию
    -d DOMAINS       Comma-separated list of domains to obtain a certificate for
+                    Список доменов, разделенных запятыми, для которых необходимо получить сертификат
 
   --apache          Use the Apache plugin for authentication & installation
+                    Используйте плагин Apache для аутентификации и установки
   --standalone      Run a standalone webserver for authentication
+                    Запустите автономный веб-сервер для проверки подлинности
   --nginx           Use the Nginx plugin for authentication & installation
+                    Используйте плагин Nginx для аутентификации и установки
   --webroot         Place files in a server's webroot folder for authentication
+                    Поместите файлы в корневую папку сервера для проверки подлинности
   --manual          Obtain certificates interactively, or using shell script hooks
+                    Получение сертификатов в интерактивном режиме или с помощью перехватчиков командной строки
 
    -n               Run non-interactively
   --test-cert       Obtain a test certificate from a staging server
+                    Запуск в неинтерактивном режиме
   --dry-run         Test "renew" or "certonly" without saving any certificates to disk
+                    Протестируйте "обновить" или "certonly" без сохранения каких-либо сертификатов на диске
 
 manage certificates:
+управление сертификатами:
     certificates    Display information about certificates you have from Certbot
+                    Отображать информацию о сертификатах, которые вы получили от Certbot
     revoke          Revoke a certificate (supply --cert-name or --cert-path)
+                    Отозвать сертификат (указать --cert-name или --certpath)
     delete          Delete a certificate (supply --cert-name)
+                    Удалить сертификат (указать --cert-name)
     reconfigure     Update a certificate's configuration (supply --cert-name)
+                    Обновите конфигурацию сертификата (укажите --cert-name)
 
 manage your account:
+управляйте своей учетной записью:
     register        Create an ACME account
+                    Создайте учетную запись ACME
     unregister      Deactivate an ACME account
+                    Деактивировать учетную запись ACME
     update_account  Update an ACME account
+                    Обновите учетную запись ACME
     show_account    Display account details
+                    Отображение сведений об учетной записи
   --agree-tos       Agree to the ACME server's Subscriber Agreement
+                    Соглашаетесь с подписным соглашением ACME server
    -m EMAIL         Email address for important account notifications
+                    Адрес электронной почты для получения важных уведомлений об учетной записи
 
 options:
+опции:
   -h, --help            show this help message and exit
+                        отобразите это справочное сообщение и закройте
   -c CONFIG_FILE, --config CONFIG_FILE
                         path to config file (default: /etc/letsencrypt/cli.ini
                         and ~/.config/letsencrypt/cli.ini)
+                        путь к конфигурационному файлу (по умолчанию: /etc/letsencrypt/cli.ini и ~/.config/letsencrypt/cli.ini)
   -v, --verbose         This flag can be used multiple times to incrementally
                         increase the verbosity of output, e.g. -vvv. (default:
+                        0)
+                        Этот флаг можно использовать несколько раз для постепенного
+                        увеличьте детализацию выходных данных, например, -vvv. (по умолчанию:
                         0)
   --max-log-backups MAX_LOG_BACKUPS
                         Specifies the maximum number of backup logs that
@@ -52,14 +89,24 @@ options:
                         Setting this flag to 0 disables log rotation entirely,
                         causing Certbot to always append to the same log file.
                         (default: 1000)
+                        Указывает максимальное количество резервных копий журналов, которые должны храниться при встроенной ротации журналов Certbot.
+                        Установка этого флага равным 0 полностью отключает ротацию журналов, в результате чего Certbot всегда добавляет файлы в один и тот же файл журнала.
+                        (по умолчанию: 1000)
   -n, --non-interactive, --noninteractive
                         Run without ever asking for user input. This may
                         require additional command line flags; the client will
                         try to explain which ones are required if it finds one
                         missing (default: False)
+                        Запускается без запроса ввода данных пользователем. Это может
+                        потребовать дополнительных флагов командной строки; клиент попытается
+                        объяснить, какие из них требуются, если обнаружит, что один
+                        из них отсутствует (по умолчанию: False).
   --force-interactive   Force Certbot to be interactive even if it detects
                         it's not being run in a terminal. This flag cannot be
                         used with the renew subcommand. (default: False)
+                        Заставьте Certbot быть интерактивным, даже если он обнаруживает, что
+                        он не запускается в терминале. Этот флаг нельзя
+                        использовать с подкомандой renew. (по умолчанию: False)
   -d DOMAIN, --domains DOMAIN, --domain DOMAIN
                         Domain names to include. For multiple domains you can
                         use multiple -d flags or enter a comma separated list
@@ -72,8 +119,11 @@ options:
                         appended to the certificate name. (default: Ask)
   --eab-kid EAB_KID     Key Identifier for External Account Binding (default:
                         None)
+                        Идентификатор ключа для привязки внешней учетной записи (по умолчанию:
+                        Нет)
   --eab-hmac-key EAB_HMAC_KEY
                         HMAC key for External Account Binding (default: None)
+                        Ключ HMAC для привязки внешней учетной записи (по умолчанию: Нет)
   --cert-name CERTNAME  Certificate name to apply. This name is used by
                         Certbot for housekeeping and in file paths; it doesn't
                         affect the content of the certificate itself.
@@ -84,6 +134,9 @@ options:
                         certificate's name. (default: the first provided
                         domain or the name of an existing certificate on your
                         system for the same domains)
+                        Имя сертификата, которое будет применяться. Это имя используется Cert bot для ведения реестра и в путях к файлам; оно не влияет на содержимое самого сертификата.
+                        Имя сертификата не может содержать разделителей путей к файлам
+                        (например, "/" или "\", в зависимости от платформы). Чтобы просмотреть имена сертификатов, запустите "сертификаты certbot". При создании нового сертификата укажите имя нового сертификата. (по умолчанию: первое указанное домен или имя существующего сертификата в вашей системе для тех же доменов)
   --dry-run             Perform a test run against the Let's Encrypt staging
                         server, obtaining test (invalid) certificates but not
                         saving them to disk. This can only be used with the
@@ -94,16 +147,25 @@ options:
                         run, unless enabled by --run-deploy-hooks. The test
                         server may be overridden with --server. (default:
                         False)
+                        Выполните тестовый запуск на промежуточном этапе Let's Encrypt
+                        сервер, получающий тестовые (недействительные) сертификаты, но не
+                        сохраняю их на диск. Это можно использовать только с подкомандами "certonly" и "renew". Это может спровоцировать веб-сервер  ерезагружается для временного изменения и отката файлов конфигурации. --команды pre-hook и --post-hook выполняются по умолчанию. -команды -deploy-hook не выполняют запускайте, если только это не включено с помощью --run-deploy-hooks. Тест
+                        сервер может быть переопределен с помощью --server. (по умолчанию:
+                        False)
   --debug-challenges    After setting up challenges, wait for user input
                         before submitting to CA. When used in combination with
                         the `-v` option, the challenge URLs or FQDNs and their
                         expected return values are shown. (default: False)
+                        После настройки запросов дождитесь ввода данных пользователем
+                        перед отправкой в центр сертификации. При использовании в сочетании с параметром `-v` отображаются URL-адреса запросов или полное  оменное имя и их ожидаемые возвращаемые значения. (по умолчанию: False)
   --preferred-chain PREFERRED_CHAIN
                         Set the preferred certificate chain. If the CA offers
                         multiple certificate chains, prefer the chain whose
                         topmost certificate was issued from this Subject
                         Common Name. If no match, the default offered chain
                         will be used. (default: None)
+                        Установить предпочтительный цепочки сертификатов. Если ЦС предлагает
+                        несколько цепочек сертификатов, предпочитаю цепи сертификат верхний был выдан из этой темы Распространенное Имя. Если не соответствует, то по умолчанию предлагаемые услуги будет использоваться. (по умолчанию: none)
   --preferred-challenges PREF_CHALLS
                         A sorted, comma delimited list of the preferred
                         challenge to use during authorization with the most
@@ -113,10 +175,18 @@ options:
                         for details. ACME Challenges are versioned, but if you
                         pick "http" rather than "http-01", Certbot will select
                         the latest version automatically. (default: [])
+                        Отсортированный, разделенный запятыми список предпочтительных
+                        сложность использования во время авторизации с наибольшим
+                        предпочтительный вызов, указанный первым (например, "dns" или
+                        "http,dns"). Не все плагины поддерживают все задачи.
+                        Видишь https://certbot.eff.org/docs/using.html#plugins для получения подробной информации. Тесты ACME зависят от версии, но если вы выберете "http", а не "http-01", Cert bot автоматически выберет последнюю версию. (по умолчанию: [])
   --issuance-timeout ISSUANCE_TIMEOUT
                         This option specifies how long (in seconds) Certbot
                         will wait for the server to issue a certificate.
                         (default: 90)
+                        Этот параметр определяет, как долго (в секундах) Certbot
+                        будет ожидать выдачи сертификата сервером.
+                        (по умолчанию: 90)
   --user-agent USER_AGENT
                         Set a custom user agent string for the client. User
                         agent strings allow the CA to collect high level
@@ -130,47 +200,66 @@ options:
                         The flags encoded in the user agent are: --duplicate,
                         --force-renew, --allow-subset-of-names, -n, and
                         whether any hooks are set.
+                        Установите пользовательскую строку агента пользователя для клиента. Пользователь строки агента позволяют центру сертификации собирать данные высокого уровня статистика о показателях успешности в  ависимости от операционной системы, плагина и варианта использования , а также информация о том, когда следует отказаться от поддержки прошлых версий.
+                        Версии и флаги Python. Если вы хотите скрыть это для получения информации с сервера Let's Encrypt задайте значение "". (по умолчанию: CertbotACMEClient/3.0.0 (certbot; ИМЯ операционной СИСТЕМЫ, ВЕРСИЯ операционной системы) Аутентификатор/Установщик XXX/ГГГГ (ПОДКОМАНДА; флаги: FLAGS) Py/major.minor.patchlevel).
+                        В user agent закодированы следующие флаги: --duplicate, --принудительное обновление, -разрешить-подмножество-имен, -n, а также указаны ли какие-либо перехватчики.
   --user-agent-comment USER_AGENT_COMMENT
                         Add a comment to the default user agent string. May be
                         used when repackaging Certbot or calling it from
                         another tool to allow additional statistical data to
                         be collected. Ignored if --user-agent is set.
                         (Example: Foo-Wrapper/1.0) (default: None)
+                        Добавьте комментарий к строке user agent по умолчанию. Может использоваться при переупаковке Cert bot или его вызове из другого инструмента, позволяющего собирать дополнительные статистические  анные. Игнорируется, если установлен параметр --user-agent.
+                        (Пример: Foo-Wrapper/1.0) (по умолчанию: Нет)
 
 automation:
+автоматизация:
   Flags for automating execution & other tweaks
+  Флаги для автоматизации выполнения и другие настройки
 
   --keep-until-expiring, --keep, --reinstall
                         If the requested certificate matches an existing
                         certificate, always keep the existing one until it is
                         due for renewal (for the 'run' subcommand this means
                         reinstall the existing certificate). (default: Ask)
+                        Если запрашиваемый сертификат соответствует существующему
+                        сертификат, всегда сохраняйте существующий до тех пор, пока не наступит срок его обновления (для подкоманды "выполнить" это означает переустановите существующий сертификат). (по умолчанию: Спросить)
   --expand              If an existing certificate is a strict subset of the
                         requested names, always expand and replace it with the
                         additional names. (default: Ask)
+                        Если существующий сертификат является строгим подмножеством запрошенных имен, всегда расширяйте и заменяйте его дополнительными именами. (по умолчанию: Спрашивать)
   --version             show program's version number and exit
+                        покажите номер версии программы и завершите работу
   --force-renewal, --renew-by-default
                         If a certificate already exists for the requested
                         domains, renew it now, regardless of whether it is
                         near expiry. (Often --keep-until-expiring is more
                         appropriate). Also implies --expand. (default: False)
+                        Если сертификат для запрошенных доменов уже существует, обновите его сейчас, независимо от того, подходит ли срок его действия.
+                        (Часто более уместно использовать параметр сохранять до истечения срока действия). Также подразумевается параметр расширить. (по умолчанию: False)
   --renew-with-new-domains
                         If a certificate already exists for the requested
                         certificate name but does not match the requested
                         domains, renew it now, regardless of whether it is
                         near expiry. (default: False)
+                        Если сертификат уже существует для запрошенного
+                        имя сертификата, но не соответствует запрошенному
+                        домены, продлевайте его сейчас, независимо от того, подходит ли срок его действия к концу. (по умолчанию: False)
   --reuse-key           When renewing, use the same private key as the
                         existing certificate. (default: False)
+                        При обновлении используйте тот же закрытый ключ, что и для существующего сертификата. (по умолчанию: False)
   --no-reuse-key        When renewing, do not use the same private key as the
                         existing certificate. Not reusing private keys is the
                         default behavior of Certbot. This option may be used
                         to unset --reuse-key on an existing certificate.
                         (default: False)
+                        При обновлении не используйте тот же закрытый ключ, что и в существующем сертификате. По умолчанию Certbot не использует закрытые ключи повторно. Эта опция может использоваться для отмены установки --reuse-key для существующего сертификата. (по умолчанию: False)
   --new-key             When renewing or replacing a certificate, generate a
                         new private key, even if --reuse-key is set on the
                         existing certificate. Combining --new-key and --reuse-
                         key will result in the private key being replaced and
                         then reused in future renewals. (default: False)
+                        При обновлении или замене сертификата создайте новый закрытый ключ, аже если для существующего сертификата установлен --reuse-key.  бъединение --нового-ключа и --повторного использования- использование ключа приведет к замене закрытого ключа и последующему повторному использованию при будущих обновлениях. (по умолчанию:  alse)
   --allow-subset-of-names
                         When performing domain validation, do not consider it
                         a failure if authorizations can not be obtained for a
@@ -179,53 +268,72 @@ automation:
                         succeed even if some domains no longer point at this
                         system. This option cannot be used with --csr.
                         (default: False)
+                        При выполнении проверки домена не учитывайте это сбой, если не удается получить разрешения на строгое подмножество запрашиваемых оменов. Это может быть полезно для успешного обновления нескольких доменов, даже если некоторые домены больше не указывают на это система. Этот параметр нельзя использовать с --csr. (по умолчанию: False)
   --agree-tos           Agree to the ACME Subscriber Agreement (default: Ask)
+                        Соглашаться с подписным соглашением ACME (по умолчанию: Спрашивать)
   --duplicate           Allow making a certificate lineage that duplicates an
                         existing one (both can be renewed in parallel)
                         (default: False)
+                        Разрешить создание сертификата, дублирующего существующий (оба сертификата могут обновляться параллельно) (по умолчанию: False)
   -q, --quiet           Silence all output except errors. Useful for
                         automation via cron. Implies --non-interactive.
                         (default: False)
+                        Отключение всех выходных данных, кроме ошибок. Полезно для автоматизации с помощью cron. Подразумевает -неинтерактивный. (по умолчанию: False)
 
 security:
+безопасность:
   Security parameters & server settings
+  Параметры безопасности и настройки сервера
 
   --rsa-key-size N      Size of the RSA key. (default: 2048)
+                        Размер ключа RSA. (по умолчанию: 2048
   --key-type {rsa,ecdsa}
                         Type of generated private key. Only *ONE* per
                         invocation can be provided at this time. (default:
                         ecdsa)
+                        Тип сгенерированного закрытого ключа. В данный момент может быть предоставлен только *ОДИН* для каждого вызова. (по умолчанию: ecdsa)
   --elliptic-curve N    The SECG elliptic curve name to use. Please see RFC
                         8446 for supported values. (default: secp256r1)
+                        Используемое название эллиптической кривой SECG. Пожалуйста, смотрите RFC 8446 для получения информации о поддерживаемых значениях. (по умолчанию: secp256r1)
   --must-staple         Adds the OCSP Must-Staple extension to the
                         certificate. Autoconfigures OCSP Stapling for
                         supported setups (Apache version >= 2.3.3 ). (default:
                         False)
+                        Добавляет к сертификату расширение OCSP для обязательного сшивания. Автоматически настраивает сшивание OCSP для поддерживаемых настроек (версия Apache >= 2.3.3). (по умолчанию: False)
   --redirect            Automatically redirect all HTTP traffic to HTTPS for
                         the newly authenticated vhost. (default: redirect
                         enabled for install and run, disabled for enhance)
+                        Автоматически перенаправлять весь HTTP-трафик на HTTPS для только что прошедшего проверку подлинности vhost. (по умолчанию: перенаправление включено для установки и запуска, отключено для улучшения)
   --no-redirect         Do not automatically redirect all HTTP traffic to
                         HTTPS for the newly authenticated vhost. (default:
                         redirect enabled for install and run, disabled for
                         enhance)
+                        Не следует автоматически перенаправлять весь HTTP-трафик на HTTPS для только что прошедшего проверку подлинности vhost. (по умолчанию: перенаправление включено для установки и запуска, отключено для
+                        улучшения)
   --hsts                Add the Strict-Transport-Security header to every HTTP
                         response. Forcing browser to always use SSL for the
-                        domain. Defends against SSL Stripping. (default: None)
+                        domain. Defends against SSL Stripping. (default: None) Добавьте заголовок Strict-Transport-Security к каждому протоколу HTTP ответ. Принуждение браузера всегда использовать протокол SSL для домена. Защита от удаления протокола SSL. (по умолчанию: Нет)
   --uir                 Add the "Content-Security-Policy: upgrade-insecure-
                         requests" header to every HTTP response. Forcing the
                         browser to use https:// for every http:// resource.
                         (default: None)
+                        Добавьте заголовок "Content-Security-Policy: обновление-небезопасно- запросы" к каждому HTTP-ответу. Заставляя браузер использовать https:// для каждого http:// ресурса. (по умолчанию: Нет)
   --staple-ocsp         Enables OCSP Stapling. A valid OCSP response is
                         stapled to the certificate that the server offers
                         during TLS. (default: None)
+                        Включает сшивание OCSP. Допустимый ответ OCSP сшивается с сертификатом, который предлагает сервер во время TLS. (по умолчанию: Нет)
   --strict-permissions  Require that all configuration files are owned by the
                         current user; only needed if your config is somewhere
                         unsafe like /tmp/ (default: False)
+                        Требуется, чтобы все файлы конфигурации принадлежали текущему пользователю; требуется только в том случае, если ваша конфигурация находится где-то еще небезопасно, например, /tmp/ (по умолчанию: False)
   --auto-hsts           Gradually increasing max-age value for HTTP Strict
                         Transport Security security header (default: False)
+                        Постепенное увеличение максимального значения для HTTP Strict Заголовок безопасности Transport Security (по умолчанию: False)
 
 testing:
+тестирование:
   The following flags are meant for testing and integration purposes only.
+  Следующие флаги предназначены только для тестирования и интеграции.
 
   --run-deploy-hooks    When performing a test run using `--dry-run` or
                         `reconfigure`, run any applicable deploy hooks. This
@@ -238,78 +346,105 @@ testing:
                         certificate acquired during the dry run. This flag is
                         recommended when modifying the deploy hook using
                         `reconfigure`. (default: False)
+                        При выполнении тестового запуска с использованием `--dry-run` или `reconfigure` запустите все применимые перехватчики развертывания. Этот включает перехватчики, установленные в командной строке, сохраненные в файле конфигурации обновления сертификата или присутствующие в настоящее время в каталоге обновлений-перехватчики. Чтобы исключить перехваты каталогов, используйте --no-directory-hooks. Крючок(ы) будет только будет запущен, если пробный запуск завершится успешно, и будет использоваться текущий активный сертификат, а не временный тестовый сертификат, полученный во время предварительного запуска. Этот флажок рекомендуется использовать при изменении механизма развертывания с помощью `перенастроить`. (по умолчанию: False)
   --test-cert, --staging
                         Use the Let's Encrypt staging server to obtain or
                         revoke test (invalid) certificates; equivalent to
                         --server https://acme-
                         staging-v02.api.letsencrypt.org/directory (default:
                         False)
+                        Используйте промежуточный сервер Let's Encrypt для получения или отзыва тестовых (недействительных) сертификатов; эквивалентно --server https://acme- staging-v02.api.letsencrypt.org/directory (по умолчанию: False)
   --debug               Show tracebacks in case of errors (default: False)
+                        Показывать обратную трассировку в случае ошибок (по умолчанию: False)
   --no-verify-ssl       Disable verification of the ACME server's certificate.
                         The root certificates trusted by Certbot can be
                         overriden by setting the REQUESTS_CA_BUNDLE
                         environment variable. (default: False)
+                        Disable verification of the ACME server's certificate. The root certificates trusted by Certbot can be overriden by setting the REQUESTS_CA_BUNDLE environment variable. (default: False)
   --http-01-port HTTP01_PORT
                         Port used in the http-01 challenge. This only affects
                         the port Certbot listens on. A conforming ACME server
                         will still attempt to connect on port 80. (default:
                         80)
+                        Порт, используемый в запросе http-01. Это влияет только на порт, который прослушивает бот для проверки подлинности. Соответствующий сервер ACME по-прежнему будет пытаться подключиться к порту 80. (по умолчанию: 80)
   --http-01-address HTTP01_ADDRESS
                         The address the server listens to during http-01
                         challenge. (default: )
+                        Адрес, который сервер прослушивает во время http-01 вызов. (по умолчанию: )
   --https-port HTTPS_PORT
                         Port used to serve HTTPS. This affects which port
                         Nginx will listen on after a LE certificate is
                         installed. (default: 443)
+                        Порт, используемый для обслуживания HTTPS. Это влияет на то, какую часть Nginx будет прослушивать после получения файлового сертификата. установленный. (по умолчанию: 443)
   --break-my-certs      Be willing to replace or renew valid certificates with
                         invalid (testing/staging) certificates (default:
                         False)
+                        Будьте готовы заменить или обновить действующие сертификаты на недействительные (тестовые/промежуточные) сертификаты (по умолчанию: False)
 
 paths:
   Flags for changing execution paths & servers
+  Флаги для изменения путей выполнения и серверов
 
   --cert-path CERT_PATH
                         Path to where certificate is saved (with certonly
                         --csr), installed from, or revoked (default: None)
-  --key-path KEY_PATH   Path to private key for certificate installation or
-                        revocation (if account key is missing) (default: None)
+                        Путь к месту сохранения сертификата (обязательно с указанием --csr), установки с него или отзыва сертификата (по умолчанию: Нет --key-path KEY_PATH Path to private key for certificate installation or revocation (if account key is missing) (default: None)
   --fullchain-path FULLCHAIN_PATH
                         Accompanying path to a full certificate chain
                         (certificate plus chain). (default: None)
+                        Прилагаемый путь к полной цепочке сертификатов (сертификат плюс цепочка). (по умолчанию: Нет)
   --chain-path CHAIN_PATH
                         Accompanying path to a certificate chain. (default:
                         None)
+                        Сопроводительный путь к цепочке сертификатов. (по умолчанию: Нет)
   --config-dir CONFIG_DIR
                         Configuration directory. (default: /etc/letsencrypt)
+                        Каталог конфигурации. (по умолчанию: /etc/letsencrypt)
   --work-dir WORK_DIR   Working directory. (default: /var/lib/letsencrypt)
+                        Рабочий каталог. (по умолчанию: /var/lib/letsencrypt)
   --logs-dir LOGS_DIR   Logs directory. (default: /var/log/letsencrypt)
+                        Каталог журналов. (по умолчанию: /var/log/letsencrypt)
   --server SERVER       ACME Directory Resource URI. (default:
                         https://acme-v02.api.letsencrypt.org/directory)
+                        URI ресурса ACME Directory. (по умолчанию: https://acme-v02.api.letsencrypt.org/directory)
 
 manage:
+управление:
   Various subcommands and flags are available for managing your
   certificates:
+  Для управления вашими сертификатами доступны различные подкоманды и флаги:
 
   certificates          List certificates managed by Certbot
+                        Список сертификатов, управляемых Certbot
   delete                Clean up all files related to a certificate
+                        Очистите все файлы, связанные с сертификатом
   renew                 Renew all certificates (or one specified with --cert-
                         name)
+                        Обновите все сертификаты (или один, указанный с помощью --cert-name).
   revoke                Revoke a certificate specified with --cert-path or
                         --cert-name
+                        Отозвать сертификат, указанный с помощью --cert-path или --cert-name
   reconfigure           Update renewal configuration for a certificate
                         specified by --cert-name
+                        Обновите конфигурацию обновления сертификата заданную с помощью --cert-name
 
 run:
+запуск:
   Options for obtaining & installing certificates
+  Варианты получения и установки сертификатов
 
 certonly:
+только сертификат:
   Options for modifying how a certificate is obtained
+  Варианты изменения способа получения сертификата
 
   --csr CSR             Path to a Certificate Signing Request (CSR) in DER or
                         PEM format. Currently --csr only works with the
                         'certonly' subcommand. (default: None)
+                        Путь к запросу на подпись сертификата (CSR) в формате DER или PEM. В настоящее время --csr работает только с подкомандой 'certonly'. (по умолчанию: Нет)
 
 renew:
+возобновлять:
   The 'renew' subcommand will attempt to renew any certificates previously
   obtained if they are close to expiry, and print a summary of the results.
   By default, 'renew' will reuse the plugins and options used to obtain or
@@ -318,6 +453,7 @@ renew:
   the `--cert-name` option. Hooks are available to run commands before and
   after renewal; see https://certbot.eff.org/docs/using.html#renewal for
   more information on these.
+  Подкоманда "обновить" попытается обновить все ранее полученные сертификаты, если срок их действия близок, и напечатает сводку результатов. По умолчанию "обновить" будет повторно использовать плагины и опции, использованные для получения или последнего обновления каждого сертификата. Вы можете проверить, будут ли будущие обновления доступны. завершится успешно с помощью "--dry-run". Отдельные сертификаты можно обновить с помощью опции "--cert-name". Доступны перехватчики для запуска команд до и после обновления; смотрите раздел https://certbot.eff.org/docs/using.html#renewal для получения дополнительной информации о них.
 
   --pre-hook PRE_HOOK   Command to be run in a shell before obtaining any
                         certificates. Unless --disable-hook-validation is
@@ -330,6 +466,7 @@ renew:
                         actually to be obtained/renewed. When renewing several
                         certificates that have identical pre-hooks, only the
                         first will be executed. (default: None)
+                        Команда, которая должна быть запущена в командной строке перед получением каких-либо сертификатов. Если не используется параметр --disable-hook-validation, первое слово команды должно быть абсолютным путь к исполняемому файлу или имя, найденное с помощью переменной окружения PATH. Предназначен в первую очередь для обновления, где его можно использовать для временного выключения веб-сервера, который может конфликтовать с автономным плагин. Это будет вызвано только в том случае, если сертификат фактически подлежащий получению/обновлению. При обновлении нескольких сертификаты, которые имеют идентичные предварительные настройки, будут выполнены только в первом случае. (по умолчанию: Нет)
   --post-hook POST_HOOK
                         Command to be run in a shell after attempting to
                         obtain/renew certificates. Unless --disable-hook-
@@ -341,6 +478,7 @@ renew:
                         an attempt was made to obtain/renew a certificate. If
                         multiple renewed certificates have identical post-
                         hooks, only one will be run. (default: None)
+                        Команда, которая должна быть запущена в командной строке после попытки получения/обновления сертификатов. Если не используется проверка --disable-hook-, первым словом команды должен быть абсолютный путь к исполняемому файлу или найденному файлу через переменную окружения PATH. Может использоваться для развертывания обновленных сертификатов или для перезапуска любых серверов которые были остановлены с помощью --pre-hook. Запускается только в том случае, если была предпринята попытка получить/обновить сертификат. Если несколько обновленных сертификатов имеют одинаковые post-перехватчики, будет запущен только один. (по умолчанию: Нет)
   --deploy-hook DEPLOY_HOOK
                         Command to be run in a shell once for each
                         successfully issued certificate. Unless --disable-
@@ -354,6 +492,7 @@ renew:
                         $RENEWED_DOMAINS will contain a space-delimited list
                         of renewed certificate domains (for example,
                         "example.com www.example.com") (default: None)
+                        Команда, запускаемая в командной оболочке один раз для каждого успешно выданный сертификат. Если только...отключить- используется проверка с помощью перехвата, первое слово команды должно быть абсолютным путем к исполняемому файлу или к найденному через переменную окружения PATH. Для этой команды переменная оболочки $RENEWED_LINEAGE будет указывать на подкаталог config live (например, "/etc/letsencrypt/live/example.com"), содержащий новые сертификаты и ключи; переменная оболочки $RENEWED_DOMAINS будет содержать список, разделенный пробелами доменов с обновленными сертификатами (например, "example.com www.example.com ") (по умолчанию: Нет)
   --disable-hook-validation
                         Ordinarily the commands specified for --pre-
                         hook/--post-hook/--deploy-hook will be checked for
@@ -363,8 +502,10 @@ renew:
                         rather simplistic and fails if you use more advanced
                         shell constructs, so you can use this switch to
                         disable it. (default: False)
+                        Обычно команды, указанные для --pre-hook/--post-hook/--deploy-hook, проверяются на корректность, чтобы увидеть, находятся ли запускаемые программы в $PATH, чтобы ошибки можно было обнаружить на ранней стадии, даже если перехватчики еще не запущены. Проверка проводится следующим образом довольно упрощенно и терпит неудачу, если вы используете более продвинутые оболочка сконструирована таким образом, что вы можете использовать этот переключатель, чтобы отключить ее. (по умолчанию: False)
   --no-directory-hooks  Disable running executables found in Certbot's hook
                         directories during renewal. (default: False)
+                        Отключите запуск исполняемых файлов, найденных в каталогах перехватчиков Certbot, во время обновления. (по умолчанию: False)
   --disable-renew-updates
                         Disable automatic updates to your server configuration
                         that would otherwise be done by the selected installer
@@ -372,32 +513,43 @@ renew:
                         renew", regardless of if the certificate is renewed.
                         This setting does not apply to important TLS
                         configuration updates. (default: False)
+                        Отключите автоматическое обновление конфигурации вашего сервера, которое в противном случае выполнялось бы выбранным установщиком подключаемым модулем и запускалось бы, когда пользователь запускает "cert bot обновить", независимо от того, был ли обновлен сертификат. Этот параметр не применяется к важным обновлениям конфигурации TLS. (по умолчанию: False)
   --no-autorenew        Disable auto renewal of certificates. (default: False)
+                        Отключите автоматическое обновление сертификатов. (по умолчанию: False)
 
 certificates:
+сертификаты:
   List certificates managed by Certbot
+  Список сертификатов, управляемых Certbot
 
 delete:
   Options for deleting a certificate
+  Варианты удаления сертификата
 
 revoke:
+отменять:
   Options for revocation of certificates
+  Варианты отзыва сертификатов
 
   --reason {unspecified,keycompromise,affiliationchanged,superseded,cessationofoperation}
                         Specify reason for revoking certificate. (default:
                         unspecified)
+                        {не указано,отказ ключа,изменена принадлежность, заменено действие, приостановлена работа} Укажите причину отзыва сертификата. (по умолчанию: не указано)
   --delete-after-revoke
                         Delete certificates after revoking them, along with
                         all previous and later versions of those certificates.
                         (default: None)
+                        Удалите сертификаты после их отзыва, а также все предыдущие и более поздние версии этих сертификатов. (по умолчанию: Нет)
   --no-delete-after-revoke
                         Do not delete certificates after revoking them. This
                         option should be used with caution because the 'renew'
                         subcommand will attempt to renew undeleted revoked
                         certificates. (default: None)
+                        Не удаляйте сертификаты после их отзыва. Этот этот параметр следует использовать с осторожностью, поскольку подкоманда "обновить" попытается обновить восстановленные отозванные сертификаты. (по умолчанию: Нет)
 
 register:
   Options for account registration
+  Варианты регистрации учетной записи
 
   --register-unsafely-without-email
                         Specifying this flag enables registering an account
@@ -407,48 +559,66 @@ register:
                         certificates or problems with your Certbot
                         installation that will lead to failure to renew.
                         (default: False)
+                        Установка этого флажка позволяет зарегистрировать учетную запись без указания адреса электронной почты. Настоятельно не рекомендуется это делать, поскольку вы не сможете получать уведомления о предстоящем истечении срока действия или отзыве ваших сертификатов или проблемах с вашим Certbot установка, которая приведет к невозможности продления. (по умолчанию: False)
   -m EMAIL, --email EMAIL
                         Email used for registration and recovery contact. Use
                         comma to register multiple emails, ex:
                         u1@example.com,u2@example.com. (default: Ask).
+                        Адрес электронной почты, используемый для регистрации и восстановления связи. Используйте запятую для регистрации нескольких электронных писем, например: u1@example.com,u2@example.com. (по умолчанию: Задать).
   --eff-email           Share your e-mail address with EFF (default: None)
+                        Поделитесь своим адресом электронной почты с EFF (по умолчанию: Нет).
   --no-eff-email        Don't share your e-mail address with EFF (default:
                         None)
+                        Не сообщайте свой адрес электронной почты EFF (по умолчанию: Нет)
 
 update_account:
   Options for account modification
+  Варианты изменения учетной записи
 
 unregister:
   Options for account deactivation.
+  Варианты деактивации учетной записи.
 
   --account ACCOUNT_ID  Account ID to use (default: None)
+                        Используемый идентификатор учетной записи (по умолчанию: Нет)
 
 install:
   Options for modifying how a certificate is deployed
+  Параметры для изменения способа развертывания сертификата
 
 rollback:
   Options for rolling back server configuration changes
+  Опции для отката изменений конфигурации сервера
 
   --checkpoints N       Revert configuration N number of checkpoints.
                         (default: 1)
+                        Отменить настройку N контрольных точек. (по умолчанию: 1)
 
 plugins:
   Options for the "plugins" subcommand
+  Параметры для подкоманды "плагины"
 
   --init                Initialize plugins. (default: False)
+                        Инициализируйте плагины. (по умолчанию: False)
   --prepare             Initialize and prepare plugins. (default: False)
+                        Инициализируйте и подготовьте плагины. (по умолчанию: False)
   --authenticators      Limit to authenticator plugins only. (default: None)
+                        Используйте только плагины для проверки подлинности. (по умолчанию: Нет)
   --installers          Limit to installer plugins only. (default: None)
+                        Ограничьтесь только установочными плагинами. (по умолчанию: Нет)
 
 enhance:
   Helps to harden the TLS configuration by adding security enhancements to
   already existing configuration.
+  Помогает упростить настройку TLS путем добавления улучшений безопасности в уже существующую конфигурацию.
 
 show_account:
   Options useful for the "show_account" subcommand:
+  Параметры, полезные для подкоманды "show_account":
 
 reconfigure:
   Common options that may be updated with the "reconfigure" subcommand:
+  Общие параметры, которые могут быть обновлены с помощью подкоманды "перенастроить":
 
 plugins:
   Plugin Selection: Certbot client supports an extensible plugins
@@ -456,153 +626,203 @@ plugins:
   and their names. You can force a particular plugin by setting options
   provided below. Running --help <plugin_name> will list flags specific to
   that plugin.
+  Выбор плагина: Клиент Certbot поддерживает расширяемую архитектуру плагинов. Список всех установленных плагинов и их названия приведены в разделе "плагины для cert bot". Вы можете принудительно использовать определенный плагин, установив параметры приведено ниже. Запустив команду --help <имя_плагина>, вы получите список флагов, специфичных для этого плагина.
 
   --configurator CONFIGURATOR
                         Name of the plugin that is both an authenticator and
                         an installer. Should not be used together with
                         --authenticator or --installer. (default: Ask)
+                        Название плагина, который является одновременно и средством аутентификации, и средством установки. Не следует использовать вместе с --authenticator или --installer. (по умолчанию: Ask)
   -a AUTHENTICATOR, --authenticator AUTHENTICATOR
                         Authenticator plugin name. (default: None)
+                        Имя подключаемого модуля аутентификации. (по умолчанию: Нет)
   -i INSTALLER, --installer INSTALLER
                         Installer plugin name (also used to find domains).
                         (default: None)
+                        Имя установщика плагина (также используется для поиска доменов).
   --apache              Obtain and install certificates using Apache (default:
                         False)
+                        Получение и установка сертификатов с помощью Apache (по умолчанию: False)
   --nginx               Obtain and install certificates using Nginx (default:
                         False)
-  --standalone          Obtain certificates using a "standalone" webserver.
-                        (default: False)
+                        Получение и установка сертификатов с помощью Nginx (по умолчанию: False)
+  --standalone          Obtain certificates using a "standalone" webserver. (default: False)
+                        Получите сертификаты, используя "автономный" веб-сервер. (по умолчанию: False)
   --manual              Provide laborious manual instructions for obtaining a
                         certificate (default: False)
+                        Предоставить подробные инструкции вручную для получения сертификата (по умолчанию: False)
   --webroot             Obtain certificates by placing files in a webroot
                         directory. (default: False)
+                        Получите сертификаты, поместив файлы в webroot каталог. (по умолчанию: False)
   --dns-cloudflare      Obtain certificates using a DNS TXT record (if you are
                         using Cloudflare for DNS). (default: False)
+                        Получите сертификаты, используя текстовую запись DNS (если вы используете Cloudflare для DNS). (по умолчанию: False)
   --dns-digitalocean    Obtain certificates using a DNS TXT record (if you are
                         using DigitalOcean for DNS). (default: False)
+                        Получите сертификаты, используя текстовую запись DNS (если вы используете DigitalOcean для DNS). (по умолчанию: False)
   --dns-dnsimple        Obtain certificates using a DNS TXT record (if you are
                         using DNSimple for DNS). (default: False)
+                        Получите сертификаты, используя текстовую запись DNS (если вы используете DNSimple для DNS). (по умолчанию: False)
   --dns-dnsmadeeasy     Obtain certificates using a DNS TXT record (if you are
                         using DNS Made Easy for DNS). (default: False)
+                        Получите сертификаты, используя текстовую запись DNS (если вы используете DNS Made Easy для DNS). (по умолчанию: False)
   --dns-gehirn          Obtain certificates using a DNS TXT record (if you are
                         using Gehirn Infrastructure Service for DNS).
                         (default: False)
+                        Получите сертификаты, используя текстовую запись DNS (если вы используете службу инфраструктуры Gehirn для DNS). (по умолчанию: False)
   --dns-google          Obtain certificates using a DNS TXT record (if you are
                         using Google Cloud DNS). (default: False)
+                        Получите сертификаты, используя текстовую запись DNS (если вы используете Google Cloud DNS). (по умолчанию: False)
   --dns-linode          Obtain certificates using a DNS TXT record (if you are
                         using Linode for DNS). (default: False)
+                        Получите сертификаты, используя текстовую запись DNS (если вы используете Linode для DNS). (по умолчанию: False)
   --dns-luadns          Obtain certificates using a DNS TXT record (if you are
                         using LuaDNS for DNS). (default: False)
+                        Получите сертификаты, используя текстовую запись DNS (если вы используете LuaDNS для DNS). (по умолчанию: False)
   --dns-nsone           Obtain certificates using a DNS TXT record (if you are
                         using NS1 for DNS). (default: False)
+                        Получите сертификаты, используя текстовую запись DNS (если вы используете NS1 для DNS). (по умолчанию: False)
   --dns-ovh             Obtain certificates using a DNS TXT record (if you are
                         using OVH for DNS). (default: False)
+                        Получите сертификаты, используя текстовую запись DNS (если вы используете OVH для DNS). (по умолчанию: False)
   --dns-rfc2136         Obtain certificates using a DNS TXT record (if you are
                         using BIND for DNS). (default: False)
+                        Получите сертификаты, используя текстовую запись DNS (если вы используете BIND для DNS). (по умолчанию: False)
   --dns-route53         Obtain certificates using a DNS TXT record (if you are
                         using Route53 for DNS). (default: False)
+                        Получите сертификаты, используя текстовую запись DNS (если вы используете Route53 для DNS). (по умолчанию: False)
   --dns-sakuracloud     Obtain certificates using a DNS TXT record (if you are
                         using Sakura Cloud for DNS). (default: False)
+                        Получите сертификаты, используя текстовую запись DNS (если вы используете Sakura Cloud для DNS). (по умолчанию: False)
 
 apache:
   Apache Web Server plugin (Please note that the default values of the
   Apache plugin options change depending on the operating system Certbot is
   run on.)
+  Подключаемый модуль веб-сервера Apache (Обратите внимание, что значения параметров подключаемого модуля Apache по умолчанию меняются в зависимости от операционной системы, на которой запущен Certbot.)
 
   --apache-enmod APACHE_ENMOD
                         Path to the Apache 'a2enmod' binary (default: None)
+                        Путь к двоичному файлу Apache 'a2enmod' (по умолчанию: Нет)
   --apache-dismod APACHE_DISMOD
                         Path to the Apache 'a2dismod' binary (default: None)
+                        Путь к двоичному файлу Apache 'a2dismod' (по умолчанию: Нет)
   --apache-le-vhost-ext APACHE_LE_VHOST_EXT
                         SSL vhost configuration extension (default: -le-
                         ssl.conf)
+                        Расширение конфигурации SSL vhost (по умолчанию: -le-
+                        ssl.conf)
   --apache-server-root APACHE_SERVER_ROOT
                         Apache server root directory (default: /etc/apache2)
+                        Корневой каталог сервера Apache (по умолчанию: /etc/apache2)
   --apache-vhost-root APACHE_VHOST_ROOT
                         Apache server VirtualHost configuration root (default:
                         None)
+                        Корень конфигурации виртуального хостинга сервера Apache (по умолчанию: Нет)
   --apache-logs-root APACHE_LOGS_ROOT
                         Apache server logs directory (default:
                         /var/log/apache2)
-  --apache-challenge-location APACHE_CHALLENGE_LOCATION
-                        Directory path for challenge configuration (default:
-                        /etc/apache2)
+                        Каталог журналов сервера Apache (по умолчанию: /var/log/apache2) --apache-challenge-location APACHE_CHALLENGE_LOCATION Directory path for challenge configuration (default: /etc/apache2)
   --apache-handle-modules APACHE_HANDLE_MODULES
                         Let installer handle enabling required modules for you
                         (Only Ubuntu/Debian currently) (default: False)
-  --apache-handle-sites APACHE_HANDLE_SITES
-                        Let installer handle enabling sites for you (Only
-                        Ubuntu/Debian currently) (default: False)
+                        Позвольте установщику включить необходимые модули за вас (В настоящее время только Ubuntu/Debian) (по умолчанию: False) --apache-handle-sites APACHE_HANDLE_SITES Let installer handle enabling sites for you (Only Ubuntu/Debian currently) (default: False)
   --apache-ctl APACHE_CTL
                         Full path to Apache control script (default:
                         apache2ctl)
+                        Полный путь к управляющему скрипту Apache (по умолчанию: apache2ctl)
   --apache-bin APACHE_BIN
                         Full path to apache2/httpd binary (default: None)
+                        Полный путь к двоичному файлу apache2/httpd (по умолчанию: Нет)
 
 dns-cloudflare:
   Obtain certificates using a DNS TXT record (if you are using Cloudflare
   for DNS).
+  Получите сертификаты, используя текстовую запись DNS (если вы используете Cloudflare для DNS).
 
   --dns-cloudflare-propagation-seconds DNS_CLOUDFLARE_PROPAGATION_SECONDS
                         The number of seconds to wait for DNS to propagate
                         before asking the ACME server to verify the DNS
                         record. (default: 10)
+                        Количество секунд, в течение которых необходимо ожидать распространения DNS перед запросом сервера ACME на проверку DNS запись. (по умолчанию: 10)
   --dns-cloudflare-credentials DNS_CLOUDFLARE_CREDENTIALS
                         Cloudflare credentials INI file. (default: None)
+                        INI-файл учетных данных Cloudflare. (по умолчанию: Нет)
 
 dns-digitalocean:
   Obtain certificates using a DNS TXT record (if you are using DigitalOcean
   for DNS).
+  Получите сертификаты, используя текстовую запись DNS (если вы используете DigitalOcean
+для DNS).
 
   --dns-digitalocean-propagation-seconds DNS_DIGITALOCEAN_PROPAGATION_SECONDS
                         The number of seconds to wait for DNS to propagate
                         before asking the ACME server to verify the DNS
                         record. (default: 10)
+                        Количество секунд, в течение которых необходимо ожидать распространения DNS перед запросом сервера ACME на проверку DNS запись. (по умолчанию: 10)
   --dns-digitalocean-credentials DNS_DIGITALOCEAN_CREDENTIALS
                         DigitalOcean credentials INI file. (default: None)
+                        INI-файл учетных данных DigitalOcean. (по умолчанию: Нет)
 
 dns-dnsimple:
   Obtain certificates using a DNS TXT record (if you are using DNSimple for
   DNS).
+  Получите сертификаты, используя текстовую запись DNS (если вы используете DNSimple для
+  DNS).)
 
   --dns-dnsimple-propagation-seconds DNS_DNSIMPLE_PROPAGATION_SECONDS
                         The number of seconds to wait for DNS to propagate
                         before asking the ACME server to verify the DNS
                         record. (default: 30)
+                        Количество секунд, в течение которых необходимо ожидать распространения DNS перед запросом сервера ACME на проверку DNS запись. (по умолчанию: 30)
   --dns-dnsimple-credentials DNS_DNSIMPLE_CREDENTIALS
                         DNSimple credentials INI file. (default: None)
+                        Файл DNSimple credentials INI. (по умолчанию: Нет
 
 dns-dnsmadeeasy:
   Obtain certificates using a DNS TXT record (if you are using DNS Made Easy
   for DNS).
+  Получите сертификаты, используя текстовую запись DNS (если вы используете DNS Made Easy
+для DNS).
 
   --dns-dnsmadeeasy-propagation-seconds DNS_DNSMADEEASY_PROPAGATION_SECONDS
                         The number of seconds to wait for DNS to propagate
                         before asking the ACME server to verify the DNS
                         record. (default: 60)
+                        Количество секунд, в течение которых необходимо ожидать распространения DNS
+                        перед запросом сервера ACME на проверку DNS
+                        запись. (по умолчанию: 60)
   --dns-dnsmadeeasy-credentials DNS_DNSMADEEASY_CREDENTIALS
                         DNS Made Easy credentials INI file. (default: None)
+                        DNS упростил ввод учетных данных в файл. (по умолчанию: Нет)
 
 dns-gehirn:
   Obtain certificates using a DNS TXT record (if you are using Gehirn
   Infrastructure Service for DNS).
+  Получите сертификаты, используя текстовую запись DNS (если вы используете Gehirn
+  Инфраструктурный сервис для DNS).
 
   --dns-gehirn-propagation-seconds DNS_GEHIRN_PROPAGATION_SECONDS
                         The number of seconds to wait for DNS to propagate
                         before asking the ACME server to verify the DNS
                         record. (default: 30)
+                        Количество секунд, в течение которых необходимо ожидать распространения DNS перед запросом сервера ACME на проверку DNS запись. (по умолчанию: 30)
   --dns-gehirn-credentials DNS_GEHIRN_CREDENTIALS
                         Gehirn Infrastructure Service credentials file.
                         (default: None)
+                        Файл учетных данных службы инфраструктуры Gehirn. (по умолчанию: Нет)
 
 dns-google:
   Obtain certificates using a DNS TXT record (if you are using Google Cloud
   DNS for DNS).
+  Получите сертификаты, используя текстовую запись DNS (если вы используете Google Cloud
+  DNS для DNS).
 
   --dns-google-propagation-seconds DNS_GOOGLE_PROPAGATION_SECONDS
                         The number of seconds to wait for DNS to propagate
                         before asking the ACME server to verify the DNS
                         record. (default: 60)
+                        Количество секунд, в течение которых необходимо ожидать распространения DNS перед запросом сервера ACME на проверку DNS запись. (по умолчанию: 60)
   --dns-google-credentials DNS_GOOGLE_CREDENTIALS
                         Path to Google Cloud DNS service account JSON file to
                         use instead of relying on Application Default
@@ -615,36 +835,48 @@ dns-google:
                         control#permissions_and_roles for information about
                         the permissions required to modify Cloud DNS records.)
                         (default: None)
+                        Путь к учетной записи Google Cloud DNS service в формате JSON, который можно использовать вместо того, чтобы полагаться на приложение по умолчанию Учетные данные (ADC). (См. https://cloud.google.com/docs/ аутентификация/приложение-по умолчанию-учетные данные для информация об ABC, https://developers.google.com/iidentity/protocols/OAuth2ServiceAccount
+                        #создание учетной записи для получения информации о создании учетной записи службы и https://cloud.google.com/dns/access- используйте#permissions_and_roles для получения информации о разрешениях, необходимых для изменения записей облачного DNS.) (по умолчанию: Нет)
   --dns-google-project DNS_GOOGLE_PROJECT
                         The ID of the Google Cloud project that the Google
                         Cloud DNS managed zone(s) reside in. This will be
                         determined automatically if not specified. (default:
                         None)
+                        Идентификатор проекта Google Cloud, в котором находятся управляемые зоны Google Cloud DNS. Если он не указан, он будет определен автоматически. (по умолчанию: Нет)
 
 dns-linode:
   Obtain certificates using a DNS TXT record (if you are using Linode for
+  DNS).
+  Получите сертификаты, используя текстовую запись DNS (если вы используете Linode для
   DNS).
 
   --dns-linode-propagation-seconds DNS_LINODE_PROPAGATION_SECONDS
                         The number of seconds to wait for DNS to propagate
                         before asking the ACME server to verify the DNS
                         record. (default: 120)
+                        Количество секунд, в течение которых необходимо ожидать распространения DNS перед запросом сервера ACME на проверку DNS запись. (по умолчанию: 120)
   --dns-linode-credentials DNS_LINODE_CREDENTIALS
                         Linode credentials INI file. (default: None)
+                        INI-файл учетных данных Linode. (по умолчанию: Нет)
 
 dns-luadns:
   Obtain certificates using a DNS TXT record (if you are using LuaDNS for
+  DNS).
+  Получите сертификаты, используя текстовую запись DNS (если вы используете LuaDNS для
   DNS).
 
   --dns-luadns-propagation-seconds DNS_LUADNS_PROPAGATION_SECONDS
                         The number of seconds to wait for DNS to propagate
                         before asking the ACME server to verify the DNS
                         record. (default: 30)
+                        Количество секунд, в течение которых необходимо ожидать распространения DNS перед запросом сервера ACME на проверку DNS запись. (по умолчанию: 30)
   --dns-luadns-credentials DNS_LUADNS_CREDENTIALS
                         LuaDNS credentials INI file. (default: None)
+                        INI-файл учетных данных LuaDNS. (по умолчанию: Нет)
 
 dns-nsone:
   Obtain certificates using a DNS TXT record (if you are using NS1 for DNS).
+  Получите сертификаты, используя текстовую запись DNS (если вы используете NS1 для DNS).
 
   --dns-nsone-propagation-seconds DNS_NSONE_PROPAGATION_SECONDS
                         The number of seconds to wait for DNS to propagate
@@ -660,34 +892,43 @@ dns-ovh:
                         The number of seconds to wait for DNS to propagate
                         before asking the ACME server to verify the DNS
                         record. (default: 120)
-  --dns-ovh-credentials DNS_OVH_CREDENTIALS
-                        OVH credentials INI file. (default: None)
+                        Количество секунд, в течение которых необходимо ожидать распространения DNS перед запросом сервера ACME на проверку DNS запись. (по умолчанию: 30) --dns-ovh-credentials DNS_OVH_CREDENTIALS OVH credentials INI file. (default: None)
 
 dns-rfc2136:
   Obtain certificates using a DNS TXT record (if you are using BIND for
+  DNS).
+  Получите сертификаты, используя текстовую запись DNS (если вы используете BIND для
   DNS).
 
   --dns-rfc2136-propagation-seconds DNS_RFC2136_PROPAGATION_SECONDS
                         The number of seconds to wait for DNS to propagate
                         before asking the ACME server to verify the DNS
                         record. (default: 60)
+                        Количество секунд, в течение которых необходимо ожидать распространения DNS перед запросом сервера ACME на проверку DNS запись. (по умолчанию: 60)
   --dns-rfc2136-credentials DNS_RFC2136_CREDENTIALS
                         RFC 2136 credentials INI file. (default: None)
+                        INI-файл учетных данных RFC 2136. (по умолчанию: Нет)
 
 dns-route53:
   Obtain certificates using a DNS TXT record (if you are using AWS Route53
   for DNS).
+  Получите сертификаты, используя текстовую запись DNS (если вы используете AWS Route53
+для DNS).
 
 dns-sakuracloud:
   Obtain certificates using a DNS TXT record (if you are using Sakura Cloud
   for DNS).
+  Получите сертификаты, используя текстовую запись DNS (если вы используете Sakura Cloud
+для DNS).
 
   --dns-sakuracloud-propagation-seconds DNS_SAKURACLOUD_PROPAGATION_SECONDS
                         The number of seconds to wait for DNS to propagate
                         before asking the ACME server to verify the DNS
                         record. (default: 90)
+                        Количество секунд, в течение которых необходимо ожидать распространения DNS перед запросом сервера ACME на проверку DNS запись. (по умолчанию: 90)
   --dns-sakuracloud-credentials DNS_SAKURACLOUD_CREDENTIALS
                         Sakura Cloud credentials file. (default: None)
+                        Файл учетных данных Sakura Cloud. (по умолчанию: Нет)
 
 manual:
   Authenticate through manual configuration or custom shell scripts. When
@@ -705,40 +946,51 @@ manual:
   contains a comma-separated list of all domains that are challenged for the
   current certificate.
 
+  Выполните аутентификацию с помощью ручной настройки или пользовательских сценариев оболочки. При использовании сценариев оболочки необходимо предоставить сценарий проверки подлинности. Переменные среды, доступные для этого сценария, зависят от типа запроса. $CERTBOT_DOMAIN всегда будет содержать домен, для которого выполняется аутентификация. Для HTTP-01 и DNS01 $CERTBOT_VALIDATION - это строка проверки, а $CERTBOT_TOKEN - это имя файла ресурса запрашиваемого при выполнении запроса HTTP-01. Также может быть предоставлен дополнительный сценарий очистки, который может использовать дополнительную переменную $CERTBOT_AUTH_OUTPUT, который содержит стандартный вывод из сценария аутентификации. Как для аутентификатора, так и для сценария очистки, при вызовах HTTP-01 и DNS-01 значение $CERTBOT_REMAINING_CHALLENGES будет равно количеству вызовов, оставшихся после текущего, и $CERTBOT_ALL_DOMAINS. содержит разделенный запятыми список всех доменов, у которых запрашивается текущий сертификат.
+
   --manual-auth-hook MANUAL_AUTH_HOOK
                         Path or command to execute for the authentication
                         script (default: None)
+                        Путь или команда для выполнения аутентификации скрипт (по  молчанию: Нет)
   --manual-cleanup-hook MANUAL_CLEANUP_HOOK
                         Path or command to execute for the cleanup script
                         (default: None)
+                        Путь или команда для выполнения сценария очистки (по умолчанию: Нет)
 
 nginx:
   Nginx Web Server plugin
+  Плагин для веб-сервера Nginx
 
   --nginx-server-root NGINX_SERVER_ROOT
                         Nginx server root directory. (default: /etc/nginx or
                         /usr/local/etc/nginx)
+                        Корневой каталог сервера Nginx. (по умолчанию: /etc/nginx или /usr/local/etc/nginx)
   --nginx-ctl NGINX_CTL
                         Path to the 'nginx' binary, used for 'configtest' and
                         retrieving nginx version number. (default: nginx)
+                        Путь к двоичному файлу 'nginx', используемому для 'configtest' и получения номера версии nginx. (по умолчанию: nginx)
   --nginx-sleep-seconds NGINX_SLEEP_SECONDS
                         Number of seconds to wait for nginx configuration
                         changes to apply when reloading. (default: 1)
+                        Количество секунд, в течение которых необходимо ожидать изменения конфигурации nginx изменения будут применены при перезагрузке. (по умолчанию: 1)
 
 null:
   Null Installer
+  Нулевой установщик
 
 standalone:
   Runs an HTTP server locally which serves the necessary validation files
   under the /.well-known/acme-challenge/ request path. Suitable if there is
   no HTTP server already running. HTTP challenge only (wildcards not
   supported).
+  Запускает локальный HTTP-сервер, который обслуживает необходимые файлы проверки по пути /.well-known/acme-challenge/ request. Подходит, если HTTP-сервер еще не запущен. Только HTTP-вызов (подстановочные знаки не поддерживаются).
 
 webroot:
   Saves the necessary validation files to a .well-known/acme-challenge/
   directory within the nominated webroot path. A separate HTTP server must
   be running and serving files from the webroot path. HTTP challenge only
   (wildcards not supported).
+  Сохраняет необходимые файлы проверки в каталоге .well-known/acme-challenge/, указанном в указанном пути webroot. Должен быть запущен отдельный HTTP-сервер, обслуживающий файлы из пути webroot. Только HTTP-вызов (подстановочные знаки не поддерживаются).
 
   --webroot-path WEBROOT_PATH, -w WEBROOT_PATH
                         public_html / webroot path. This can be specified
@@ -747,6 +999,7 @@ webroot:
                         For instance: `-w /var/www/example -d example.com -d
                         www.example.com -w /var/www/thing -d thing.net -d
                         m.thing.net` (default: Ask)
+                        путь public_html / webroot. Его можно указать несколько раз для обработки разных доменов; для каждого домена будет указан путь webroot, который ему предшествовал. Например: `-w /var/www/example -d example.com -d www.example.com -w /var/www/thing -d thing.net -d m.thing.net` (по умолчанию: Спросить)
   --webroot-map WEBROOT_MAP
                         JSON dictionary mapping domains to webroot paths; this
                         implies -d for each entry. You may need to escape this
@@ -757,3 +1010,4 @@ webroot:
                         a config file, it needs to be on a single line, like:
                         webroot-map = {"example.com":"/var/www"}. (default:
                         {})
+                        Словарь JSON сопоставляет домены с путями webroot; это подразумевает -d для каждой записи. Возможно, вам придется экранировать это из вашей оболочки. Например: --webroot-map '{"eg1.is,m.eg1.is":"/www/eg1/", "eg2.is":"/www/eg2"}" Этот параметр объединен с параметрами -w / -d, но имеет приоритет над ними. В настоящее время, если вы помещаете webroot-map в конфигурационный файл, он должен быть в одной строке, например: webroot-map = {"example.com":"/var/www"}. (по умолчанию: {})
