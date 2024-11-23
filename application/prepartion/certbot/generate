@@ -75,10 +75,12 @@ function generate_wildcard_certificate_for_main_domain() {
       flag_help=0
       ;;
     b)
+      #  Будьте готовы заменить или обновить действующие сертификаты на недействительные (тестовые/промежуточные) сертификаты (по умолчанию: False)
       break_my_certs='--break-my-certs'
     ;;
     # --test-cert or --staging
     t)
+      # Используйте промежуточный сервер Let's Encrypt для получения или отзыва тестовых (недействительных) сертификатов; эквивалентно --server https://acme- staging-v02.api.letsencrypt.org/directory (по умолчанию: False)
       test='--staging'
       flag_help=0
       ;;
@@ -95,6 +97,7 @@ function generate_wildcard_certificate_for_main_domain() {
       flag_help=0
       ;;
     s)
+      # Размер ключа RSA. (по умолчанию: 2048)
       letsencrypt_rsa_key_size="$OPTARG"
       flag_help=0
       ;;
@@ -111,9 +114,14 @@ function generate_wildcard_certificate_for_main_domain() {
       flag_help=0
     ;;
     m)
+      # Добавляет к сертификату расширение OCSP для обязательного сшивания. Автоматически настраивает сшивание OCSP для поддерживаемых настроек (версия Apache >= 2.3.3). (по умолчанию: False)
       flag_must_staple='--must-staple'
       flag_help=0
       ;;
+    ?)
+      echo "Invalid option: -${OPTARG}."
+      exit 1
+    ;;
     *) flag_help=0 ;;
     esac
 
